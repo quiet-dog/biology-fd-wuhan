@@ -1,0 +1,20 @@
+:7676 {
+        handle_path /prod-api/* {
+                reverse_proxy 127.0.0.1:9020
+        }
+
+        handle_path /ws {
+                reverse_proxy 127.0.0.1:9020 {
+                        header_up Host {upstream_hostport}
+                        header_up X-Forwarded-Host {host}
+                }
+        }
+
+        handle {
+                root * /home/zks/Projects/privite/biology-fd/biology-fd/dist
+                try_files {path}.html {path} /index.html
+                file_server
+                encode gzip zstd
+        }
+
+}

@@ -1,0 +1,22 @@
+{
+  "Version": "4.4.0",
+  "Title": "高风险安全风险车间智能化风险管理和实时动态监管平台",
+  "FixedHeader": true,
+  "HiddenSideBar": false,
+  "MultiTagsCache": false,
+  "KeepAlive": true,
+  "Layout": "vertical",
+  "Theme": "default",
+  "DarkMode": false,
+  "Grey": false,
+  "Weak": false,
+  "HideTabs": false,
+  "SidebarStatus": true,
+  "EpThemeColor": "#409EFF",
+  "ShowLogo": true,
+  "ShowModel": "smart",
+  "MenuArrowIconNoTransition": true,
+  "CachingAsyncRoutes": false,
+  "TooltipEffect": "light",
+  "ResponsiveStorageNameSpace": "responsive-"
+}
