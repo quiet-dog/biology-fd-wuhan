@@ -13,6 +13,7 @@ import { CommonUtils } from "@/utils/common";
 const noticesNum = ref(0);
 import { Sort } from "element-plus";
 import { useUserStore } from "@/store/modules/user";
+import { alarmEventsInfo } from "@/api/alarmPlatform/alarmEvents";
 
 // 添加类型定义
 interface NoticeItem {
@@ -116,7 +117,8 @@ const getNotices = async () => {
       description: v.notificationContent,
       type: v.notificationType,
       datetime: v.sendTime,
-      readStatus: v.readStatus
+      readStatus: v.readStatus,
+      eventId: v.eventId
     }));
 
     // 转换个人通知数据
@@ -126,7 +128,8 @@ const getNotices = async () => {
       description: v.notificationContent,
       type: v.notificationType,
       datetime: v.sendTime,
-      readStatus: v.readStatus
+      readStatus: v.readStatus,
+      eventId: v.eventId
     }));
 
     // 更新分页总数
@@ -135,6 +138,20 @@ const getNotices = async () => {
     console.error("获取通知列表失败:", error);
   }
 };
+
+const eventInfo = ref({})
+const getEventInfo = (item) => {
+  // alarmEventsInfo()
+  if (item.eventId != null && item.eventId > 0) {
+    alarmEventsInfo(item.eventId).then(res => {
+      eventInfo.value = res.data
+    }).catch(err => {
+
+    })
+  } else {
+    eventInfo.value = {}
+  }
+}
 
 onMounted(async () => {
   await getNotices();
@@ -159,33 +176,53 @@ const handleRead = async (key: number) => {
     </span>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-tabs
-          :stretch="true"
-          v-model="activeKey"
-          class="dropdown-tabs"
-          :style="{ width: notices.length === 0 ? '200px' : '330px' }"
-        >
-          <el-empty
-            v-if="notices?.length === 0"
-            description="暂无消息"
-            :image-size="60"
-          />
+        <el-tabs :stretch="true" v-model="activeKey" class="dropdown-tabs"
+          :style="{ width: notices.length === 0 ? '200px' : '330px' }">
+          <el-empty v-if="notices?.length === 0" description="暂无消息" :image-size="60" />
           <span v-else>
             <template v-for="item in notices" :key="item.key">
-              <el-tab-pane
-                :label="`${item.name}(${
-                  item.key === '1'
+              <el-popover placement="left-start" trigger="click" :width="300">
+                <el-descriptions title="信息" :column="1">
+                  <template v-if="eventInfo.type == '设备报警' || eventInfo.type == '工艺节点报警'">
+                    <el-descriptions-item label="报警编号">{{ eventInfo?.eventId }}</el-descriptions-item>
+                    <el-descriptions-item label="级别">{{ eventInfo?.level }}</el-descriptions-item>
+                    <el-descriptions-item label="类型">{{ eventInfo?.type }}</el-descriptions-item>
+                    <el-descriptions-item label="报警描述">{{ eventInfo?.description }}</el-descriptions-item>
+                    <el-descriptions-item label="设备">{{ eventInfo?.equipment?.equipmentName }}</el-descriptions-item>
+                    <el-descriptions-item label="报警数值">{{ eventInfo?.equipmentValue }}</el-descriptions-item>
+                  </template>
+                  <template v-if="eventInfo.type == '物料报警'">
+                    <el-descriptions-item label="报警编号">{{ eventInfo?.eventId }}</el-descriptions-item>
+                    <el-descriptions-item label="级别">{{ eventInfo?.level }}</el-descriptions-item>
+                    <el-descriptions-item label="类型">{{ eventInfo?.type }}</el-descriptions-item>
+                    <el-descriptions-item label="报警描述">{{ eventInfo?.description }}</el-descriptions-item>
+                    <el-descriptions-item label="物料编号">{{ eventInfo?.materials?.code }}</el-descriptions-item>
+                    <el-descriptions-item label="物料名称">{{ eventInfo?.materials?.name }}</el-descriptions-item>
+                  </template>
+                  <template v-if="eventInfo.type == '环境报警'">
+                    <el-descriptions-item label="报警编号">{{ eventInfo?.eventId }}</el-descriptions-item>
+                    <el-descriptions-item label="级别">{{ eventInfo?.level }}</el-descriptions-item>
+                    <el-descriptions-item label="类型">{{ eventInfo?.type }}</el-descriptions-item>
+                    <el-descriptions-item label="报警描述">{{ eventInfo?.description }}</el-descriptions-item>
+                    <el-descriptions-item label="环境描述">{{ eventInfo?.environment?.description + "-" +
+                      eventInfo?.environment?.unitName}}</el-descriptions-item>
+                    <el-descriptions-item label="环境区域">{{ eventInfo?.environment?.earea }}</el-descriptions-item>
+                  </template>
+                </el-descriptions>
+                <template #reference>
+                  <el-tab-pane :label="`${item.name}(${item.key === '1'
                     ? unreadSysNoticesNum
                     : unreadPersonalNoticesNum
-                })`"
-                :name="`${item.key}`"
-              >
-                <el-scrollbar max-height="330px">
-                  <div class="noticeList-container">
-                    <NoticeList :list="item.list" @read="handleRead" />
-                  </div>
-                </el-scrollbar>
-              </el-tab-pane>
+                    })`" :name="`${item.key}`">
+                    <el-scrollbar max-height="330px">
+                      <div class="noticeList-container">
+                        <NoticeList @getInfo="getEventInfo" :list="item.list" @read="handleRead" />
+                      </div>
+                    </el-scrollbar>
+                  </el-tab-pane>
+                </template>
+              </el-popover>
+
             </template>
           </span>
         </el-tabs>

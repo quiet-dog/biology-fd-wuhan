@@ -61,6 +61,9 @@
         <el-button type="primary" :icon="Plus" @click="openDialog('add')"
           >新增</el-button
         >
+         <el-button type="success" :icon="Upload" @click="openImportDialog"
+          >导入</el-button
+        >
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
@@ -102,6 +105,7 @@
       @success="analyzeModalVisible = false"
       @closed="analyzeModalVisible = false"
     />
+    <importFormModal @refresh="archiveListFun" ref="importRef"  />
   </div>
 </template>
 
@@ -116,8 +120,15 @@ import { CommonUtils } from "@/utils/common";
 import { receiveListRes, receiveList } from "@/api/materialData/receiptRecord";
 import dayjs from "dayjs";
 import analyzeFormModal from "./analyze-from-modal.vue";
+import { Upload } from "@element-plus/icons-vue";
+import importFormModal from "./import-form-modal.vue";
 
 const analyzeModalVisible = ref(false);
+const importRef = ref();
+const openImportDialog = () => {
+  importRef.value.handleOpened();
+};
+
 
 const tableRef = ref();
 const columns: TableColumnList = [

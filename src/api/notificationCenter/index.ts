@@ -22,6 +22,7 @@ export function notificationList(params: notificationListRes) {
   return http.request("get", "/manage/notification", { params });
 }
 
+
 //删除通知
 export const deletenode = (data: Array<number>) => {
   return http.request("delete", "/manage/notification", {

@@ -9,6 +9,7 @@ import { useAppStoreHook } from "@/store/modules/app";
 import { useSettingStoreHook } from "@/store/modules/settings";
 import { deviceDetection, useDark, useGlobal } from "@pureadmin/utils";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
+import Vide from "@/assets/a.mp3";
 import {
   h,
   ref,
@@ -18,7 +19,7 @@ import {
   onBeforeMount,
   defineComponent
 } from "vue";
-import { ElNotification } from "element-plus";
+import { ElMessageBox, ElNotification } from "element-plus";
 import { Client } from "@stomp/stompjs";
 
 import navbar from "./components/navbar.vue";
@@ -120,7 +121,7 @@ const stompClient = new Client({
     //   ? "ws://home.icepie.net:9020/ws"
     //   : "/ws-api/ws"
 });
-
+const audu = ref();
 stompClient.onConnect = frame => {
   stompClient.subscribe("/topic/info", greeting => {
     console.log("greeting", JSON.parse(greeting.body));
@@ -145,6 +146,14 @@ stompClient.onConnect = frame => {
         iconColor = "#1890FF"; // 蓝色
     }
 
+    // 音频是否在播放
+
+    if (audu.value.paused) {
+      audu.value.play().catch(err => {
+        console.log(err);
+      });
+    }
+    
     ElNotification({
       title: data.content.type,
       message: data.content.description,
@@ -167,6 +176,7 @@ stompClient.onStompError = frame => {
   console.error("Additional details: " + frame.body);
 };
 
+
 // 在现有的onMounted中添加WebSocket激活
 onMounted(() => {
   if (isMobile) {
@@ -174,6 +184,20 @@ onMounted(() => {
   }
   // 激活WebSocket连接
   stompClient.activate();
+  // 是否已经用户同意播放
+  // ElMessageBox.alert('是否允许播放报警音频', '提示', {
+  //   // if you want to disable its autofocus
+  //   // autofocus: false,
+  //   confirmButtonText: 'OK',
+  //   callback: (action) => {
+
+  //   },
+  // })
+  // setTimeout(() => {
+  //   audu.value.play().catch(err => {
+  //     console.log(err);
+  //   });
+  // }, 5000); 
 });
 
 onBeforeMount(() => {
@@ -253,6 +277,9 @@ const layoutHeader = defineComponent({
     </div>
     <!-- 系统设置 -->
     <!-- <setting /> -->
+     <audio style="display: none;" controls  ref="audu">
+      <source :src="Vide" type="audio/mpeg" />
+     </audio>
   </div>
 </template>
 

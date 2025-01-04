@@ -125,8 +125,16 @@ const columns: TableColumnList = [
     prop: "type"
   },
   {
+    label: "物料标签",
+    prop: "tag"
+  },
+  {
     label: "库存量",
     prop: "stock"
+  },
+  {
+    label: "当前入库量",
+    prop: "lastStock"
   },
   {
     label: "物料单位",

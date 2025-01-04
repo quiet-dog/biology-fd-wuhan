@@ -75,7 +75,7 @@
           </template>
           <template #notificationType="{ row }">
             <el-tag
-              :type="row.notificationType == '通知' ? 'primary' : 'success'"
+              :type="row.notificationType == '通知' ? 'primary' : 'warning'"
             >
               {{ row.notificationType }}</el-tag
             >

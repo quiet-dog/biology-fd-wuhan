@@ -48,6 +48,18 @@ export function downloadTemplate() {
   );
 }
 
+//下载导入模板
+export function downloadReceiveTemplate() {
+  return http.request(
+    "get",
+    "/manage/receive/excelTemplate",
+    {},
+    {
+      responseType: "blob"
+    }
+  );
+}
+
 //添加物料档案
 export interface addmaterialFilesRes {
   name: string;

@@ -12,7 +12,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div v-for="item in list" :key="item.key" class="notice-item">
+  <div @click="$emit('getInfo',item)" v-for="item in list" :key="item.key" class="notice-item">
     <div class="notice-content">
       <div class="notice-title">{{ item.title }}</div>
       <div class="notice-desc">{{ item.description }}</div>
