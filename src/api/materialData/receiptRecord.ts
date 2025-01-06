@@ -27,6 +27,22 @@ export interface addreceiveRes {
   receiveNum: number;
   receiveExplain: string;
 }
+
+export interface AddMaterials {
+  name?: string;
+  code?: string;
+  specification?: string;
+  type?: string;
+  stock?: number;
+  tag?: string;
+  lastStock?: number;
+  unit?: string;
+  batch?: string;
+}
 export function addreceive(data: addreceiveRes) {
   return http.request("post", "/manage/receive", { data });
+}
+
+export function addMaterials(data: AddMaterials) {
+  return http.request("post", "/manage/materials", { data });
 }

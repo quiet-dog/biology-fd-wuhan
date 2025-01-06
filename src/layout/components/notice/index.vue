@@ -11,9 +11,11 @@ import {
 import { PaginationProps } from "@pureadmin/table";
 import { CommonUtils } from "@/utils/common";
 const noticesNum = ref(0);
-import { Sort } from "element-plus";
+import { ElMessage, Sort } from "element-plus";
 import { useUserStore } from "@/store/modules/user";
 import { alarmEventsInfo } from "@/api/alarmPlatform/alarmEvents";
+import { dailyInspectionInfo, renewDailyInspection } from "@/api/deviceData/dailyInspectionRecords";
+import { getToken } from "@/utils/auth";
 
 // 添加类型定义
 interface NoticeItem {
@@ -78,7 +80,7 @@ const getNotices = async () => {
       orderDirection: "descending",
       pageNum: 1,
       pageSize: 1000,
-      isPersonal: false // 系统通知
+      isPersonal: false, // 系统通知
     });
 
     // 获取个人通知
@@ -89,7 +91,8 @@ const getNotices = async () => {
       orderDirection: "descending",
       pageNum: 1,
       pageSize: 1000,
-      isPersonal: true // 个人通知
+      isPersonal: true, // 个人通知
+      userId:getToken().currentUser.userInfo.userId
     });
 
     const sysData = sysRes.data;
@@ -118,7 +121,8 @@ const getNotices = async () => {
       type: v.notificationType,
       datetime: v.sendTime,
       readStatus: v.readStatus,
-      eventId: v.eventId
+      eventId: v.eventId,
+      inspectionRecordId: v.inspectionRecordId
     }));
 
     // 转换个人通知数据
@@ -129,7 +133,8 @@ const getNotices = async () => {
       type: v.notificationType,
       datetime: v.sendTime,
       readStatus: v.readStatus,
-      eventId: v.eventId
+      eventId: v.eventId,
+      inspectionRecordId: v.inspectionRecordId
     }));
 
     // 更新分页总数
@@ -140,6 +145,9 @@ const getNotices = async () => {
 };
 
 const eventInfo = ref({})
+const inspectionInfo = ref({})
+const isIn = ref(false)
+const inspectionResult =ref("")
 const getEventInfo = (item) => {
   // alarmEventsInfo()
   if (item.eventId != null && item.eventId > 0) {
@@ -148,10 +156,29 @@ const getEventInfo = (item) => {
     }).catch(err => {
 
     })
-  } else {
-    eventInfo.value = {}
+  } 
+  if (item.inspectionRecordId != null && item.inspectionRecordId > 0) {
+    dailyInspectionInfo(item.inspectionRecordId).then(res => {
+      inspectionInfo.value = res.data
+      eventInfo.value.type = "日常巡检"
+      inspectionResult.value = res.data.inspectionResult
+     
+    })
   }
+
 }
+
+function submitResult(val) {
+  renewDailyInspection({
+    ...inspectionInfo.value,
+    inspectionResult: val
+  }).then(res => {
+    ElMessage.success("提交成功")
+  }).catch(err => {
+    ElMessage.error("提交失败")
+  })
+}
+
 
 onMounted(async () => {
   await getNotices();
@@ -181,7 +208,7 @@ const handleRead = async (key: number) => {
           <el-empty v-if="notices?.length === 0" description="暂无消息" :image-size="60" />
           <span v-else>
             <template v-for="item in notices" :key="item.key">
-              <el-popover placement="left-start" trigger="click" :width="300">
+              <el-popover  placement="left-start" trigger="click" :width="300">
                 <el-descriptions title="信息" :column="1">
                   <template v-if="eventInfo.type == '设备报警' || eventInfo.type == '工艺节点报警'">
                     <el-descriptions-item label="报警编号">{{ eventInfo?.eventId }}</el-descriptions-item>
@@ -208,6 +235,17 @@ const handleRead = async (key: number) => {
                       eventInfo?.environment?.unitName}}</el-descriptions-item>
                     <el-descriptions-item label="环境区域">{{ eventInfo?.environment?.earea }}</el-descriptions-item>
                   </template>
+                  <template v-if="eventInfo.type='日常巡检'">
+                    <el-descriptions-item label="巡检编号">{{ inspectionInfo?.recordId }}</el-descriptions-item>
+                    <el-descriptions-item label="巡检人">{{ inspectionInfo?.inspector }}</el-descriptions-item>
+                    <el-descriptions-item label="巡检时间">{{ inspectionInfo?.inspectionDate }}</el-descriptions-item>
+                    <el-descriptions-item label="任务描述">{{ inspectionInfo?.taskDescription }}</el-descriptions-item>
+                    <el-descriptions-item label="异常说明">{{ inspectionInfo?.anomalyDescription }}</el-descriptions-item>
+                    <el-descriptions-item label="异常数">{{ inspectionInfo?.anomalyCount }}</el-descriptions-item>
+                    <el-descriptions-item label="巡检结果">
+                      <ElInput  @change="submitResult" v-model="inspectionResult"  placeholder="输入回车进行提交" />
+                    </el-descriptions-item>
+                  </template>
                 </el-descriptions>
                 <template #reference>
                   <el-tab-pane :label="`${item.name}(${item.key === '1'
@@ -222,6 +260,7 @@ const handleRead = async (key: number) => {
                   </el-tab-pane>
                 </template>
               </el-popover>
+              
 
             </template>
           </span>

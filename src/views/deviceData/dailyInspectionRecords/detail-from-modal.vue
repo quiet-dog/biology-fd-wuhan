@@ -20,7 +20,8 @@ const formData = ref({
   anomalyCount: 1,
   anomalyDescription: "",
   inspectionImagePath: [],
-  recordId: 0
+  recordId: 0,
+  inspectionResult:""
 });
 const inspectionImagePaths = ref([]);
 
@@ -120,15 +121,30 @@ defineExpose({
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="异常说明：" prop="anomalyDescription">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="异常说明：" prop="anomalyDescription">
         <el-input
           v-model="formData.anomalyDescription"
           placeholder="请输入异常说明"
           autocomplete="off"
           readonly
-          style="width: 760px"
+          style="width: 300px"
         />
       </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="巡检结果：" prop="inspectionResult">
+            <el-input
+              v-model="formData.inspectionResult"
+              placeholder="请输入巡检结果"
+              autocomplete="off"
+              readonly
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-form-item label="巡检图片：">
         <el-image
           v-for="item in inspectionImagePaths"

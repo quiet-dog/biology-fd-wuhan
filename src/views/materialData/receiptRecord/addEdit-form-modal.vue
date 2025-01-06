@@ -218,7 +218,7 @@ const receiveChange = value => {
               <el-option
                 v-for="item in dataList"
                 :key="item.materialsId"
-                :label="`${item.name}--${item.code}`"
+                :label="`${item.name}--${item.code}--${item.batch}--${item.stock}`"
                 :value="item.materialsId"
               />
             </el-select>
@@ -267,9 +267,11 @@ const receiveChange = value => {
               placeholder="请选择用途说明"
               style="width: 300px"
             >
-              <el-option label="生产领用" value="生产领用" />
-              <el-option label="研发领用" value="研发领用" />
-              <el-option label="其他领用" value="其他领用" />
+              <el-option label="生产用量" value="生产用量" />
+              <el-option label="维修用量" value="维修用量" />
+              <el-option label="实验用量" value="实验用量" />
+              <el-option label="清洁用量" value="清洁用量" />
+              <el-option label="其他" value="其他" />
             </el-select>
           </el-form-item>
         </el-col>

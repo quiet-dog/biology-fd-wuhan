@@ -70,6 +70,9 @@
         <el-button type="success" :icon="Upload" @click="openImportDialog">
           导入
         </el-button>
+        <el-button type="warning" :icon="Download" @click="exportClick">
+          报告导出
+        </el-button>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
@@ -92,6 +95,9 @@
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
           }"
+          @selection-change="
+            rows => (multipleSelection = rows.map(item => item.equipmentId))
+          "
           style="height: auto"
         >
           <template #isHighRisk="{ row }">
@@ -126,7 +132,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, reactive, computed } from "vue";
+import { ref, onMounted, reactive, computed, toRaw } from "vue";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { PaginationProps } from "@pureadmin/table";
 import {
@@ -136,12 +142,18 @@ import {
 import detailFromModal from "./detail-from-modal.vue";
 import { CommonUtils } from "@/utils/common";
 import { Sort } from "element-plus";
-import { Plus, Upload, Refresh, Search } from "@element-plus/icons-vue";
+import { Plus, Upload, Refresh, Search,Download } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import importFormModal from "./import-form-modal.vue";
+import { exportAlarmEvents, exportEquipment } from "@/api/alarmPlatform/alarmEvents";
+import { ExportDownload } from "@/utils/exportdownload";
 
 const tableRef = ref();
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "设备编号",
     prop: "equipmentCode"
@@ -275,6 +287,33 @@ function resetForm() {
   pagination.background = true;
   archiveListFun();
 }
+
+const multipleSelection = ref([]);
+// 导出
+const exportClick = () => {
+  if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1
+    });
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined
+    });
+  }
+
+  exportEquipment(
+    toRaw({ ...searchFormParams, ids: multipleSelection.value })
+  ).then(res => {
+    console.log(res);
+    ExportDownload(res, "设备档案列表");
+  });
+};
 
 onMounted(() => {
   archiveListFun();

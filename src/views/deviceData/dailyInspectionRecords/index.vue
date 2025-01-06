@@ -130,6 +130,10 @@ const columns: TableColumnList = [
     prop: "anomalyCount"
   },
   {
+    label: "巡检结果",
+    prop: "inspectionResult"
+  },
+  {
     label: "操作",
     slot: "operation",
     fixed: "right",

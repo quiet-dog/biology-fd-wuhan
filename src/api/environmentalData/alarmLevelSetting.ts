@@ -19,6 +19,12 @@ export function unitNameAndArea(params: any) {
   return http.request("get", "/manage/detection/unitNameAndArea", { params });
 }
 
+
+export function getNormalMaterails() {
+  return http.request("get", "/manage/materials/getAllNormal");
+
+}
+
 // /manage/detection/allGroup
 export function allGroup() {
   return http.request("get", "/manage/environment/allGroup");

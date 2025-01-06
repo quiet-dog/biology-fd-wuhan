@@ -36,6 +36,14 @@ export function materialFilesList(params: materialFilesListRes) {
   return http.request("get", "/manage/materials", { params });
 }
 
+export interface AddStock {
+  materialsId: number;
+  stock: number;
+}
+export function addStock(params: AddStock) {
+  return http.request("post", "/manage/materials/addStock", { data: params });
+}
+
 //下载导入模板
 export function downloadTemplate() {
   return http.request(

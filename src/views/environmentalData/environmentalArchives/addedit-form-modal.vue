@@ -316,7 +316,7 @@ function handleClosed() {
           <el-option label="有毒区" value="有毒区" />
         </el-select>
       </el-form-item>
-      <el-form-item label="应急预案：" prop="emergencyIds">
+      <!-- <el-form-item label="应急预案：" prop="emergencyIds">
         <el-select
           v-model="formData.emergencyIds"
           filterable
@@ -331,8 +331,8 @@ function handleClosed() {
             :value="item.emergencyId"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="SOP手册：" prop="sopIds">
+      </el-form-item> -->
+      <!-- <el-form-item label="SOP手册：" prop="sopIds">
         <el-select
           v-model="formData.sopIds"
           multiple
@@ -347,7 +347,7 @@ function handleClosed() {
             :value="item.sopId"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
   </v-dialog>
 </template>

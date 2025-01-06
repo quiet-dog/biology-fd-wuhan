@@ -1,4 +1,5 @@
 import { http } from "@/utils/http";
+import { equipmentListRes } from "../deviceData/equipmentProfile";
 
 //获取报警事件信息
 export function alarmEventsInfo(eventId: number) {
@@ -19,6 +20,18 @@ export function exportAlarmEvents(params: alarmEventsListRes) {
   return http.request(
     "get",
     "/manage/event/excel",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}
+
+
+export function exportEquipment(params: equipmentListRes) {
+  return http.request(
+    "get",
+    "/manage/equipment/excel",
     { params },
     {
       responseType: "blob"

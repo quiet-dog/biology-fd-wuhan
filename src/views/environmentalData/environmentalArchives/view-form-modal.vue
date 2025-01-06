@@ -61,7 +61,7 @@
       <el-form-item label="区域：">
         <el-input v-model="formData.earea" readonly />
       </el-form-item>
-      <el-form-item label="应急预案：">
+      <!-- <el-form-item label="应急预案：">
         <el-select
           v-model="formData.emergencyIds"
           multiple
@@ -76,8 +76,8 @@
             :value="item.emergencyId"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="SOP手册：">
+      </el-form-item> -->
+      <!-- <el-form-item label="SOP手册：">
         <el-select
           v-model="formData.sopIds"
           multiple
@@ -92,7 +92,7 @@
             :value="item.sopId"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
   </v-dialog>
 </template>

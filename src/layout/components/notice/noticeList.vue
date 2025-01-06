@@ -2,7 +2,10 @@
 import { PropType } from "vue";
 import { ListItem } from "./data";
 import NoticeItem from "./noticeItem.vue";
-
+const emit = defineEmits(["getInfo", "read"])
+function senInfo(item) {
+    emit("getInfo", item)
+}
 const props = defineProps({
   list: {
     type: Array as PropType<Array<ListItem>>,
@@ -12,7 +15,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div @click="$emit('getInfo',item)" v-for="item in list" :key="item.key" class="notice-item">
+  <div @click="senInfo(item)" v-for="item in list" :key="item.key" class="notice-item">
     <div class="notice-content">
       <div class="notice-title">{{ item.title }}</div>
       <div class="notice-desc">{{ item.description }}</div>

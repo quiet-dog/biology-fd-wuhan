@@ -16,6 +16,7 @@ import TuFour from "./tufour/index.vue";
 import { notificationList } from "@/api/notificationCenter";
 import {
   allGroup,
+  getNormalMaterails,
   unitNameAndArea
 } from "@/api/environmentalData/alarmLevelSetting";
 import { getThresholdOnline } from "@/api/alarmPlatform/thresholdSetting";
@@ -327,6 +328,8 @@ const hours = now.getHours();
   }
 })
 
+const materailsNormal = ref();
+
 onMounted(async () => {
   if (environmentRef.value) {
     environmentChart = echarts.init(environmentRef.value);
@@ -340,7 +343,7 @@ onMounted(async () => {
 
   const res = await allGroup();
   // @ts-ignore
-  console.log(res);
+  // console.log(res);
 
   //遍历 转换
 
@@ -373,6 +376,11 @@ onMounted(async () => {
   getDayStatusFun();
 
   startNoticeScroll();
+
+  getNormalMaterails().then(res => {
+    materailsNormal.value = res.data;
+    console.log("materailsNormal.value",materailsNormal.value);
+  })
 });
 
 // getThresholdOnline
@@ -520,17 +528,30 @@ const activeName = ref("一层");
                 class="home_t_lt_l_bottom_nei"
                 @click="
                   router.push({
-                    path: '/notificationCenter/index'
+                    path: '/materialData/materialFiles/index'
                   })
                 "
               >
                 <img src="/src/assets/images/tongzhi.png" alt="" />
                 <div class="home_t_lt_l_bottom_nei_right">
-                  <div>
+                  <!-- <div>
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
-                      通知和提醒
+                      库存正常和异常数量
                     </div>
                     <div>{{ useUserStore()?.noticesNum }}</div>
+                  </div> -->
+                
+                 <div>
+                    <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
+                      库存正常
+                    </div>
+                    <div>{{ materailsNormal?.normal }}</div>
+                  </div>
+                  <div style="margin-left: 15px">
+                    <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
+                      库存异常
+                    </div>
+                    <div>{{ materailsNormal?.abnormal }}</div>
                   </div>
                 </div>
               </div>

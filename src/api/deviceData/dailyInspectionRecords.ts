@@ -44,6 +44,7 @@ export interface addDailyInspectionRes {
   anomalyCount: number;
   anomalyDescription: string;
   inspectionImagePath: string[];
+  inspectorIds: number[];
 }
 export function addDailyInspection(data: addDailyInspectionRes) {
   return http.request("post", "/manage/equipment-daily-inspection", { data });

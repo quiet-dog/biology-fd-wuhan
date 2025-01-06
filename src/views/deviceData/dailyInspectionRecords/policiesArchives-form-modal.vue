@@ -5,8 +5,10 @@ import {
 } from "@/api/deviceData/dailyInspectionRecords";
 import VDialog from "@/components/VDialog/VDialog.vue";
 import { ElMessage, FormInstance, FormRules } from "element-plus";
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import ImgUpload from "@/components/ImgUpload/index.vue";
+import {personnelList}  from "@/api/personnelData/personnelProfile";
+import { getUserListApi } from "@/api/system/user";
 
 interface Props {
   type: "add" | "update";
@@ -70,7 +72,8 @@ const formData = reactive<addDailyInspectionRes>({
   inspector: "",
   anomalyCount: 1,
   anomalyDescription: "",
-  inspectionImagePath: []
+  inspectionImagePath: [],
+  inspectorIds: []
 });
 
 const visible = computed({
@@ -79,6 +82,7 @@ const visible = computed({
     emits("update:modelValue", v);
   }
 });
+
 
 function handleConfirm() {
   formRef.value.validate(async callback => {
@@ -108,7 +112,24 @@ function cancelConfirm() {
 function handleClosed() {
   formRef.value?.resetFields();
   inspectionImagePaths.value = [];
+  formData.inspectorIds = [];
 }
+
+const personnelListData = ref([])
+function changePoersonnel(value) {
+  formData.inspector = formData.inspectorIds.map(item => {
+    return personnelListData.value.find(person => person.userId === item).nickname
+  }).join(',')
+}
+onMounted(() => {
+  getUserListApi({
+    pageNum: 1,
+    pageSize:1000
+  }).then(res => {
+    console.log("res.data.rows",res.data.rows)
+    personnelListData.value = res.data.rows
+  })
+})
 </script>
 
 <template>
@@ -144,13 +165,16 @@ function handleClosed() {
       </el-form-item>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="巡检人员：" prop="inspector">
-            <el-input
+          <el-form-item label="巡检人员：" prop="inspectorId">
+            <!-- <el-input
               v-model="formData.inspector"
               placeholder="请输入巡检人员"
               autocomplete="off"
               style="width: 300px"
-            />
+            /> -->
+            <el-select multiple v-model="formData.inspectorIds" @change="changePoersonnel">
+              <el-option v-for="item in personnelListData" :key="item.userId" :label="item.nickname" :value="item.userId" />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">

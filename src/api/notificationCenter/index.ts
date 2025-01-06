@@ -17,6 +17,7 @@ export interface notificationListRes extends BasePageQuery {
   //pageSize
   pageSize: number;
   isPersonal: boolean;
+  userId?: number;
 }
 export function notificationList(params: notificationListRes) {
   return http.request("get", "/manage/notification", { params });

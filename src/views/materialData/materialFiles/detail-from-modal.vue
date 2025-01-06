@@ -51,6 +51,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
+          <el-form-item label="批次：">
+            <el-input v-model="formData.batch" autocomplete="off" readonly style="width: 300px" />
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
@@ -76,7 +79,8 @@ const formData = ref({
   type: "",
   specification: "",
   tag: "",
-  lastStock: 0
+  lastStock: 0,
+  batch:""
 });
 
 const handleOpened = (id: number) => {
