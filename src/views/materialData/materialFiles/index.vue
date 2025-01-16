@@ -35,10 +35,21 @@
                   入库
                 </el-button>
               </template>
-              <el-input-number v-model="row.currentStock"  :precision="2" :step="0.1" />
-              <el-button type="danger" size="small"  @click="confirmStock(row)">
-                确定?
-              </el-button>
+              <!-- <el-input-number v-model="row.currentStock"  :precision="2" :step="0.1" /> -->
+              <ElForm>
+                <ElFormItem label="入库量">
+                  <ElInputNumber v-model="row.currentStock" :precision="2" :step="0.1" />
+                </ElFormItem>
+                <ElFormItem label="批次">
+                  <ElInput v-model="row.batch" />
+                </ElFormItem>
+                <ElFormItem >
+                  <el-button type="danger" size="small" @click="confirmStock(row)">
+                    确定?
+                  </el-button>
+                </ElFormItem>
+              </ElForm>
+
             </el-popover>
 
             <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row)">
@@ -99,18 +110,18 @@ const columns: TableColumnList = [
     label: "库存量",
     prop: "stock"
   },
-  {
-    label: "当前入库量",
-    prop: "lastStock"
-  },
+  // {
+  //   label: "当前入库量",
+  //   prop: "lastStock"
+  // },
   {
     label: "物料单位",
     prop: "unit"
   },
-  {
-    label: "批次",
-    prop: "batch"
-  },
+  // {
+  //   label: "批次",
+  //   prop: "batch"
+  // },
   {
     label: "操作",
     slot: "operation",
@@ -125,10 +136,11 @@ const defaultSort: Sort = {
 };
 
 function confirmStock(row) {
-  console.log("row",row);
+  console.log("row", row);
   addStock({
     materialsId: row.materialsId,
-    stock: row.currentStock
+    stock: row.currentStock,
+    batch: row.batch
   }).then(() => {
     ElMessage.success("入库成功");
     archiveListFun();

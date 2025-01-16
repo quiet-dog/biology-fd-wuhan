@@ -81,6 +81,8 @@ const getNotices = async () => {
       pageNum: 1,
       pageSize: 1000,
       isPersonal: false, // 系统通知
+      userId:getToken().currentUser.userInfo.userId,
+      isNotRead:true
     });
 
     // 获取个人通知
@@ -92,7 +94,8 @@ const getNotices = async () => {
       pageNum: 1,
       pageSize: 1000,
       isPersonal: true, // 个人通知
-      userId:getToken().currentUser.userInfo.userId
+      userId:getToken().currentUser.userInfo.userId,
+      isNotRead:true
     });
 
     const sysData = sysRes.data;

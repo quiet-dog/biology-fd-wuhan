@@ -110,6 +110,7 @@
     v-model="previewVisible"
     :loading="loading"
     :disable-footer="true"
+    @cancel="() => (previewVisible = false)"
   >
     <OfficePreview :file-url="previewVisibleUrl" />
   </v-detail-dialog>

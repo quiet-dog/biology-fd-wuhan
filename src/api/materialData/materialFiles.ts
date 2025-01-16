@@ -39,9 +39,16 @@ export function materialFilesList(params: materialFilesListRes) {
 export interface AddStock {
   materialsId: number;
   stock: number;
+  batch: string;
 }
 export function addStock(params: AddStock) {
   return http.request("post", "/manage/materials/addStock", { data: params });
+}
+
+export function getStock(data) {
+  return http.request("get", "/manage/materials/warehouse", {
+    params: data
+  });
 }
 
 //下载导入模板

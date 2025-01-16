@@ -21,7 +21,9 @@ const { form, loading, onSearch, resetForm, columns, dataList, pagination, handl
 const channelId = ref("")
 
 function opened() {
-  videoRef.value.play(playUrl.value)
+  const url = new URL(playUrl.value);
+  url.host = window.location.host;
+  videoRef.value.play(url.toString());
   videoRef.value.setChannelId(channelId.value)
 }
 

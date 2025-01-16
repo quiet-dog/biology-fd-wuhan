@@ -113,6 +113,7 @@ async function handleConfirm() {
 
 function handleOpened() {
   Object.assign(formData);
+  ElMessage.warning("物料先进先出");
   archiveListFun();
   archiveListFun2();
 }
