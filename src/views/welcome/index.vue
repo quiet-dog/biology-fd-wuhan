@@ -22,7 +22,9 @@ import {
 import { getThresholdOnline } from "@/api/alarmPlatform/thresholdSetting";
 
 import { useUserStore } from "@/store/modules/user";
-import { getDayStatus } from "@/api/door/door";
+import { getDayStatus, getDoorEventList, getMaterialsEasy } from "@/api/door/door";
+import dayjs from "dayjs";
+import { equipmentList } from "@/api/deviceData/equipmentProfile";
 
 defineOptions({
   name: "Welcome"
@@ -319,16 +321,53 @@ const handleScroll = () => {
 
 const shangwu = computed(() => {
   const now = new Date();
-const hours = now.getHours();
+  const hours = now.getHours();
   console.log('1231')
   if (hours < 12) {
-  return "上午"
-} else {
-  return "下午"
+    return "上午"
+  } else {
+    return "下午"
   }
 })
 
 const materailsNormal = ref();
+
+const eventData = ref([])
+const getEventDataList = () => {
+  getDoorEventList({
+    pageNum: 1,
+    pageSize: 200,
+    beginTime: dayjs().startOf('day').format('YYYY-MM-DD'),
+    endTime: dayjs().endOf('day').format('YYYY-MM-DD')
+  }).then(res => {
+    eventData.value = res.data.rows;
+  }).catch(err => {
+    console.log('err', err)
+  })
+}
+
+const onlineEquipment = ref([])
+const notOnlineEquipment = ref([])
+const getEquipmentStatus = () => {
+  equipmentList({
+    pageSize: 300,
+    pageNum:1,
+  }).then(res => {
+    onlineEquipment.value = res.data.rows.filter(item => item.isOnline)
+    notOnlineEquipment.value = res.data.rows.filter(item => !item.isOnline)
+  }).catch(err => {
+    console.log('err', err)
+  })
+}
+
+const normalMaterialsList = ref([])
+const notNormalMaterialsList = ref([])
+const getMaterialsEasyList = () => {
+  getMaterialsEasy().then(res => {
+    normalMaterialsList.value = res.data.filter(item => item.description ==null)
+    notNormalMaterialsList.value = res.data.filter(item => item.description!=null && item.description!="")
+  })
+}
 
 onMounted(async () => {
   if (environmentRef.value) {
@@ -379,8 +418,9 @@ onMounted(async () => {
 
   getNormalMaterails().then(res => {
     materailsNormal.value = res.data;
-    console.log("materailsNormal.value",materailsNormal.value);
+    console.log("materailsNormal.value", materailsNormal.value);
   })
+  
 });
 
 // getThresholdOnline
@@ -467,71 +507,81 @@ const activeName = ref("一层");
   <div class="home">
     <div class="home_t">
       <div class="home_t_l">
-        <el-card
-          class="home_t_lt"
-          :body-style="{
-            width: '100%',
-            display: 'flex',
-            'justify-content': 'space-between',
-            'align-items': 'center',
-            padding: 0
-          }"
-        >
+        <el-card class="home_t_lt" :body-style="{
+          width: '100%',
+          display: 'flex',
+          'justify-content': 'space-between',
+          'align-items': 'center',
+          padding: 0
+        }">
           <div class="home_t_lt_l">
-            <div class="home_t_lt_l_title">{{ shangwu}}好！系统管理员</div>
+            <div class="home_t_lt_l_title">{{ shangwu }}好！系统管理员</div>
             <div class="home_t_lt_l_bottom">
-              <div
-                class="home_t_lt_l_bottom_nei"
-                @click="
-                  router.push({
-                    path: '/personnelData/accessControlRecords/index'
-                  })
-                "
-              >
+              <div class="home_t_lt_l_bottom_nei" @click="
+                router.push({
+                  path: '/personnelData/accessControlRecords/index'
+                })
+                ">
                 <img src="/src/assets/images/renyuan1.png" alt="" />
                 <div class="home_t_lt_l_bottom_nei_right">
                   <div>
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
                       人员出勤率
                     </div>
-                    <div>
-                      {{ Math.floor(parseFloat((attendanceRate* 100).toFixed(2) )) }}%
-                    </div>
+                    <ElPopover @before-enter="getEventDataList" width="300">
+                      <template #reference>
+                        <div>
+                          {{ Math.floor(parseFloat((attendanceRate * 100).toFixed(2))) }}%
+                        </div>
+                      </template>
+                      <ElTable height="500" :data="eventData">
+                        <ElTableColumn prop="personnel.code" label="员工编号"/>
+                        <ElTableColumn prop="personnel.name" label="员工姓名"/>
+                         <ElTableColumn prop="doorDate" label="出勤时间">
+                          <template #default="{row}">
+                            {{ dayjs(row.doorDate).format('HH:mm:ss') }}
+                          </template>
+                         </ElTableColumn>
+                      </ElTable>
+                    </ElPopover>
+
                   </div>
                 </div>
               </div>
-              <div
-                class="home_t_lt_l_bottom_nei"
-                @click="
-                  router.push({
-                    path: '/deviceData/equipmentProfile/index'
-                  })
-                "
-              >
+              <div class="home_t_lt_l_bottom_nei">
                 <img src="/src/assets/images/zaixian.png" alt="" />
                 <div class="home_t_lt_l_bottom_nei_right">
                   <div>
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
                       在线设备
                     </div>
-                    <div>{{ list2[0].num }}</div>
+                    <ElPopover @before-enter="getEquipmentStatus" width="300">
+                      <template #reference>
+                        <div>{{ list2[0].num }}</div>
+                      </template>
+                      <ElTable height="500" :data="onlineEquipment">
+                        <ElTableColumn prop="equipmentName" label="设备名称"/>
+                        <ElTableColumn prop="equipmentCode" label="设备编号"/>
+                      </ElTable>
+                    </ElPopover>
                   </div>
                   <div style="margin-left: 15px">
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
                       离线设备
                     </div>
-                    <div>{{ list2[1].num }}</div>
+                    <ElPopover  @before-enter="getEquipmentStatus" width="300">
+                      <template #reference>
+                        <div>{{ list2[1].num }}</div>
+                      </template>
+                      <ElTable height="500" :data="notOnlineEquipment">
+                        <ElTableColumn prop="equipmentName" label="设备名称"/>
+                        <ElTableColumn prop="equipmentCode" label="设备编号"/>
+                      </ElTable>
+                    </ElPopover>
                   </div>
                 </div>
               </div>
-              <div
-                class="home_t_lt_l_bottom_nei"
-                @click="
-                  router.push({
-                    path: '/materialData/materialFiles/index'
-                  })
-                "
-              >
+              <div class="home_t_lt_l_bottom_nei">
                 <img src="/src/assets/images/tongzhi.png" alt="" />
                 <div class="home_t_lt_l_bottom_nei_right">
                   <!-- <div>
@@ -540,18 +590,35 @@ const activeName = ref("一层");
                     </div>
                     <div>{{ useUserStore()?.noticesNum }}</div>
                   </div> -->
-                
-                 <div>
+
+                  <div>
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
                       库存正常
                     </div>
-                    <div>{{ materailsNormal?.normal }}</div>
+                    <ElPopover @before-enter="getMaterialsEasyList" width="300">
+                      <template #reference>
+                        <div>{{ materailsNormal?.normal }}</div>
+                      </template>
+                      <ElTable :data="normalMaterialsList" height="500">
+                        <ElTableColumn prop="name" label="物料名称"/>
+                        <ElTableColumn prop="code" label="物料编号"/>
+                      </ElTable>
+                    </ElPopover>
                   </div>
                   <div style="margin-left: 15px">
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
                       库存异常
                     </div>
-                    <div>{{ materailsNormal?.abnormal }}</div>
+                    <ElPopover @before-enter="getMaterialsEasyList" width="300">
+                      <template #reference>
+                        <div>{{ materailsNormal?.abnormal }}</div>
+                      </template>
+                      <ElTable :data="notNormalMaterialsList" height="500">
+                        <ElTableColumn prop="name" label="物料名称"/>
+                        <ElTableColumn prop="code" label="物料编号"/>
+                        <ElTableColumn prop="description" label="描述"/>
+                      </ElTable>
+                      </ElPopover>
                   </div>
                 </div>
               </div>
@@ -560,103 +627,67 @@ const activeName = ref("一层");
           <div class="home_t_lt_r" />
         </el-card>
         <div class="home_t_lb">
-          <el-card
-            :body-style="{
-              width: '100%',
-              padding: '21px 24px'
-            }"
-          >
+          <el-card :body-style="{
+            width: '100%',
+            padding: '21px 24px'
+          }">
             <div>快速导航</div>
             <div class="home_bl">
-              <div
-                v-for="item in routerList"
-                :key="item.name"
-                @click="routerClick(item)"
-              >
+              <div v-for="item in routerList" :key="item.name" @click="routerClick(item)">
                 <img :src="item.back" alt="" />
                 <span>{{ item.name }}</span>
               </div>
             </div>
           </el-card>
-          <el-card
-            :body-style="{
-              width: '100%',
-              height: '100%',
-              padding: '20px 20px',
-              display: 'flex',
-              'justify-content': 'space-between',
-              'align-items': 'center',
-              'flex-direction': 'column'
-            }"
-          >
+          <el-card :body-style="{
+            width: '100%',
+            height: '100%',
+            padding: '20px 20px',
+            display: 'flex',
+            'justify-content': 'space-between',
+            'align-items': 'center',
+            'flex-direction': 'column'
+          }">
             <div class="home_rt">
               <span>通知提醒</span>
               <div style="display: flex; align-items: center">
-                <el-input
-                  v-model="searchValue"
-                  style="width: 130px; margin-right: 20px"
-                  placeholder="请输入信息"
-                  size="small"
-                  @change="searchChange"
-                  :prefix-icon="Search"
-                />
-                <el-select
-                  size="small"
-                  style="width: 130px; margin-right: 20px"
-                  v-model="notificationType"
-                  @change="searchChange"
-                  clearable
-                  placeholder="请选择类型"
-                >
+                <el-input v-model="searchValue" style="width: 130px; margin-right: 20px" placeholder="请输入信息"
+                  size="small" @change="searchChange" :prefix-icon="Search" />
+                <el-select size="small" style="width: 130px; margin-right: 20px" v-model="notificationType"
+                  @change="searchChange" clearable placeholder="请选择类型">
                   <el-option label="通知" value="通知" />
                   <el-option label="提醒" value="提醒" />
                 </el-select>
-                <el-button type="text" @click="viewMoreClick"
-                  >查看更多</el-button
-                >
+                <el-button type="text" @click="viewMoreClick">查看更多</el-button>
               </div>
             </div>
-            <div
-              class="home_rb"
-              ref="noticeListRef"
-              @mouseenter="pauseScroll"
-              @mouseleave="resumeScroll"
-              @wheel="handleScroll"
-            >
+            <div class="home_rb" ref="noticeListRef" @mouseenter="pauseScroll" @mouseleave="resumeScroll"
+              @wheel="handleScroll">
               <div class="home_rb_nei" v-for="item in nlist" :key="item.title">
                 <div style="display: flex; align-items: center">
-                  <div
-                    style="
+                  <div style="
                       width: 8px;
                       height: 8px;
                       border-radius: 50%;
                       background-color: #ffa914;
                       margin-right: 5px;
-                    "
-                  />
+                    " />
                   <!-- <span style="font-size: 14px; padding-right: 10px">{{
                     item.title
                   }}</span> -->
 
                   <el-tag v-if="item.type" type="primary" size="small">{{
                     item.type
-                  }}</el-tag>
-                  <el-tooltip
-                    class="box-item"
-                    effect="dark"
-                    :content="item.content"
-                    placement="top"
-                  >
-                    <span
-                      style="
+                    }}</el-tag>
+                  <el-tooltip class="box-item" effect="dark" :content="item.content" placement="top">
+                    <span style="
                         white-space: nowrap;
                         /* 禁止换行 */
                         overflow: hidden;
                         /* 超出内容隐藏 */
                         text-overflow: ellipsis;
                         /* 显示省略号 */
-                      "
-                    >
+                      ">
                       {{ item.content }}
                     </span>
                   </el-tooltip>
@@ -667,22 +698,17 @@ const activeName = ref("一层");
           </el-card>
         </div>
       </div>
-      <el-card
-        :body-style="{
-          width: '100%',
-          height: '100%',
-          padding: 0
-        }"
-        class="home_t_r"
-      >
+      <el-card :body-style="{
+        width: '100%',
+        height: '100%',
+        padding: 0
+      }" class="home_t_r">
         <div class="equipmentStatus" ref="equipmentStatusRef" />
         <div class="home_t_rb">
           <div class="home_t_rb_nei" v-for="item in list2" :key="item.name">
-            <div
-              :style="{
-                background: item.color
-              }"
-            />
+            <div :style="{
+              background: item.color
+            }" />
             <div>{{ item.name }}</div>
             <div>{{ item.baifen }}</div>
             <div>{{ item.num }}</div>
@@ -691,12 +717,10 @@ const activeName = ref("一层");
       </el-card>
     </div>
     <div class="home_b">
-      <el-card
-        :body-style="{
-          width: '100%',
-          padding: 0
-        }"
-      >
+      <el-card :body-style="{
+        width: '100%',
+        padding: 0
+      }">
         <div class="home_bt">
           <span>车间平面图</span>
         </div>
@@ -718,44 +742,20 @@ const activeName = ref("一层");
           </ElTabs>
         </div>
       </el-card>
-      <el-card
-        :body-style="{
-          width: '100%',
-          height: '100%',
-          padding: 0,
-          position: 'relative'
-        }"
-      >
-        <el-select
-          class="environment-area-select"
-          style="width: 127px; height: 31.98px; z-index: 999999"
-          v-model="area"
-          placeholder="请选择区域"
-          clearable
-          @change="handleSelectionChange"
-        >
-          <el-option
-            v-for="item in allGroupList.area"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+      <el-card :body-style="{
+        width: '100%',
+        height: '100%',
+        padding: 0,
+        position: 'relative'
+      }">
+        <el-select class="environment-area-select" style="width: 127px; height: 31.98px; z-index: 999999" v-model="area"
+          placeholder="请选择区域" clearable @change="handleSelectionChange">
+          <el-option v-for="item in allGroupList.area" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
         <!--   :prefix-icon="Search" -->
-        <el-select
-          class="environment-metric-select"
-          style="width: 127px; height: 31.98px; z-index: 999999"
-          v-model="unitName"
-          placeholder="请选择指标"
-          clearable
-          @change="handleSelectionChange"
-        >
-          <el-option
-            v-for="item in allGroupList.unitName"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+        <el-select class="environment-metric-select" style="width: 127px; height: 31.98px; z-index: 999999"
+          v-model="unitName" placeholder="请选择指标" clearable @change="handleSelectionChange">
+          <el-option v-for="item in allGroupList.unitName" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
         <div class="chart" ref="environmentRef" />
       </el-card>
@@ -774,29 +774,36 @@ $design-height: 1080;
 @function adaptiveHeight($px) {
   @return #{$px / $design-height * 100}vh;
 }
+
 .home_t {
   display: flex;
   justify-content: space-between;
   height: adaptiveHeight(572);
+
   .home_t_l {
     width: 73.5%;
+
     .home_t_lt {
       width: 100%;
       height: adaptiveHeight(292);
       background-color: #ebf1fd;
       display: flex;
       justify-content: space-between;
+
       .home_t_lt_l {
         width: calc(100% - adaptiveWidth(440));
         margin-left: adaptiveWidth(20);
+
         .home_t_lt_l_title {
           font-size: 40px;
           color: rgba(0, 0, 0, 1);
         }
+
         .home_t_lt_l_bottom {
           display: flex;
           justify-content: space-between;
           margin-top: adaptiveHeight(30);
+
           .home_t_lt_l_bottom_nei {
             width: 32%;
             height: adaptiveHeight(147);
@@ -804,11 +811,13 @@ $design-height: 1080;
             display: flex;
             justify-content: center;
             flex-direction: column;
+
             img {
               width: 54px;
               height: 50px;
               margin-left: adaptiveWidth(21);
             }
+
             .home_t_lt_l_bottom_nei_right {
               margin-left: adaptiveWidth(21);
               margin-top: adaptiveHeight(10);
@@ -817,6 +826,7 @@ $design-height: 1080;
           }
         }
       }
+
       .home_t_lt_r {
         width: adaptiveWidth(460);
         height: 100%;
@@ -825,13 +835,16 @@ $design-height: 1080;
         background-position: 10px 0;
       }
     }
+
     .home_t_lb {
       display: flex;
       justify-content: space-between;
       margin-top: adaptiveHeight(16);
+
       .el-card {
         width: 49.5%;
         height: adaptiveHeight(261);
+
         &:nth-child(1) {
           .home_bl {
             cursor: pointer;
@@ -839,12 +852,14 @@ $design-height: 1080;
             justify-content: space-between;
             flex-wrap: wrap;
             margin-top: adaptiveHeight(16);
+
             div {
               width: adaptiveWidth(250);
               height: adaptiveHeight(84);
               background: linear-gradient(180deg, #f3f9ff 0%, #f9ffff 100%);
               display: flex;
               align-items: center;
+
               &:nth-child(3),
               &:nth-child(4) {
                 margin-top: adaptiveHeight(10);
@@ -855,12 +870,14 @@ $design-height: 1080;
                 height: 64px;
                 margin: 0 adaptiveWidth(16);
               }
+
               span {
                 font-size: 16px;
               }
             }
           }
         }
+
         &:nth-child(2) {
           .home_rt {
             width: 100%;
@@ -869,6 +886,7 @@ $design-height: 1080;
             align-items: center;
             margin-bottom: 15px;
           }
+
           .home_rb_nei {
             width: adaptiveWidth(560);
             display: flex;
@@ -903,14 +921,17 @@ $design-height: 1080;
       }
     }
   }
+
   .home_t_r {
     width: 25.5%;
     height: adaptiveHeight(572);
     position: relative;
+
     .equipmentStatus {
       width: 100%;
       height: adaptiveHeight(344);
     }
+
     .home_t_rb {
       width: adaptiveWidth(366);
       height: adaptiveHeight(228);
@@ -955,34 +976,41 @@ $design-height: 1080;
     }
   }
 }
+
 .home_b {
   height: adaptiveHeight(387);
   margin-top: adaptiveHeight(16);
   display: flex;
   justify-content: space-between;
+
   .el-card {
     width: 49.5%;
     height: adaptiveHeight(387);
+
     &:nth-child(1) {
       .home_bt {
         width: 100%;
         height: adaptiveHeight(56);
         display: flex;
         align-items: center;
+
         span {
           font-size: 16px;
           font-weight: bold;
           padding-left: adaptiveWidth(25);
         }
       }
+
       .home_bb {
         width: 100%;
         height: adaptiveHeight(331);
         overflow: auto;
       }
     }
+
     &:nth-child(2) {
       position: relative;
+
       .environment-area-select {
         position: absolute;
         top: adaptiveHeight(24);
@@ -1005,6 +1033,7 @@ $design-height: 1080;
     }
   }
 }
+
 // .chart{
 //   width: 100%;
 //   height: 100%;
@@ -1018,6 +1047,7 @@ $design-height: 1080;
   top: 24px;
   right: 170px;
 }
+
 :deep(.home_t_r_select) {
   position: absolute;
   top: 24px;

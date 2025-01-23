@@ -28,3 +28,8 @@ export function getDoorEventList(data: DoorEventQuery) {
     params: data
   });
 }
+
+
+export function getMaterialsEasy() {
+  return http.request<ResponseData<PageDTO<DoorDTO>>>("get", "/manage/materials/getMaterialsEasy");
+}

@@ -75,8 +75,8 @@ export interface StreamDTO {
 
 export const getChannelListApi = (data: ChannelQuery) => {
   const query = {
-    limit: data.pageSize,
-    skip: Number.isNaN(data.pageNum * data.pageSize) ? 0 : data.pageNum * data.pageSize,
+    limit: data.pageSize ? data.pageSize : 10,
+    skip: Number.isNaN((data.pageNum - 1) * data.pageSize) || ((data.pageNum - 1) * data.pageSize) <= 0 ? 0 : (data.pageNum - 1) * data.pageSize,
     sort: data.sort,
   }
   if (data.name != "") {
