@@ -1,5 +1,5 @@
 {
-  "name": "测试系统-front-end-pure",
+  "name": "frontendpure",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -20,8 +20,7 @@
     "lint:lint-staged": "lint-staged -c ./.husky/lintstagedrc.js",
     "lint:pretty": "pretty-quick --staged",
     "lint": "pnpm lint:eslint && pnpm lint:prettier && pnpm lint:stylelint",
-    "prepare": "husky install",
-    "preinstall": "npx only-allow pnpm"
+    "prepare": "husky install"
   },
   "browserslist": [
     "> 1%",
@@ -33,7 +32,7 @@
     "@pureadmin/table": "^2.3.2",
     "@pureadmin/utils": "^1.9.6",
     "@stomp/stompjs": "^7.0.0",
-    "@vue-office/docx": "^1.6.2",
+    "@vue-office/docx": "^1.6.3",
     "@vue-office/excel": "^1.7.11",
     "@vue-office/pdf": "^2.0.9",
     "@vue-office/pptx": "^0.0.5",

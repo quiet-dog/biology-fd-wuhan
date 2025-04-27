@@ -123,10 +123,10 @@ const previewVisible = ref(false);
 const previewVisibleUrl = ref("");
 
 const getPreviewUrl = item => {
-  if (!item.path.includes("/upload/")) {
-    item.path = "/upload/" + item.path;
+   if (item.path[0] === "/") {
+    item.path = item.path.substring(1);
   }
-  previewVisibleUrl.value = item.path;
+  previewVisibleUrl.value =  item.path;
   previewVisible.value = true;
 };
 

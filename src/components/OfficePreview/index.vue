@@ -1,5 +1,5 @@
 <template>
-  <component
+  <!-- <component
     v-if="!isMediaFile && isSupported"
     :is="previewComponent"
     :src="src"
@@ -7,8 +7,9 @@
     :style="{ height: '100vh' }"
     @rendered="renderedHandler"
     @error="errorHandler"
-  />
-  <div
+  /> -->
+  <iframe :src="src" height="800px" width="100%" />
+  <!-- <div
     v-else-if="isMediaFile"
     :style="{
       height: '100vh',
@@ -41,7 +42,7 @@
   >
     <i class="el-icon-warning" style="font-size: 48px; color: #e6a23c" />
     <p style="margin-top: 16px">不支持该文件类型的预览</p>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -116,41 +117,44 @@ export default {
     fileUrl: {
       immediate: true,
       handler(newUrl) {
-        if (newUrl) {
-          this.loadFile();
-        }
+        var encodedUrl = encodeURIComponent("http://192.168.0.11:9000/biology/"+newUrl);
+      // 然后使用 btoa 对编码后的 URL 进行 Base64 编码
+        var base64Url = btoa(encodedUrl);
+        this.src = location.origin + "/kkfile/onlinePreview?url=" + encodeURIComponent(base64Url);
+        console.error("src", this.src);
       }
     }
   },
   methods: {
     loadFile() {
-      axios
-        .get(`${defaultConfig.baseURL}/file/preview`, {
-          params: {
-            fileName: this.fileUrl
-          },
-          headers: {
-            Authorization: `Bearer ${getToken().token}`,
-            Accept: "*/*"
-          },
-          responseType: "arraybuffer",
-          transformResponse: [
-            data => {
-              return new Blob([data], {
-                type: this.fileUrl.endsWith(".pdf")
-                  ? "application/pdf"
-                  : "application/octet-stream"
-              });
-            }
-          ]
-        })
-        .then(response => {
-          this.src = window.URL.createObjectURL(response.data);
-        })
-        .catch(error => {
-          console.error("文件预览加载失败:", error);
-          this.errorHandler();
-        });
+      // this.fileUrl
+      // axios
+      //   .get(`${location.origin}/minioapi/biology/${this.fileUrl}`, {
+      //     params: {
+      //       fileName: this.fileUrl
+      //     },
+      //     headers: {
+      //       Authorization: `Bearer ${getToken().token}`,
+      //       Accept: "*/*"
+      //     },
+      //     responseType: "arraybuffer",
+      //     transformResponse: [
+      //       data => {
+      //         return new Blob([data], {
+      //           type: this.fileUrl.endsWith(".pdf")
+      //             ? "application/pdf"
+      //             : "application/octet-stream"
+      //         });
+      //       }
+      //     ]
+      //   })
+      //   .then(response => {
+      //     this.src = window.URL.createObjectURL(response.data);
+      //   })
+      //   .catch(error => {
+      //     console.error("文件预览加载失败:", error);
+      //     this.errorHandler();
+      //   });
     },
     renderedHandler() {
       console.log("渲染完成");
