@@ -25,12 +25,12 @@ export function renewprocess(data: renewequipmentRes) {
 
 //获取设备档案列表
 export interface equipmentListRes extends BasePageQuery {
-  equipmentName: string;
-  manufacturer: string;
+  equipmentName?: string;
+  manufacturer?: string;
   startPurchaseDate?: string;
   endPurchaseDate?: string;
-  usageStatus: string;
-  equipmentType: string;
+  usageStatus?: string;
+  equipmentType?: string;
 }
 export function equipmentList(params: equipmentListRes) {
   return http.request("get", "/manage/equipment", { params });

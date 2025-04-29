@@ -31,9 +31,10 @@ export function renewthreshold(data: renewthresholdRes) {
 
 //获取阈值设置列表
 export interface thresholdListRes extends BasePageQuery {
-  sensorName: string;
-  sensorModel: string;
-  equipmentIndex: string;
+  sensorName?: string;
+  sensorModel?: string;
+  equipmentIndex?: string;
+  equipmentId?: number;
 }
 export function thresholdList(params: thresholdListRes) {
   return http.request("get", "/manage/threshold", { params });
