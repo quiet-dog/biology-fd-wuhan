@@ -10,6 +10,7 @@ export interface DoorEventQuery extends BasePageQuery {
   outId?: string;
   doorPlace?: string;
   name?: string;
+  doorDate?: number;
 }
 
 export interface DoorDTO {
@@ -19,8 +20,8 @@ export interface DoorDTO {
   verificationMode?: string
   eventType?: string
   doorDate?: number
+  doorId?: number
 }
-
 
 
 export function getDoorEventList(data: DoorEventQuery) {
@@ -32,4 +33,18 @@ export function getDoorEventList(data: DoorEventQuery) {
 
 export function getMaterialsEasy() {
   return http.request<ResponseData<PageDTO<DoorDTO>>>("get", "/manage/materials/getMaterialsEasy");
+}
+
+
+export function editDoor(data: DoorDTO) {
+  return http.request<ResponseData<void>>("put", "/manage/door/" + data.doorId, {
+    data
+  });
+}
+
+
+export function exportDoorTemplate() {
+  return http.request("get", "/manage/door/excelTemplate", {
+    responseType: "blob"
+  });
 }

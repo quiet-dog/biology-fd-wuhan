@@ -2,11 +2,12 @@
 import VImportDialog from "@/components/VImportDialog/VImportDialog.vue";
 import { ref, reactive } from "vue";
 import { UploadFilled } from "@element-plus/icons-vue";
-import { downloadTemplate } from "@/api/deviceData/WeiXiuRecords";
+import { downloadTemplate,exportPersonnelTemplate } from "@/api/personnelData/personnelProfile";
 import { getToken } from "@/utils/auth";
 import { ExportDownload } from "@/utils/exportdownload";
 import { defaultConfig } from "@/utils/http/index";
 import { ElMessage } from "element-plus";
+import { exportDoorTemplate } from "@/api/door/door";
 
 const loading = ref(false);
 
@@ -20,20 +21,23 @@ const upload = reactive({
   // 设置上传的请求头部
   headers: { Authorization: `Bearer ${getToken().token}` },
   // 上传的地址
-  url: `${defaultConfig.baseURL}/manage/equipment-repair/excel`
+  url: `${defaultConfig.baseURL}/manage/door/excel`
 });
 
 const uploadRef = ref();
 
 const downloadTemplateClick = () => {
-  downloadTemplate().then(res => {
-    ExportDownload(res, "维修记录导入模板");
+  // downloadTemplate().then(res => {
+  //   ExportDownload(res, "人员导入模板");
+  // });
+  exportDoorTemplate().then(res => {
+    ExportDownload(res, "出勤导入模板");
   });
 };
 
 /** 文件上传成功处理 */
 const handleFileSuccess = (res) => {
-    if (res.code !== 0) {
+  if (res.code !== 0) {
     ElMessage.error(res.msg);
     return;
   }
@@ -63,7 +67,7 @@ defineExpose({
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="导入维修记录"
+    title="导入出勤"
     v-model="visible"
     :loading="loading"
     :disableFooter="true"

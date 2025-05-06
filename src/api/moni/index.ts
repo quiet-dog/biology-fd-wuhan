@@ -53,3 +53,22 @@ export const updateMoniApi = (data: UpdateMoniCommand) => {
     data
   });
 };
+
+export const startMoniApi = (moniId: number) => {
+  return http.request<ResponseData<MoniDTO>>("get", `/manage/moni/start/${moniId}`, {
+  });
+}
+
+
+export const stopMoniApi = (moniId: number) => {
+  return http.request<ResponseData<MoniDTO>>("get", `/manage/moni/stop/${moniId}`, {
+  });
+}
+
+export const deleteMoniApi = (moniId: number) => {
+  return http.request<ResponseData<MoniDTO>>("post", `/manage/moni/delete`, {
+    data: {
+      moniIds: [moniId]
+    }
+  });
+}

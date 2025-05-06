@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { getMoniApi, MoniDTO, SearchMoniCommand } from '@/api/moni';
+import { deleteMoniApi, getMoniApi, MoniDTO, SearchMoniCommand,startMoniApi,stopMoniApi } from '@/api/moni';
 import { CommonUtils } from '@/utils/common';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
@@ -14,7 +14,7 @@ import MoniFormModal from "./moni-form-modal.vue";
 const searchFormParams = reactive<SearchMoniCommand>({
   orderColumn: "createTime",
   orderDirection: "descending",
-  pushType:"1",
+  pushType: "1",
 });
 
 const columns: TableColumnList = [
@@ -31,9 +31,18 @@ const columns: TableColumnList = [
     prop: "max"
   },
   {
+    label: "是否开启",
+    prop: "max"
+  },
+  {
     label: "创建时间",
     prop: "createTime",
     slot: "createTime"
+  },
+  {
+    label: "操作",
+    prop: "operation",
+    slot: "operation"
   }
 ];
 const opType = ref<"add" | "update">("add");
@@ -80,6 +89,12 @@ function openDialog(type: "add" | "update", row?: MoniDTO) {
   modalVisible.value = true;
 }
 
+function deleteMoni(id: number) {
+  deleteMoniApi(id).then(() => {
+    archiveListFun();
+  });
+}
+
 
 onMounted(() => {
   archiveListFun();
@@ -93,7 +108,7 @@ onMounted(() => {
   <div>
     <PureTableBar title="设备档案模拟列表" :columns="columns" :tableRef="tableRef?.getTableRef()">
       <template #buttons>
-        <el-button type="primary" :icon="useRenderIcon(AddFill)"  @click="openDialog('add')">
+        <el-button type="primary" :icon="useRenderIcon(AddFill)" @click="openDialog('add')">
           新增模拟
         </el-button>
       </template>
@@ -108,14 +123,51 @@ onMounted(() => {
           <template #createTime="{ row }">
             <span>{{
               dayjs(row.createTime).format("YYYY-MM-DD HH:mm:ss")
-            }}</span>
+              }}</span>
+          </template>
+          <template #operation="{ row }">
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="startMoniApi(row.moniId)"
+            >
+              开始推送
+            </el-button>
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="stopMoniApi(row.moniId)"
+            >
+            停止推送
+            </el-button>
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="openDialog('update', row)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="deleteMoni(row.moniId)"
+            >
+              删除
+            </el-button>
           </template>
         </pure-table>
       </template>
     </PureTableBar>
 
-    <MoniFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)"
-       />
+    <MoniFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)" />
   </div>
 </template>
 

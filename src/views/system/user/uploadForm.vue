@@ -4,6 +4,7 @@ import { getToken } from "@/utils/auth";
 import { http } from "@/utils/http";
 import { message } from "@/utils/message";
 import { useHook } from "./hook";
+import { ElMessage } from "element-plus";
 
 const { getList } = useHook();
 
@@ -35,7 +36,11 @@ const handleFileUploadProgress = () => {
 };
 
 /** 文件上传成功处理 */
-const handleFileSuccess = () => {
+const handleFileSuccess = (res) => {
+  if (res.code !== 0) {
+    ElMessage.error(res.msg);
+    return;
+  }
   upload.open = false;
   upload.loading = false;
   formRef.value.clearFiles();

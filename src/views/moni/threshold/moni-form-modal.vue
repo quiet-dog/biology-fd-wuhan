@@ -9,7 +9,7 @@ import { computed, reactive, ref } from "vue";
 interface Props {
   type: "add" | "update";
   modelValue: boolean;
-  // row?: KnowledgePageResponse;
+  row?: UpdateMoniCommand;
   // typeOptions: Array<KnowledgeTypeEntity>;
 }
 
@@ -154,17 +154,23 @@ function cancelConfirm() {
 }
 
 function handleOpened() {
-  // if (props.row) {
-  //   Object.assign(formData, props.row);
-  //   Paths.value = [];
-  //   props.row.paths.forEach(item => {
-  //     const fileName = item.split("/").pop();
-  //     Paths.value.push({
-  //       name: fileName,
-  //       url: ""
-  //     });
-  //   });
-  // }
+  if (props.row) {
+    Object.assign(formData, props.row);
+    console.log("formData", formData);
+    if (Number(formData.pushFrequency) > 3600) {
+      selectPinValue.value = "1";
+      pinInput.value = Number(formData.pushFrequency) / 3600;
+      return;
+    } else if (Number(formData.pushFrequency) > 60) {
+      selectPinValue.value = "2";
+      pinInput.value = Number(formData.pushFrequency) / 60;
+      return;
+    } else {
+      selectPinValue.value = "3";
+      pinInput.value = Number(formData.pushFrequency);
+      return;
+    }
+  }
 }
 
 function handleClosed() {
@@ -180,10 +186,10 @@ function handleSelectChange(value, selectedData) {
 
 function handleInputPin(val) {
   if (val) {
-    if (selectPinValue.value == "2") {
+    if (selectPinValue.value == "3") {
+        formData.pushFrequency = val;
+    }else if (selectPinValue.value == "2") {
         formData.pushFrequency = val * 60;
-    }else if (selectPinValue.value == "3") {
-        formData.pushFrequency = val * 60 * 60;
     } else {
         formData.pushFrequency = val;
     }

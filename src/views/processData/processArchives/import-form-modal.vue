@@ -32,7 +32,11 @@ const downloadTemplateClick = () => {
 };
 
 /** 文件上传成功处理 */
-const handleFileSuccess = () => {
+const handleFileSuccess = (res) => {
+  if (res.code !== 0) {
+    ElMessage.error(res.msg);
+    return;
+  }
   ElMessage.success("提交成功");
   uploadRef.value.clearFiles();
   visible.value = false;
