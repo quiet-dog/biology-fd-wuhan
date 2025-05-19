@@ -46,12 +46,12 @@
 </template>
 
 <script>
-import VueOfficeDocx from "@vue-office/docx";
-import VueOfficeExcel from "@vue-office/excel";
-import VuePdfEmbed from "vue-pdf-embed";
-import VueOfficePptx from "@vue-office/pptx";
-import "@vue-office/docx/lib/index.css";
-import "@vue-office/excel/lib/index.css";
+// import VueOfficeDocx from "@vue-office/docx";
+// import VueOfficeExcel from "@vue-office/excel";
+// import VuePdfEmbed from "vue-pdf-embed";
+// import VueOfficePptx from "@vue-office/pptx";
+// import "@vue-office/docx/lib/index.css";
+// import "@vue-office/excel/lib/index.css";
 // import "@vue-office/pdf/lib/index.css";
 import axios from "axios";
 import { getToken } from "../../utils/auth";
@@ -59,10 +59,10 @@ import { defaultConfig } from "@/utils/http";
 
 export default {
   components: {
-    VueOfficeDocx,
-    VueOfficeExcel,
-    VuePdfEmbed,
-    VueOfficePptx
+    // VueOfficeDocx,
+    // VueOfficeExcel,
+    // VuePdfEmbed,
+    // VueOfficePptx
   },
   props: {
     fileUrl: {
@@ -117,7 +117,7 @@ export default {
     fileUrl: {
       immediate: true,
       handler(newUrl) {
-        var encodedUrl = encodeURIComponent("http://192.168.0.11:9000/biology/"+newUrl);
+        var encodedUrl = encodeURIComponent(`http://${location.hostname}:9000/biology/`+newUrl);
       // 然后使用 btoa 对编码后的 URL 进行 Base64 编码
         var base64Url = btoa(encodedUrl);
         this.src = location.origin + "/kkfile/onlinePreview?url=" + encodeURIComponent(base64Url);

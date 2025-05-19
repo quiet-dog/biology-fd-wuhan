@@ -38,10 +38,10 @@ const handleOpened = async (id: number) => {
   const { data } = await equipmentRepairInfo(id);
   data.repairImagePath?.forEach(item => {
     axios
-      .get(`${defaultConfig.baseURL}/file/preview`, {
-        params: {
-          fileName: item
-        },
+      .get(`${defaultConfig.baseURL}/file/preview`+item, {
+        // params: {
+        //   fileName: item
+        // },
         headers: { Authorization: `Bearer ${getToken().token}` },
         responseType: "arraybuffer" // 获取文件流
       })

@@ -31,14 +31,15 @@ const columns: TableColumnList = [
     prop: "max"
   },
   {
-    label: "是否开启",
-    prop: "max"
+    label: "推送频率",
+    prop: "pushFrequency",
+    slot: "pushFrequency"
   },
-  {
-    label: "创建时间",
-    prop: "createTime",
-    slot: "createTime"
-  },
+  // {
+  //   label: "创建时间",
+  //   prop: "createTime",
+  //   slot: "createTime"
+  // },
   {
     label: "操作",
     prop: "operation",
@@ -95,6 +96,19 @@ function deleteMoni(id: number) {
   });
 }
 
+function startMoniApiFunc(row) {
+  startMoniApi(row).then(() => {
+    archiveListFun();
+  });
+}
+
+function stopMoniApiFunc(row) {
+  stopMoniApi(row).then(() => {
+    archiveListFun();
+  });
+}
+
+
 
 onMounted(() => {
   archiveListFun();
@@ -125,22 +139,29 @@ onMounted(() => {
               dayjs(row.createTime).format("YYYY-MM-DD HH:mm:ss")
               }}</span>
           </template>
+          <template #pushFrequency="{ row }">
+            <span v-if="row.pushFrequency >= 3600">{{ row.pushFrequency / 3600}}/时</span>
+            <span v-if="row.pushFrequency >= 60 && row.pushFrequency < 3600">{{ row.pushFrequency / 60}}/分</span>
+            <span v-if="row.pushFrequency >= 0 && row.pushFrequency < 60">{{ row.pushFrequency}}/秒</span>
+          </template>
           <template #operation="{ row }">
             <el-button
               class="reset-margin"
               link
               type="primary"
               :size="size"
-              @click="startMoniApi(row.moniId)"
+              @click="startMoniApiFunc(row.moniId)"
+              v-if="!row.isPush"
             >
               开始推送
             </el-button>
             <el-button
               class="reset-margin"
               link
-              type="primary"
+              type="danger"
               :size="size"
-              @click="stopMoniApi(row.moniId)"
+              @click="stopMoniApiFunc(row.moniId)"
+              v-else
             >
             停止推送
             </el-button>

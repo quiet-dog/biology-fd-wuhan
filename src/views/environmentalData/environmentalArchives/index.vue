@@ -51,9 +51,20 @@
         <el-button type="primary" :icon="Plus" @click="openDialog('add')"
           >新增</el-button
         >
-        <el-button type="warning" :icon="Download" @click="exportClick"
+        <!-- <el-button type="warning" :icon="Download" @click="exportClick"
           >报告导出</el-button
-        >
+        > -->
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <el-dropdown>
+          <el-button type="warning" :icon="Download" >报告导出</el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="exportClick('excel')">excel</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('word')">word</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('pdf')">pdf</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
@@ -132,7 +143,7 @@ import {
 } from "@/api/environmentalData/environmentalArchives";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { ExportDownload } from "@/utils/exportdownload";
+import { ExportDownload, ExportPdfDownload, ExportWordDownload } from "@/utils/exportdownload";
 import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
 import addEditFormModal from "./addedit-form-modal.vue";
 import thresholdFormModal from "./threshold-form-modal.vue";
@@ -222,7 +233,8 @@ const searchFormRef = ref();
 const searchFormParams = reactive<environmentalFilesListRes>({
   description: "",
   tag: "",
-  environmentIds: []
+  environmentIds: [],
+  exportType: "pdf",
 });
 
 const pagination: PaginationProps = {
@@ -248,7 +260,7 @@ const archiveListFun = async () => {
   pagination.total = data.total;
 };
 
-const exportClick = () => {
+const exportClick = (type: string) => {
   if (multipleSelection.value.length == 0) {
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, {
@@ -266,9 +278,15 @@ const exportClick = () => {
   }
 
   exportEnvironmentalFiles(
-    toRaw({ ...searchFormParams, environmentIds: multipleSelection.value })
+    toRaw({ ...searchFormParams, environmentIds: multipleSelection.value,exportType:type })
   ).then(res => {
-    ExportDownload(res, "环境检测");
+    if (type == "pdf") {
+      ExportPdfDownload(res, "环境检测");
+    } else if (type == "word") {
+      ExportWordDownload(res, "环境检测");
+    } else {
+      ExportDownload(res, "环境检测");
+    }
   });
 };
 

@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { getMoniApi, MoniDTO, SearchMoniCommand } from '@/api/moni';
+import { deleteMoniApi, getMoniApi, MoniDTO, SearchMoniCommand, startMoniApi, stopMoniApi } from '@/api/moni';
 import { CommonUtils } from '@/utils/common';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
@@ -31,9 +31,19 @@ const columns: TableColumnList = [
     prop: "max"
   },
   {
-    label: "创建时间",
-    prop: "createTime",
-    slot: "createTime"
+    label: "推送频率",
+    prop: "pushFrequency",
+    slot: "pushFrequency"
+  },
+  // {
+  //   label: "创建时间",
+  //   prop: "createTime",
+  //   slot: "createTime"
+  // },
+  {
+    label: "操作",
+    prop: "operation",
+    slot: "operation"
   }
 ];
 const opType = ref<"add" | "update">("add");
@@ -80,6 +90,24 @@ function openDialog(type: "add" | "update", row?: MoniDTO) {
   modalVisible.value = true;
 }
 
+function deleteMoni(id: number) {
+  deleteMoniApi(id).then(() => {
+    archiveListFun();
+  });
+}
+
+function startMoniApiFunc(row) {
+  startMoniApi(row).then(() => {
+    archiveListFun();
+  });
+}
+
+function stopMoniApiFunc(row) {
+  stopMoniApi(row).then(() => {
+    archiveListFun();
+  });
+}
+
 
 onMounted(() => {
   archiveListFun();
@@ -91,7 +119,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <PureTableBar title="设备档案模拟列表" :columns="columns" :tableRef="tableRef?.getTableRef()">
+    <PureTableBar title="环境档案模拟列表" :columns="columns" :tableRef="tableRef?.getTableRef()">
       <template #buttons>
         <el-button type="primary" :icon="useRenderIcon(AddFill)"  @click="openDialog('add')">
           新增模拟
@@ -109,6 +137,51 @@ onMounted(() => {
             <span>{{
               dayjs(row.createTime).format("YYYY-MM-DD HH:mm:ss")
             }}</span>
+          </template>
+          <template #pushFrequency="{ row }">
+            <span v-if="row.pushFrequency >= 3600">{{ row.pushFrequency / 3600}}/时</span>
+            <span v-if="row.pushFrequency >= 60 && row.pushFrequency < 3600">{{ row.pushFrequency / 60}}/分</span>
+            <span v-if="row.pushFrequency >= 0 && row.pushFrequency < 60">{{ row.pushFrequency}}/秒</span>
+          </template>
+          <template #operation="{ row }">
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="startMoniApiFunc(row.moniId)"
+              v-if="!row.isPush"
+            >
+              开始推送
+            </el-button>
+            <el-button
+              class="reset-margin"
+              link
+              type="danger"
+              :size="size"
+              @click="stopMoniApiFunc(row.moniId)"
+              v-else
+            >
+            停止推送
+            </el-button>
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="openDialog('update', row)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="deleteMoni(row.moniId)"
+            >
+              删除
+            </el-button>
           </template>
         </pure-table>
       </template>

@@ -44,10 +44,10 @@ const handleOpened = async (id: number) => {
   });
   data.inspectionImagePath?.forEach(item => {
     axios
-      .get(`${defaultConfig.baseURL}/file/preview`, {
-        params: {
-          fileName: item
-        },
+      .get(`${defaultConfig.baseURL}/file/preview`+item, {
+        // params: {
+        //   fileName: item
+        // },
         headers: { Authorization: `Bearer ${getToken().token}` },
         responseType: "arraybuffer" // 获取文件流
       })
@@ -83,10 +83,10 @@ function getShortFileName(fileName: string): string {
 //下载文件
 const downloadFile = item => {
   axios
-    .get(`${defaultConfig.baseURL}/file/preview`, {
-      params: {
-        fileName: item.path
-      },
+    .get(`${defaultConfig.baseURL}/file/preview`+item.path, {
+      // params: {
+      //   fileName: item.path
+      // },
       headers: { Authorization: `Bearer ${getToken().token}` },
       responseType: "arraybuffer" // 获取文件流
     })

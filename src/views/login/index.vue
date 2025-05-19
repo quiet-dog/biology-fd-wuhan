@@ -67,6 +67,8 @@ const currentPage = ref(0);
 
 const passwordDialogVisible = ref(false);
 
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
 const onConfirm = () => {
   if (passwordForm.oldPassword !== ruleForm.password) {
     message("旧密码不正确", { type: "warning" });
@@ -76,6 +78,16 @@ const onConfirm = () => {
   // 判断新密码和确认密码是否一致
   if (passwordForm.newPassword !== passwordForm.confirmPassword) {
     message("新密码和确认密码不一致", { type: "warning" });
+    return;
+  }
+
+  if (passwordForm.newPassword.length < 15) {
+    message("密码长度不能小于15位", { type: "warning" });
+    return;
+  }
+
+  if (passwordRegex.test(passwordForm.newPassword)) {
+    message("密码过于简单，需包含大小写，特殊字符，数字", { type: "warning" });
     return;
   }
 

@@ -18,6 +18,9 @@
         <el-button type="primary" @click="analyzeFormModalClick">库存分析</el-button>
         <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
         <el-button type="success" :icon="Upload" @click="openImportDialog">导入</el-button>
+        <el-button type="warning" :icon="Download" @click="exportClick"
+          >导出</el-button
+        >
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
@@ -77,16 +80,18 @@ import { PaginationProps } from "@pureadmin/table";
 import {
   materialFilesListRes,
   materialFilesList,
-  addStock
+  addStock,
+  exportMaterialEvents
 } from "@/api/materialData/materialFiles";
 import detailFromModal from "./detail-from-modal.vue";
 import importFormModal from "./import-form-modal.vue";
 import { ElMessage, Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { Upload, Plus } from "@element-plus/icons-vue";
+import { Upload, Plus,Download } from "@element-plus/icons-vue";
 import policiesArchivesFormModal from "./policiesArchives-form-modal.vue";
 import analyzeFormModal from "./analyze-from-modal.vue";
 import AddFormModal from "./add-from-modal.vue";
+import { ExportDownload } from "@/utils/exportdownload";
 const AddModalVisible = ref(false);
 const tableRef = ref();
 const columns: TableColumnList = [
@@ -227,6 +232,31 @@ const opType = ref("add");
 function openDialog(type: "add") {
   opType.value = type;
   AddModalVisible.value = true;
+}
+
+const exportClick = () => {
+  // if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1
+    });
+  // } else {
+  //   CommonUtils.fillSortParams(searchFormParams, sortState.value);
+  //   CommonUtils.fillPaginationParams(searchFormParams, {
+  //     ...pagination,
+  //     pageSize: undefined,
+  //     currentPage: undefined
+  //   });
+  // }
+
+  exportMaterialEvents(
+    toRaw({ ...searchFormParams })
+  ).then(res => {
+    console.log(res);
+    ExportDownload(res, "物料档案列表");
+  });
 }
 
 onMounted(() => {

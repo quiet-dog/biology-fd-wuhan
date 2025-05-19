@@ -12,6 +12,7 @@ export interface personnelListRes extends BasePageQuery {
   post: string;
   education: string;
   contact: string;
+  exportType?: string
 }
 
 export interface PersonnelDTO {

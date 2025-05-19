@@ -85,10 +85,10 @@ const downloadFile = item => {
   }
 
   axios
-    .get(`${defaultConfig.baseURL}/file/preview`, {
-      params: {
-        fileName: item.path
-      },
+    .get(`${defaultConfig.baseURL}/file/preview`+item.path, {
+      // params: {
+      //   fileName: item.path
+      // },
       headers: { Authorization: `Bearer ${getToken().token}` },
       responseType: "arraybuffer" // 获取文件流
     })

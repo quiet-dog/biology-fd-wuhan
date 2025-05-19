@@ -11,6 +11,7 @@ export interface alarmEventsListRes extends BasePageQuery {
   type: string;
   level: string;
   eventIds: number[];
+  exportType?: string;
 }
 export function alarmEventsList(params: alarmEventsListRes) {
   return http.request("get", "/manage/event", { params });

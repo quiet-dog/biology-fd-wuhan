@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as echarts from "echarts";
-import { ref, onMounted, nextTick, computed } from "vue";
+import { ref, onMounted, nextTick, computed, h } from 'vue';
 import { Search } from "@element-plus/icons-vue";
 import renyuan from "@/assets/images/renyuan.png";
 import shebei from "@/assets/images/shebei.png";
@@ -11,6 +11,7 @@ import TuOne from "./tuone/index.vue";
 import TuTwo from "./tutwo/index.vue";
 import TuThree from "./tuthree/index.vue";
 import TuFour from "./tufour/index.vue";
+import { menusList } from "@/utils/menus";
 
 // src/api/notificationCenter
 import { notificationList } from "@/api/notificationCenter";
@@ -351,7 +352,7 @@ const notOnlineEquipment = ref([])
 const getEquipmentStatus = () => {
   equipmentList({
     pageSize: 300,
-    pageNum:1,
+    pageNum: 1,
   }).then(res => {
     onlineEquipment.value = res.data.rows.filter(item => item.isOnline)
     notOnlineEquipment.value = res.data.rows.filter(item => !item.isOnline)
@@ -364,8 +365,8 @@ const normalMaterialsList = ref([])
 const notNormalMaterialsList = ref([])
 const getMaterialsEasyList = () => {
   getMaterialsEasy().then(res => {
-    normalMaterialsList.value = res.data.filter(item => item.description ==null)
-    notNormalMaterialsList.value = res.data.filter(item => item.description!=null && item.description!="")
+    normalMaterialsList.value = res.data.filter(item => item.description == null)
+    notNormalMaterialsList.value = res.data.filter(item => item.description != null && item.description != "")
   })
 }
 
@@ -420,7 +421,7 @@ onMounted(async () => {
     materailsNormal.value = res.data;
     console.log("materailsNormal.value", materailsNormal.value);
   })
-  
+
 });
 
 // getThresholdOnline
@@ -501,6 +502,23 @@ const getDayStatusFun = async () => {
 };
 
 const activeName = ref("一层");
+
+
+const kuaisuSearch = ref("");
+const kuaisuShow = ref(false);
+const kuaisuList = ref([])
+const kuaisuSearchChange = (val) => {
+  if (val == "") {
+    kuaisuList.value = [];
+    return
+  }
+  kuaisuList.value = menusList.filter(item => {
+    return item.menu_name.includes(kuaisuSearch.value);
+  });
+};
+const toPath = (item) => {
+  router.push(item);
+}
 </script>
 
 <template>
@@ -535,13 +553,13 @@ const activeName = ref("一层");
                         </div>
                       </template>
                       <ElTable height="500" :data="eventData">
-                        <ElTableColumn prop="personnel.code" label="员工编号"/>
-                        <ElTableColumn prop="personnel.name" label="员工姓名"/>
-                         <ElTableColumn prop="doorDate" label="出勤时间">
-                          <template #default="{row}">
+                        <ElTableColumn prop="personnel.code" label="员工编号" />
+                        <ElTableColumn prop="personnel.name" label="员工姓名" />
+                        <ElTableColumn prop="doorDate" label="出勤时间">
+                          <template #default="{ row }">
                             {{ dayjs(row.doorDate).format('HH:mm:ss') }}
                           </template>
-                         </ElTableColumn>
+                        </ElTableColumn>
                       </ElTable>
                     </ElPopover>
 
@@ -560,8 +578,8 @@ const activeName = ref("一层");
                         <div>{{ list2[0].num }}</div>
                       </template>
                       <ElTable height="500" :data="onlineEquipment">
-                        <ElTableColumn prop="equipmentName" label="设备名称"/>
-                        <ElTableColumn prop="equipmentCode" label="设备编号"/>
+                        <ElTableColumn prop="equipmentName" label="设备名称" />
+                        <ElTableColumn prop="equipmentCode" label="设备编号" />
                       </ElTable>
                     </ElPopover>
                   </div>
@@ -569,13 +587,13 @@ const activeName = ref("一层");
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
                       离线设备
                     </div>
-                    <ElPopover  @before-enter="getEquipmentStatus" width="300">
+                    <ElPopover @before-enter="getEquipmentStatus" width="300">
                       <template #reference>
                         <div>{{ list2[1].num }}</div>
                       </template>
                       <ElTable height="500" :data="notOnlineEquipment">
-                        <ElTableColumn prop="equipmentName" label="设备名称"/>
-                        <ElTableColumn prop="equipmentCode" label="设备编号"/>
+                        <ElTableColumn prop="equipmentName" label="设备名称" />
+                        <ElTableColumn prop="equipmentCode" label="设备编号" />
                       </ElTable>
                     </ElPopover>
                   </div>
@@ -584,13 +602,6 @@ const activeName = ref("一层");
               <div class="home_t_lt_l_bottom_nei">
                 <img src="/src/assets/images/tongzhi.png" alt="" />
                 <div class="home_t_lt_l_bottom_nei_right">
-                  <!-- <div>
-                    <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
-                      库存正常和异常数量
-                    </div>
-                    <div>{{ useUserStore()?.noticesNum }}</div>
-                  </div> -->
-
                   <div>
                     <div style="font-size: 14px; color: rgba(0, 0, 0, 0.4)">
                       库存正常
@@ -600,8 +611,8 @@ const activeName = ref("一层");
                         <div>{{ materailsNormal?.normal }}</div>
                       </template>
                       <ElTable :data="normalMaterialsList" height="500">
-                        <ElTableColumn prop="name" label="物料名称"/>
-                        <ElTableColumn prop="code" label="物料编号"/>
+                        <ElTableColumn prop="name" label="物料名称" />
+                        <ElTableColumn prop="code" label="物料编号" />
                       </ElTable>
                     </ElPopover>
                   </div>
@@ -614,11 +625,11 @@ const activeName = ref("一层");
                         <div>{{ materailsNormal?.abnormal }}</div>
                       </template>
                       <ElTable :data="notNormalMaterialsList" height="500">
-                        <ElTableColumn prop="name" label="物料名称"/>
-                        <ElTableColumn prop="code" label="物料编号"/>
-                        <ElTableColumn prop="description" label="描述"/>
+                        <ElTableColumn prop="name" label="物料名称" />
+                        <ElTableColumn prop="code" label="物料编号" />
+                        <ElTableColumn prop="description" label="描述" />
                       </ElTable>
-                      </ElPopover>
+                    </ElPopover>
                   </div>
                 </div>
               </div>
@@ -631,7 +642,7 @@ const activeName = ref("一层");
             width: '100%',
             padding: '21px 24px'
           }">
-            <div>快速导航</div>
+            <div @click="kuaisuShow = true">快速导航</div>
             <div class="home_bl">
               <div v-for="item in routerList" :key="item.name" @click="routerClick(item)">
                 <img :src="item.back" alt="" />
@@ -672,27 +683,19 @@ const activeName = ref("一层");
                       background-color: #ffa914;
                       margin-right: 5px;
                     " />
-                  <!-- <span style="font-size: 14px; padding-right: 10px">{{
-                    item.title
-                  }}</span> -->
-
                   <el-tag v-if="item.type" type="primary" size="small">{{
                     item.type
-                    }}</el-tag>
+                  }}</el-tag>
                   <el-tooltip class="box-item" effect="dark" :content="item.content" placement="top">
                     <span style="
                         white-space: nowrap;
-                        /* 禁止换行 */
                         overflow: hidden;
-                        /* 超出内容隐藏 */
                         text-overflow: ellipsis;
-                        /* 显示省略号 */
                       ">
                       {{ item.content }}
                     </span>
                   </el-tooltip>
                 </div>
-                <!-- <div style="font-size: 14px">{{ item.time }}</div> -->
               </div>
             </div>
           </el-card>
@@ -725,7 +728,6 @@ const activeName = ref("一层");
           <span>车间平面图</span>
         </div>
         <div class="home_bb">
-          <!-- <TuOne /> -->
           <ElTabs v-model="activeName" style="margin: 0 30px">
             <ElTabPane label="一层" name="一层">
               <TuOne v-if="activeName == '一层'" />
@@ -752,7 +754,6 @@ const activeName = ref("一层");
           placeholder="请选择区域" clearable @change="handleSelectionChange">
           <el-option v-for="item in allGroupList.area" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
-        <!--   :prefix-icon="Search" -->
         <el-select class="environment-metric-select" style="width: 127px; height: 31.98px; z-index: 999999"
           v-model="unitName" placeholder="请选择指标" clearable @change="handleSelectionChange">
           <el-option v-for="item in allGroupList.unitName" :key="item.value" :label="item.label" :value="item.value" />
@@ -760,7 +761,14 @@ const activeName = ref("一层");
         <div class="chart" ref="environmentRef" />
       </el-card>
     </div>
+    <el-dialog :z-index="99999999" title="快速导航" v-model="kuaisuShow" width="400px">
+      <el-input v-model="kuaisuSearch" @input="kuaisuSearchChange" />
+      <el-card @click="toPath(item.path)" v-for="item in kuaisuList" :key="item.path">
+        <h3>{{ item.menu_name }}</h3>
+      </el-card>
+    </el-dialog>
   </div>
+
 </template>
 
 <style lang="scss" scoped>

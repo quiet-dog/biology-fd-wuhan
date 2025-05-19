@@ -24,6 +24,17 @@
           <el-option label="提醒" value="提醒" />
         </el-select>
       </el-form-item>
+      <el-form-item label="报警时间：">
+        <el-date-picker
+          class="!w-[240px]"
+          v-model="timeRange"
+          value-format="YYYY-MM-DD"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="archiveListFun"
           >搜索</el-button
@@ -109,7 +120,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, reactive, toRaw } from "vue";
+import { ref, onMounted, reactive, toRaw, computed } from "vue";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { PaginationProps } from "@pureadmin/table";
 import {
@@ -126,6 +137,25 @@ import dayjs from "dayjs";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 const tableRef = ref();
+const timeRange = computed<[string, string] | null>({
+  get() {
+    if (searchFormParams.beginTime && searchFormParams.endTime) {
+      return [searchFormParams.beginTime, searchFormParams.endTime];
+    } else {
+      return null;
+    }
+  },
+  set(v) {
+    if (v?.length === 2) {
+      searchFormParams.beginTime = v[0];
+      searchFormParams.endTime = v[1];
+    } else {
+      searchFormParams.beginTime = undefined;
+      searchFormParams.endTime = undefined;
+    }
+  }
+});
+
 const columns: TableColumnList = [
   {
     label: "编号",
@@ -218,6 +248,8 @@ const archiveListFun = async () => {
 function resetForm() {
   searchFormParams.notificationTitle = "";
   searchFormParams.notificationType = "";
+  searchFormParams.beginTime = undefined;
+  searchFormParams.endTime = undefined;
 
   // 重置 pagination 中的属性
   pagination.total = 0;

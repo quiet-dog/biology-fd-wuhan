@@ -163,10 +163,8 @@ export function useHook() {
 
   function onChange({ row, index }) {
     ElMessageBox.confirm(
-      `确认要<strong>${
-        row.status === 0 ? "停用" : "启用"
-      }</strong><strong style='color:var(--el-color-primary)'>${
-        row.username
+      `确认要<strong>${row.status === 0 ? "停用" : "启用"
+      }</strong><strong style='color:var(--el-color-primary)'>${row.username
       }</strong>用户吗?`,
       "系统提示",
       {
@@ -207,6 +205,13 @@ export function useHook() {
   }
 
   async function handleAdd(row, done) {
+    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    // if (!passwordRegex.test(row.password) && row.password.length < 8) {
+    //   message("密码必须包含至少8个字符，至少一个大写字母，一个小写字母和一个数字", {
+    //     type: "error"
+    //   });
+    //   return;
+    // }
     await addUserApi(row as UserRequest).then(() => {
       message(`您新增了用户${row.username}的这条数据`, {
         type: "success"
@@ -239,6 +244,15 @@ export function useHook() {
   }
 
   async function handleResetPassword(row, request, done) {
+    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    // if (!passwordRegex.test(request.password) && request.password.length < 8) {
+    //   message("密码必须包含至少8个字符，至少一个大写字母，一个小写字母和一个数字", {
+    //     type: "error"
+    //   });
+    //   return;
+    // }
+
+
     await updateUserPasswordApi(request).then(() => {
       message(`您修改了用户${row.username}的密码`, { type: "success" });
       // 刷新列表

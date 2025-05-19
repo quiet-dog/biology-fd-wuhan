@@ -57,9 +57,17 @@
         <el-button type="primary" @click="analyzeFormModalClick">
           报告频次分析
         </el-button>
-        <el-button type="warning" :icon="Download" @click="exportClick">
-          报告导出
-        </el-button>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <el-dropdown>
+          <el-button type="warning" :icon="Download" >报告导出</el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="exportClick('excel')">excel</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('word')">word</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('pdf')">pdf</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
@@ -128,7 +136,7 @@ import {
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
 import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
-import { ExportDownload } from "@/utils/exportdownload";
+import { ExportDownload, ExportPdfDownload, ExportWordDownload } from "@/utils/exportdownload";
 import analyzeFormModal from "./analyze-from-modal.vue";
 import detailFormModal from "./detail-from-modal.vue";
 
@@ -243,7 +251,7 @@ const openDetailDialog = row => {
 };
 
 // 导出
-const exportClick = () => {
+const exportClick = (type:string) => {
   if (multipleSelection.value.length == 0) {
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, {
@@ -261,10 +269,16 @@ const exportClick = () => {
   }
 
   exportAlarmEvents(
-    toRaw({ ...searchFormParams, eventIds: multipleSelection.value })
+    toRaw({ ...searchFormParams, eventIds: multipleSelection.value,exportType:type })
   ).then(res => {
     console.log(res);
-    ExportDownload(res, "报警事件列表");
+    if (type == "pdf") {
+      ExportPdfDownload(res, "报警事件");
+    } else if (type == "word") {
+      ExportWordDownload(res, "报警事件");
+    } else {
+      ExportDownload(res, "报警事件");
+    }
   });
 };
 

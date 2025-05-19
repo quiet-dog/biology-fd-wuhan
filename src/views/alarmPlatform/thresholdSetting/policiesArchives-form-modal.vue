@@ -153,6 +153,16 @@ function handleOpened() {
   if (props.row) {
     console.log(props.row);
     Object.assign(formData, props.row);
+    if (props.row.values != null && props.row.values.length > 0) {
+      formData.values = props.row.values.map(item => {
+      return {
+        ...item,
+      };
+    });
+    } else {
+      formData.values = [];
+    }
+    
     console.log("formData",formData)
     num.value = formData.values.length;
   }

@@ -2,9 +2,10 @@ import { http } from "@/utils/http";
 
 //获取环境档案列表
 export interface environmentalFilesListRes extends BasePageQuery {
-  description: string;
-  tag: string;
-  environmentIds: number[];
+  description?: string;
+  tag?: string;
+  environmentIds?: number[];
+  exportType?: string;
 }
 export function environmentalFilesList(params: environmentalFilesListRes) {
   return http.request("get", "/manage/environment", { params });

@@ -95,6 +95,18 @@ export function getstatistics(materialsId: number) {
   });
 }
 
+export function exportMaterialEvents(params: addmaterialFilesRes) {
+  return http.request(
+    "get",
+    "/manage/materials/excel",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}
+
+
 //删除物料档案
 // export function deletematerialFiles(materialsIdss: string[]) {
 //   return axios.delete("/manage/materials", {

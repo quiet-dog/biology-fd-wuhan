@@ -42,9 +42,17 @@
         <el-button type="success" :icon="Upload" @click="openImportDialog">
           导入
         </el-button>
-        <el-button type="warning" :icon="Download" @click="exportClick">
-          报告导出
-        </el-button>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <el-dropdown>
+          <el-button type="warning" :icon="Download" >导出</el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="exportClick('excel')">excel</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('word')">word</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('pdf')">pdf</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
@@ -127,7 +135,7 @@ import policiesArchivesFormModal from "./policiesArchives-form-modal.vue";
 import detailFromModal from "./detail-from-modal.vue";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { ExportDownload } from "@/utils/exportdownload";
+import { ExportDownload, ExportPdfDownload, ExportWordDownload } from "@/utils/exportdownload";
 import importFormModal from "./import-form-modal.vue";
 import {
   Plus,
@@ -185,7 +193,8 @@ const searchFormParams = reactive<archiveListRes>({
   craftArchiveCode: "",
   craftArchiveName: "",
   version: "",
-  ids: []
+  ids: [],
+  exportType:"pdf",
 });
 const pagination: PaginationProps = {
   total: 0,
@@ -208,7 +217,7 @@ const archiveListFun = async () => {
 };
 
 // 导出
-const exportClick = () => {
+const exportClick = (type:string) => {
   if (multipleSelection.value.length == 0) {
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, {
@@ -226,9 +235,15 @@ const exportClick = () => {
   }
 
   exportArchive(
-    toRaw({ ...searchFormParams, ids: multipleSelection.value })
+    toRaw({ ...searchFormParams, ids: multipleSelection.value,exportType:type })
   ).then(res => {
-    ExportDownload(res, "工艺档案");
+    if (type == "pdf") {
+      ExportPdfDownload(res, "工艺档案");
+    } else if (type == "word") {
+      ExportWordDownload(res, "工艺档案");
+    } else {
+      ExportDownload(res, "工艺档案");
+    }
   });
 };
 

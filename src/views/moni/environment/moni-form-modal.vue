@@ -4,7 +4,7 @@ import { equipmentList } from "@/api/deviceData/equipmentProfile";
 import { AddMoniCommand, createMoniApi, updateMoniApi, UpdateMoniCommand } from "@/api/moni";
 import VDialog from "@/components/VDialog/VDialog.vue";
 import { CascaderProps, ElMessage, FormRules } from "element-plus";
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import {
   environmentalFilesList,
 } from "@/api/environmentalData/environmentalArchives";
@@ -12,7 +12,7 @@ import {
 interface Props {
   type: "add" | "update";
   modelValue: boolean;
-  // row?: KnowledgePageResponse;
+  row?: UpdateMoniCommand;
   // typeOptions: Array<KnowledgeTypeEntity>;
 }
 
@@ -26,7 +26,7 @@ const loading = ref(false);
 const selectValue = ref([]);
 const selectOption = ref([]);
 const selectPinValue = ref("3");
-const pinInput = ref("")
+const pinInput = ref(0)
 
 const visible = computed({
   get: () => props.modelValue,
@@ -34,7 +34,7 @@ const visible = computed({
     emits("update:modelValue", v);
   }
 });
-const formRef =ref()
+const formRef = ref()
 
 let id = 0
 const selcteProps: CascaderProps = {
@@ -110,14 +110,14 @@ const rules: FormRules = {
   min: [
     {
       validator: (rule, value, callback) => {
-          if (value == 0) {
-            callback(new Error("最小值不能为空"));
-          } else if (value >= formData.max) {
-            callback(new Error("最小值不能大于最大值"));
-          } else {
-            callback();
-          }
-        
+        if (value == 0) {
+          callback(new Error("最小值不能为空"));
+        } else if (value >= formData.max) {
+          callback(new Error("最小值不能大于最大值"));
+        } else {
+          callback();
+        }
+
       }
     }
   ],
@@ -125,13 +125,13 @@ const rules: FormRules = {
     {
       validator: (rule, value, callback) => {
         // if (formData.pushType == "2") {
-          if (value == 0) {
-            callback(new Error("最大值不能为空"));
-          } else if (value <= formData.min) {
-            callback(new Error("最大值不能小于最小值"));
-          } else {
-            callback();
-          }
+        if (value == 0) {
+          callback(new Error("最大值不能为空"));
+        } else if (value <= formData.min) {
+          callback(new Error("最大值不能小于最小值"));
+        } else {
+          callback();
+        }
       }
     }
   ]
@@ -148,6 +148,7 @@ async function handleConfirm() {
           await createMoniApi(formData);
         } else if (props.type === "update") {
           formData.pushType = "2";
+          console.log("formData", formData);
           await updateMoniApi(formData as UpdateMoniCommand);
         }
         ElMessage.success("提交成功");
@@ -169,38 +170,48 @@ function cancelConfirm() {
 }
 
 function handleOpened() {
-  // if (props.row) {
-  //   Object.assign(formData, props.row);
-  //   Paths.value = [];
-  //   props.row.paths.forEach(item => {
-  //     const fileName = item.split("/").pop();
-  //     Paths.value.push({
-  //       name: fileName,
-  //       url: ""
-  //     });
-  //   });
-  // }
+  if (props.row) {
+    Object.assign(formData, props.row);
+    selectValue.value = formData.environmentIds;
+    console.log("formData", formData);
+    if (Number(formData.pushFrequency) > 3600) {
+      selectPinValue.value = "1";
+      pinInput.value = Number(formData.pushFrequency) / 3600;
+      return;
+    } else if (Number(formData.pushFrequency) > 60) {
+      selectPinValue.value = "2";
+      pinInput.value = Number(formData.pushFrequency) / 60;
+      return;
+    } else {
+      selectPinValue.value = "3";
+      pinInput.value = Number(formData.pushFrequency);
+      return;
+    }
+  }
 }
 
 function handleClosed() {
-  // formRef.value?.resetFields();
+  formRef.value?.resetFields();
+  selectPinValue.value = "3";
+  pinInput.value = 0;
+  selectValue.value = [];
   // Paths.value = [];
 }
 
 function handleSelectChange(value, selectedData) {
   if (value) {
-    formData.environmentIds = value.map(item=>item[0])
+    formData.environmentIds = value
   }
 }
 
 function handleInputPin(val) {
   if (val) {
     if (selectPinValue.value == "2") {
-        formData.pushFrequency = val * 60;
-    }else if (selectPinValue.value == "3") {
-        formData.pushFrequency = val * 60 * 60;
+      formData.pushFrequency = val * 60;
+    } else if (selectPinValue.value == "3") {
+      formData.pushFrequency = val * 60 * 60;
     } else {
-        formData.pushFrequency = val;
+      formData.pushFrequency = val;
     }
   } else {
     formData.pushFrequency = 0;
@@ -209,17 +220,32 @@ function handleInputPin(val) {
 
 function changePinValue(val) {
   if (val) {
-    if (val == "2") {
-        formData.pushFrequency = formData.pushFrequency * 60;
-    }else if (val == "3") {
-        formData.pushFrequency = formData.pushFrequency * 60 * 60;
+    if (Number(val) == 2) {
+      formData.pushFrequency = Number(pinInput.value) * 60;
+    } else if (Number(val) == 3) {
+      formData.pushFrequency = Number(pinInput.value);
     } else {
-        formData.pushFrequency = formData.pushFrequency;
+      formData.pushFrequency = Number(pinInput.value) * 60 * 60;
     }
   } else {
     formData.pushFrequency = 0;
   }
 }
+
+onMounted(() => {
+  environmentalFilesList({
+    pageNum: 1,
+    pageSize: 999,
+    // orderColumn: "purchaseDate",
+    // orderDirection: "descending",
+  }).then(res => {
+    selectOption.value = res.data.rows.map(item => ({
+      value: item.environmentId,
+      label: item.description,
+      leaf: true,
+    }))
+  })
+})
 
 </script>
 
@@ -233,9 +259,13 @@ function changePinValue(val) {
       </el-form-item>
       <el-form-item label="传感器">
         <!-- :options="selectOption"  -->
-        <el-cascader :multiple="true" v-model="selectValue" @change="handleSelectChange" :props="selcteProps"
+        <!-- <el-cascader :multiple="true" v-model="selectValue" @change="handleSelectChange" :props="selcteProps"
           collapse-tags collapse-tags-tooltip clearable>
-        </el-cascader>
+        </el-cascader> -->
+        <el-select v-model="selectValue" multiple collapse-tags collapse-tags-tooltip clearable
+          @change="handleSelectChange">
+          <el-option v-for="item in selectOption" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
       </el-form-item>
 
       <el-form-item label="最小">
@@ -253,7 +283,7 @@ function changePinValue(val) {
       <el-form-item label="推送频率">
         <el-input v-model="pinInput" type="number" @input="handleInputPin">
           <template #append>
-            <el-select v-model="selectPinValue" @change="changePinValue"  style="width: 115px">
+            <el-select v-model="selectPinValue" @change="changePinValue" style="width: 115px">
               <el-option label="时" value="1" />
               <el-option label="分" value="2" />
               <el-option label="秒" value="3" />

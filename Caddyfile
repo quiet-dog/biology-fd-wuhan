@@ -18,7 +18,7 @@
 	admin "unix//run/caddy/admin.socket"
 }
 
-:7676 {
+:9080 {
 	header Access-Control-Allow-Origin "http://jessibuca.monibuca.com"
     	header Access-Control-Allow-Methods "GET, POST, OPTIONS"
     	header Access-Control-Allow-Headers "Content-Type, Authorization"

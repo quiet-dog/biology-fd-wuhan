@@ -23,7 +23,7 @@ const loading = ref(false);
 const selectValue = ref([]);
 const selectOption = ref([]);
 const selectPinValue = ref("3");
-const pinInput = ref("")
+const pinInput = ref(0)
 
 const visible = computed({
   get: () => props.modelValue,
@@ -156,6 +156,7 @@ function cancelConfirm() {
 function handleOpened() {
   if (props.row) {
     Object.assign(formData, props.row);
+    selectValue.value = formData.thresholdIds;
     console.log("formData", formData);
     if (Number(formData.pushFrequency) > 3600) {
       selectPinValue.value = "1";
@@ -174,14 +175,17 @@ function handleOpened() {
 }
 
 function handleClosed() {
-  // formRef.value?.resetFields();
+  formRef.value?.resetFields();
+  selectPinValue.value = "3";
+  pinInput.value = 0;
+  selectValue.value = [];
   // Paths.value = [];
 }
 
 function handleSelectChange(value, selectedData) {
-  if (value) {
-    formData.thresholdIds = value.map(item=>item[1])
-  }
+  // if (value) {
+    formData.thresholdIds = value
+  // }
 }
 
 function handleInputPin(val) {

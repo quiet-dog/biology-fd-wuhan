@@ -186,6 +186,16 @@ const columns: TableColumnList = [
     slot: "isOnline"
   },
   {
+    label: "技术规格",
+    prop: "technicalSpec",
+    slot: "technicalSpec"
+  },
+  {
+    label: "性能参数",
+    prop: "performanceParams",
+    slot: "performanceParams"
+  },
+  {
     label: "操作",
     slot: "operation",
     fixed: "right",
