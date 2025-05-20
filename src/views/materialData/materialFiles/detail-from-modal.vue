@@ -1,6 +1,6 @@
 <template>
   <v-detail-dialog show-full-screen :fixed-body-height="false" use-body-scrolling title="查看物料档案" v-model="visible"
-    :loading="loading" :disableFooter="true" @cancel="cancelConfirm" @opened="handleOpened">
+    :loading="loading" :disableFooter="true" @cancel="cancelConfirm" @opened="handleOpened" @closed="handleClosed">
     <ElTabs v-model="activeName" @tab-change="handleTabChange">
 
       <el-tab-pane label="物料信息" name="物料信息">
@@ -36,16 +36,41 @@
 
           <el-row>
             <el-col :span="12">
+              <el-form-item label="物料型号：">
+                <el-input v-model="formData.model" autocomplete="off" readonly style="width: 300px" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="供应商：">
+                <el-input v-model="formData.supplier" autocomplete="off" readonly style="width: 300px" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
               <el-form-item label="物料单位：">
                 <el-input v-model="formData.unit" autocomplete="off" readonly style="width: 300px" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="物料标签：">
-                <el-input v-model="formData.tag" autocomplete="off" readonly style="width: 300px" />
+                <el-input v-model="formData.tag" autocomplete="off" readonly style="width: 300px" >
+                  <template #append>
+                    <el-color-picker v-model="formData.color" disabled />
+                  </template>
+                </el-input>
               </el-form-item>
             </el-col>
           </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="标签名称：">
+                <el-input v-model="formData.colorDescription" autocomplete="off" readonly style="width: 300px" />
+              </el-form-item>
+            </el-col>
+            </el-row>
 
           <!-- <el-row>
         <el-col :span="12">
@@ -61,12 +86,13 @@
       </el-row> -->
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="入库信息" name="入库信息">
+      <el-tab-pane label="库存信息" name="库存信息">
         <el-table :data="tableList" style="width: 100%">
-          <el-table-column prop="stock" label="入库量"></el-table-column>
-          <el-table-column prop="remainStock" label="当时剩余库存量"></el-table-column>
+          <el-table-column prop="type" label="操作类型"></el-table-column>
+          <el-table-column prop="num" label="数量"></el-table-column>
+          <el-table-column prop="stock" label="当时剩余库存量"></el-table-column>
           <el-table-column prop="batch" label="批次"></el-table-column>
-          <el-table-column prop="createTime" label="入库时间"></el-table-column>
+          <el-table-column prop="createTime" label="时间"></el-table-column>
         </el-table>
       </el-tab-pane>
 
@@ -78,7 +104,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue";
 import { ElTabs, FormInstance } from "element-plus";
-import { getStock, materialFilesInfo } from "@/api/materialData/materialFiles";
+import { getHistoryMaterials, getStock, materialFilesInfo } from "@/api/materialData/materialFiles";
 import VDetailDialog from "@/components/VDetailDialog/VDetailDialog.vue";
 
 const activeName = ref("物料信息");
@@ -97,7 +123,11 @@ const formData = ref({
   tag: "",
   lastStock: 0,
   batch: "",
-  materialsId: 0
+  materialsId: 0,
+  model: "",
+  supplier: "",
+  color: "",
+  colorDescription:"",
 });
 
 const handleOpened = (id: number) => {
@@ -115,16 +145,25 @@ function cancelConfirm() {
   formRef.value?.resetFields();
 }
 
+function handleClosed() {
+  visible.value = false;
+  formRef.value?.resetFields();
+  tableList.value = [];
+}
+
 const tableList = ref([]);
 
 function handleTabChange(ac: string) {
-  if (ac === '入库信息') {
-    getStock({
-      materialsId: formData.value.materialsId,
-      pageSizee: 1000,
-      pageNum: 1,
-    }).then(res => {
-      tableList.value = res.data.rows;
+  if (ac === '库存信息') {
+    // getStock({
+    //   materialsId: formData.value.materialsId,
+    //   pageSizee: 1000,
+    //   pageNum: 1,
+    // }).then(res => {
+    //   tableList.value = res.data.rows;
+    // })
+    getHistoryMaterials(formData.value.materialsId).then(res => {
+      tableList.value = res.data;
     })
   }
 }

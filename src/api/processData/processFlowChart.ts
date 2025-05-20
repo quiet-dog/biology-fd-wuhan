@@ -28,6 +28,7 @@ export interface processListRes extends BasePageQuery {
   craftNode: string;
   craftArchiveName: string;
   craftArchiveId: number;
+  exportType?: string;
 }
 export function processList(params: processListRes) {
   return http.request("get", "/manage/craft-process", { params });
@@ -54,4 +55,14 @@ export function deleteprocess(craftProcessIds: string[]) {
       craftProcessIds: craftProcessIds.join(",") // 将数组转换为逗号分隔的字符串
     }
   });
+}
+
+
+export function exportProcess(params: processListRes) {
+  return http.request(
+    "get",
+    "/manage/craft-process/export",
+    { params },
+    { responseType: "blob" }
+  );
 }

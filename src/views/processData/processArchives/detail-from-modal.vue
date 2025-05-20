@@ -22,7 +22,10 @@ const formData = ref({
   creator: "",
   version: "",
   createDate: "",
-  attachmentPath: []
+  attachmentPath: [],
+  labelName: "",
+  color: "",
+  colorDescription: "",
 });
 
 const visible = ref(false);
@@ -231,6 +234,37 @@ defineExpose({
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="标签名称：">
+                <el-input
+                  v-model="formData.labelName"
+                  placeholder="请输入标签名称"
+                  autocomplete="off"
+                  readonly
+                  style="width: 300px"
+                >
+                  <template #append>
+                    <el-color-picker
+                      v-model="formData.color"
+                      disabled
+                    />
+                  </template>
+              </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="标签描述：">
+                <el-input
+                  v-model="formData.colorDescription"
+                  placeholder="请输入标签描述"
+                  autocomplete="off"
+                  readonly
+                  style="width: 300px"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
           <el-form-item label="创建时间：">
             <el-input
               v-model="formData.createDate"
@@ -240,7 +274,7 @@ defineExpose({
               style="width: 300px"
             />
           </el-form-item>
-          <el-form-item label="文档：">
+          <!-- <el-form-item label="文档：">
             <div class="file_list">
               <div
                 v-for="(item, index) in attachmentPaths"
@@ -276,7 +310,7 @@ defineExpose({
                 </div>
               </div>
             </div>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="工艺节点" name="second">

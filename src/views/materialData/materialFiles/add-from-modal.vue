@@ -16,6 +16,10 @@ const formData = reactive<AddMaterials>({
   unit: "",
   specification: "",
   batch: "",
+  model: "",
+  supplier: "",
+  color: "#000000",
+  colorDescription: "",
 });
 interface Props {
   type: "add";
@@ -54,7 +58,7 @@ const rules: FormRules = {
   tag: [
     {
       required: true,
-      message: "物料标签不能为空"
+      message: "标签名称不能为空"
     }
   ],
   stock: [
@@ -85,6 +89,18 @@ const rules: FormRules = {
     {
       required: true,
       message: "批次不能为空"
+    }
+  ],
+  model: [
+    {
+      required: true,
+      message: "物料型号不能为空"
+    }
+  ],
+  supplier: [
+    {
+      required: true,
+      message: "供应商不能为空"
     }
   ]
 }
@@ -160,8 +176,12 @@ function handleClosed() {
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="物料标签" prop="tag">
-            <el-input v-model="formData.tag" clearable placeholder="请输入物料标签" />
+          <el-form-item label="标签名称" prop="tag">
+            <el-input v-model="formData.tag" clearable placeholder="请输入标签名称">
+              <template #append>
+                <el-color-picker v-model="formData.color" />
+              </template>
+            </el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -177,6 +197,28 @@ function handleClosed() {
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="型号" prop="model">
+            <el-input v-model="formData.model" clearable placeholder="请输入物料型号" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="供应商" prop="supplier">
+            <el-input v-model="formData.supplier" clearable placeholder="请输入物料供应商" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="标签描述" prop="colorDescription">
+            <el-input v-model="formData.colorDescription" clearable placeholder="请输入标签描述" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+    
       <el-row>
         <el-col :span="12">
           <el-form-item label="物料规格" prop="specification">

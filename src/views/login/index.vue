@@ -240,6 +240,7 @@ onBeforeMount(async () => {
 
   // 判断是否已登陆 token可用
   const token = getToken();
+  console.log(token);
   if (token) {
     // 调用获取用户信息
     await getUserInfo()
@@ -250,6 +251,7 @@ onBeforeMount(async () => {
         // });
       })
       .catch(() => {
+        console.log("token过期");
         isRememberMe.value = getIsRememberMe();
         if (isRememberMe.value) {
           ruleForm.username = getUsername();

@@ -31,6 +31,7 @@ export function renewmaterialFiles(data: renewmaterialFilesRes) {
 export interface materialFilesListRes extends BasePageQuery {
   name?: string;
   materialsType?: string;
+  materialsIds?: number[];
 }
 export function materialFilesList(params: materialFilesListRes) {
   return http.request("get", "/manage/materials", { params });
@@ -49,6 +50,10 @@ export function getStock(data) {
   return http.request("get", "/manage/materials/warehouse", {
     params: data
   });
+}
+
+export function getHistoryMaterials(materialsId: number) {
+  return http.request("get", `/manage/materials/history/${materialsId}`);
 }
 
 //下载导入模板
@@ -87,10 +92,10 @@ export function addmaterialFiles(data: addmaterialFilesRes) {
   return http.request("post", "/manage/materials", { data });
 }
 
-export function getstatistics(materialsId: number) {
+export function getstatistics(materialsId: number, dayType: string) {
   return http.request("get", `/manage/materials/stock/${materialsId}`, {
     params: {
-      dayType: "week"
+      dayType: dayType
     }
   });
 }

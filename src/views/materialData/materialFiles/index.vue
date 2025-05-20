@@ -18,19 +18,25 @@
         <el-button type="primary" @click="analyzeFormModalClick">库存分析</el-button>
         <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
         <el-button type="success" :icon="Upload" @click="openImportDialog">导入</el-button>
-        <el-button type="warning" :icon="Download" @click="exportClick"
-          >导出</el-button
-        >
+        <el-button type="warning" :icon="Download" @click="exportClick">导出</el-button>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
         <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
+          :row-key="'materialsId'" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
           :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+          @selection-change="
+            rows => (multipleSelection = rows.map(item => item.materialsId))
+          " @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">
+          <template #tag="{ row }">
+            <el-tag v-if="row.tag" :color="row.color != undefined ? row.color : '#409eff'">
+              {{ row.tag }}
+            </el-tag>
+          </template>
+
           <template #operation="{ row }">
             <el-popover :width="300" trigger="click">
               <template #reference>
@@ -46,7 +52,7 @@
                 <ElFormItem label="批次">
                   <ElInput v-model="row.batch" />
                 </ElFormItem>
-                <ElFormItem >
+                <ElFormItem>
                   <el-button type="danger" size="small" @click="confirmStock(row)">
                     确定?
                   </el-button>
@@ -87,7 +93,7 @@ import detailFromModal from "./detail-from-modal.vue";
 import importFormModal from "./import-form-modal.vue";
 import { ElMessage, Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { Upload, Plus,Download } from "@element-plus/icons-vue";
+import { Upload, Plus, Download } from "@element-plus/icons-vue";
 import policiesArchivesFormModal from "./policiesArchives-form-modal.vue";
 import analyzeFormModal from "./analyze-from-modal.vue";
 import AddFormModal from "./add-from-modal.vue";
@@ -95,6 +101,10 @@ import { ExportDownload } from "@/utils/exportdownload";
 const AddModalVisible = ref(false);
 const tableRef = ref();
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "物料编号",
     prop: "code"
@@ -109,7 +119,8 @@ const columns: TableColumnList = [
   },
   {
     label: "物料标签",
-    prop: "tag"
+    prop: "tag",
+    slot: "tag"
   },
   {
     label: "库存量",
@@ -157,11 +168,13 @@ function confirmStock(row) {
 const pageLoading = ref(true);
 const dataList = ref([]);
 const sortState = ref<Sort>(defaultSort);
+const multipleSelection = ref([]);
 
 const searchFormRef = ref();
 const searchFormParams = reactive<materialFilesListRes>({
   name: "",
-  materialsType: ""
+  materialsType: "",
+  materialsIds: [],
 });
 
 const pagination: PaginationProps = {
@@ -173,9 +186,16 @@ const pagination: PaginationProps = {
 
 const archiveListFun = async () => {
   pageLoading.value = true;
+  // if (multipleSelection.value.length > 0) {
+  //   searchFormParams.materialsIds = multipleSelection.value;
+  //   CommonUtils.fillSortParams(searchFormParams, sortState.value);
+  //   CommonUtils.fillPaginationParams(searchFormParams, pagination);
+  // } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, pagination);
+  // }
 
-  CommonUtils.fillSortParams(searchFormParams, sortState.value);
-  CommonUtils.fillPaginationParams(searchFormParams, pagination);
+
 
   const { data } = await materialFilesList(toRaw(searchFormParams)).finally(
     () => {
@@ -235,24 +255,24 @@ function openDialog(type: "add") {
 }
 
 const exportClick = () => {
-  // if (multipleSelection.value.length == 0) {
+  if (multipleSelection.value.length == 0) {
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, {
       ...pagination,
       pageSize: 10000,
-      currentPage: 1
+      currentPage: 1,
     });
-  // } else {
-  //   CommonUtils.fillSortParams(searchFormParams, sortState.value);
-  //   CommonUtils.fillPaginationParams(searchFormParams, {
-  //     ...pagination,
-  //     pageSize: undefined,
-  //     currentPage: undefined
-  //   });
-  // }
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined,
+    });
+  }
 
   exportMaterialEvents(
-    toRaw({ ...searchFormParams })
+    toRaw({ ...searchFormParams,materialsIds: multipleSelection.value })
   ).then(res => {
     console.log(res);
     ExportDownload(res, "物料档案列表");

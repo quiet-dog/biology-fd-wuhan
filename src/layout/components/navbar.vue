@@ -25,6 +25,13 @@ const {
   avatarsStyle,
   toggleSideBar
 } = useNav();
+const noticeRef = ref();
+const getNotice = () => {
+  noticeRef.value.getNotice();
+};
+defineExpose({
+  getNotice
+});
 </script>
 
 <template>
@@ -49,7 +56,7 @@ const {
       <!-- 菜单搜索 -->
       <!-- <Search /> -->
       <!-- 通知 -->
-      <Notice id="header-notice" />
+      <Notice ref="noticeRef" id="header-notice" />
       <!-- 退出登录 -->
       <el-dropdown trigger="click">
         <span

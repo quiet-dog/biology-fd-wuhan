@@ -69,6 +69,9 @@ export interface addArchiveRes {
   version: string;
   createDate: string;
   attachmentPath: string[];
+  labelName: string;
+  color: string;
+  colorDescription: string;
 }
 export function addArchive(data: addArchiveRes) {
   return http.request("post", "/manage/craft-archive", { data });

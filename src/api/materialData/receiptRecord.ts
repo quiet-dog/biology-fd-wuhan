@@ -38,6 +38,10 @@ export interface AddMaterials {
   lastStock?: number;
   unit?: string;
   batch?: string;
+  model?: "";
+  supplier?: "";
+  color?: string;
+  colorDescription?: string;
 }
 export function addreceive(data: addreceiveRes) {
   return http.request("post", "/manage/receive", { data });

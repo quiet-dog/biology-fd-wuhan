@@ -92,10 +92,10 @@ class PureHttp {
         return whiteList.some(v => config.url.endsWith(v))
           ? config
           : new Promise(resolve => {
-              const data = getToken();
-              config.headers["Authorization"] = formatToken(data.token);
-              resolve(config);
-            });
+            const data = getToken();
+            config.headers["Authorization"] = formatToken(data.token);
+            resolve(config);
+          });
       },
       error => {
         return Promise.reject(error);
@@ -157,6 +157,10 @@ class PureHttp {
               });
             NProgress.done();
             return Promise.reject(msg);
+          } else if (response.data.code === 107) {
+            // removeToken();
+            router.push("/login");
+            NProgress.done();
           } else {
             // 其余情况弹出错误提示框
             message(msg, { type: "error" });

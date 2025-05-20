@@ -1,32 +1,19 @@
 <template>
-  <v-detail-dialog
-    show-full-screen
-    :fixed-body-height="false"
-    use-body-scrolling
-    title="库存分析"
-    v-model="visible"
-    :disableFooter="true"
-    @cancel="cancelConfirm"
-    @opened="handleOpened"
-    @closed="handleClosed"
-  >
+  <v-detail-dialog show-full-screen :fixed-body-height="false" use-body-scrolling title="库存分析" v-model="visible"
+    :disableFooter="true" @cancel="cancelConfirm" @opened="handleOpened" @closed="handleClosed">
     <el-form class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
       <el-form-item label="物料名称：">
-        <el-select
-          v-model="formData.materialsId"
-          filterable
-          placeholder="请选择物料名称"
-          @change="materialsCodeChange"
-          style="width: 300px"
-        >
-          <el-option
-            v-for="item in dataList"
-            :key="item.materialsId"
-            :label="`${item.name}--${item.code}`"
-            :value="item.materialsId"
-          />
+        <el-select v-model="formData.materialsId" filterable placeholder="请选择物料名称" @change="materialsCodeChange"
+          style="width: 300px">
+          <el-option v-for="item in dataList" :key="item.materialsId" :label="`${item.name}--${item.code}`"
+            :value="item.materialsId" />
         </el-select>
       </el-form-item>
+      <el-radio-group @change="changeRadio" v-model="radio">
+        <el-radio-button label="周" value="周"  />
+        <el-radio-button label="月" value="月" />
+        <el-radio-button label="年" value="年" />
+      </el-radio-group>
     </el-form>
 
     <div style="width: 100%; height: 400px; margin-top: 10px" ref="chartRef" />
@@ -51,6 +38,7 @@ const formData = reactive({
   materialsId: null
 });
 const unit = ref<string>("");
+const radio = ref<string>("周");
 
 let myChart: any = null;
 const chartRef = ref();
@@ -139,8 +127,15 @@ const materialsCodeChange = async val => {
 const handleOpened = async () => {
   visible.value = true;
   await archiveListFun();
-
-  const { data } = await getstatistics(formData.materialsId);
+  let val = "week";
+  if (radio.value == "月") {
+    val = "month";
+  } else if (radio.value == "年") {
+    val = "year";
+  } else {
+    val = "week";
+  }
+  const { data } = await getstatistics(formData.materialsId,val);
 
   option.series.forEach(item => {
     item.data = data.seriesData;
@@ -151,6 +146,30 @@ const handleOpened = async () => {
   }
   myChart?.setOption(option);
 };
+
+async function changeRadio(val) { 
+  if (formData.materialsId == null || formData.materialsId == undefined || formData.materialsId == 0) {
+    return;
+  }
+  if (val == "月") {
+    val = "month";
+  } else if (val == "年") {
+    val = "year";
+  } else {
+    val = "week";
+  }
+
+  const { data } = await getstatistics(formData.materialsId,val);
+
+  option.series.forEach(item => {
+    item.data = data.seriesData;
+  });
+  option.xAxis.data = data.xaxisData;
+  if (!myChart && chartRef.value) {
+    myChart = echarts.init(chartRef.value);
+  }
+  myChart?.setOption(option);
+}
 
 function cancelConfirm() {
   visible.value = false;

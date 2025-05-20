@@ -131,7 +131,8 @@ stompClient.onConnect = frame => {
     let iconColor = "";
     switch (data.content.type) {
       case "环境报警":
-        iconColor = "#FAAD14"; // 橙色
+        // iconColor = "#FAAD14"; // 橙色
+        iconColor = "#FF4D4F"; // 红色
         break;
       case "设备报警":
         iconColor = "#FF4D4F"; // 红色
@@ -153,7 +154,7 @@ stompClient.onConnect = frame => {
         console.log(err);
       });
     }
-    
+
     ElNotification({
       title: data.content.type,
       message: data.content.description,
@@ -164,6 +165,7 @@ stompClient.onConnect = frame => {
         style: `color: ${iconColor};`
       })
     });
+    navbarRef.value.getNotice();
   });
 };
 
@@ -204,6 +206,7 @@ onBeforeMount(() => {
   useDataThemeChange().dataThemeChange();
 });
 
+const navbarRef = ref();
 const layoutHeader = defineComponent({
   render() {
     return h(
@@ -222,7 +225,10 @@ const layoutHeader = defineComponent({
         default: () => [
           !pureSetting.hiddenSideBar &&
           (layout.value.includes("vertical") || layout.value.includes("mix"))
-            ? h(navbar)
+            ? h(navbar, {
+              ref: navbarRef,
+              ref_key: "navbarRef",
+            })
             : null,
           !pureSetting.hiddenSideBar && layout.value.includes("horizontal")
             ? h(Horizontal)

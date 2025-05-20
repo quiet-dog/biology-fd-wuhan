@@ -193,6 +193,10 @@ const handleRead = async (key: number) => {
   await notificationInfo(key);
   await getNotices();
 };
+
+defineExpose({
+  getNotices
+})
 </script>
 
 <template>

@@ -42,12 +42,24 @@ const rules: FormRules = {
       message: "工艺制定人员不能为空"
     }
   ],
-  attachmentPath: [
+  labelName: [
     {
       required: true,
-      message: "文档不能为空"
+      message: "标签名称不能为空"
     }
-  ]
+  ],
+  colorDescription: [
+    {
+      required: true,
+      message: "标签描述不能为空"
+    }
+  ],
+  // attachmentPath: [
+  //   {
+  //     required: true,
+  //     message: "文档不能为空"
+  //   }
+  // ]
 };
 
 const props = defineProps<Props>();
@@ -69,7 +81,10 @@ const formData = reactive<addArchiveRes | renewArchiveRes>({
   version: "",
   createDate: dayjs().startOf("day").format("YYYY-MM-DD"),
   attachmentPath: [],
-  craftArchiveId: 0
+  craftArchiveId: 0,
+  labelName: "",
+  color: "#000000",
+  colorDescription: ""
 });
 
 const attachmentPaths = ref([]);
@@ -158,84 +173,69 @@ function handleClosed() {
 </script>
 
 <template>
-  <v-dialog
-    show-full-screen
-    :fixed-body-height="false"
-    use-body-scrolling
-    :title="type === 'add' ? '新增工艺档案' : '编辑工艺档案'"
-    v-model="visible"
-    :loading="loading"
-    @confirm="handleConfirm"
-    @cancel="cancelConfirm"
-    @opened="handleOpened"
-    @closed="handleClosed"
-  >
+  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :title="type === 'add' ? '新增工艺档案' : '编辑工艺档案'"
+    v-model="visible" :loading="loading" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
+    @closed="handleClosed">
     <el-form :model="formData" label-width="120px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
           <el-form-item label="工艺编号：" prop="craftArchiveCode">
-            <el-input
-              v-model="formData.craftArchiveCode"
-              autocomplete="off"
-              placeholder="请输入工艺编号"
-              style="width: 300px"
-            />
+            <el-input v-model="formData.craftArchiveCode" autocomplete="off" placeholder="请输入工艺编号"
+              style="width: 300px" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="工艺名称：" prop="craftArchiveName">
-            <el-input
-              v-model="formData.craftArchiveName"
-              autocomplete="off"
-              placeholder="请输入工艺名称"
-              style="width: 300px"
-            />
+            <el-input v-model="formData.craftArchiveName" autocomplete="off" placeholder="请输入工艺名称"
+              style="width: 300px" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="版本：" prop="version">
-            <el-input
-              v-model="formData.version"
-              placeholder="请输入版本"
-              autocomplete="off"
-              style="width: 300px"
-            />
+            <el-input v-model="formData.version" placeholder="请输入版本" autocomplete="off" style="width: 300px" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="工艺制定人员：" prop="creator">
-            <el-input
-              v-model="formData.creator"
-              placeholder="请输入工艺制定人员"
-              autocomplete="off"
-              style="width: 300px"
-            />
+            <el-input v-model="formData.creator" placeholder="请输入工艺制定人员" autocomplete="off" style="width: 300px" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="创建日期：" prop="createDate">
-            <el-date-picker
-              v-model="formData.createDate"
-              type="date"
-              value-format="YYYY-MM-DD hh:mm:ss"
-              placeholder="选择日期"
-              style="width: 300px"
-            />
+          <el-form-item label="标签名称：" prop="labelName">
+            <el-input v-model="formData.labelName" placeholder="请输入标签名称" autocomplete="off" style="width: 300px">
+              <template #append>
+                <el-color-picker v-model="formData.color" />
+              </template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="标签描述：" prop="colorDescription">
+            <el-input v-model="formData.colorDescription" placeholder="请输入标签描述" autocomplete="off" style="width: 300px" />
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="文档：" label-width="120" prop="attachmentPath">
+
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="创建日期：" prop="createDate">
+            <el-date-picker v-model="formData.createDate" type="date" value-format="YYYY-MM-DD hh:mm:ss"
+              placeholder="选择日期" style="width: 300px" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <!-- <el-form-item label="文档：" label-width="120" prop="attachmentPath">
         <CUplopad
           :type="type"
           ref="CUplopadRef"
           v-model="formData.attachmentPath"
           :file-list="attachmentPaths"
         />
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
   </v-dialog>
 </template>

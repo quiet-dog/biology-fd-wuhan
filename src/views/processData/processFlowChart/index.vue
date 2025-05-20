@@ -44,6 +44,17 @@
         <el-button type="primary" :icon="Plus" @click="openDialog('add')"
           >新增</el-button
         >
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <el-dropdown>
+          <el-button type="warning" :icon="Download" >导出</el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="exportClick('excel')">excel</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('word')">word</el-dropdown-item>
+              <el-dropdown-item @click="exportClick('pdf')">pdf</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
@@ -114,14 +125,17 @@ import {
   processListRes,
   processList,
   addprocessRes,
-  renewprocessRes
+  renewprocessRes,
+  exportProcess
 } from "@/api/processData/processFlowChart";
 import { archiveListRes, archiveList } from "@/api/processData/processArchives";
 import processingFlowchartFormModal from "./processingFlowchart-form-modal.vue";
 import detailFromModal from "./detail-from-modal.vue";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { Plus, Refresh, Search } from "@element-plus/icons-vue";
+import { Download, Plus, Refresh, Search } from "@element-plus/icons-vue";
+import { exportPersonnel } from "@/api/personnelData/personnelProfile";
+import { ExportDownload, ExportPdfDownload, ExportWordDownload } from "@/utils/exportdownload";
 
 const tableRef = ref();
 const columns: TableColumnList = [
@@ -246,6 +260,25 @@ const onSearch = tableRef => {
   archiveListFun();
   // 点击搜索的时候，需要重置排序，重新排序的时候会重置分页并发起查询请求
   tableRef.getTableRef();
+};
+
+const exportClick = (type: string) => {
+  pageLoading.value = true;
+
+  CommonUtils.fillSortParams(searchFormParams, sortState.value);
+  CommonUtils.fillPaginationParams(searchFormParams, pagination);
+
+  exportProcess(
+    toRaw({ ...searchFormParams,exportType: type })
+  ).then(res => {
+    if (type == "pdf") {
+      ExportPdfDownload(res, "工艺流程图档案");
+    } else if (type == "word") {
+      ExportWordDownload(res, "工艺流程图档案");
+    } else {
+      ExportDownload(res, "工艺流程图档案");
+    }
+  });
 };
 
 onMounted(() => {
