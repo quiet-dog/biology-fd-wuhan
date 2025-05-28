@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 // import { noticesData } from "./data";
 import NoticeList from "./noticeList.vue";
 import Bell from "@iconify-icons/ep/bell";
+import { debounce, throttle } from 'lodash'
 import {
   notificationInfo,
   notificationList,
@@ -70,27 +71,27 @@ const personalNoticesNum = ref(0);
 const unreadSysNoticesNum = ref(0);
 const unreadPersonalNoticesNum = ref(0);
 const sysReq = ref({
-      notificationTitle: "",
-      notificationType: "",
-      orderColumn: "createTime",
-      orderDirection: "descending",
-      pageNum: 1,
-      pageSize: 10,
-      isPersonal: false, // 系统通知
-      userId:getToken().currentUser.userInfo.userId,
-      isNotRead:true
+  notificationTitle: "",
+  notificationType: "",
+  orderColumn: "createTime",
+  orderDirection: "descending",
+  pageNum: 1,
+  pageSize: 10,
+  isPersonal: false, // 系统通知
+  userId: getToken().currentUser.userInfo.userId,
+  isNotRead: true
 })
 const perReq = ref({
-      notificationTitle: "",
-      notificationType: "",
-      orderColumn: "createTime",
-      orderDirection: "descending",
-      pageNum: 1,
-      pageSize: 10,
-      isPersonal: true, // 个人通知
-      userId:getToken().currentUser.userInfo.userId,
-      isNotRead:true
-    })
+  notificationTitle: "",
+  notificationType: "",
+  orderColumn: "createTime",
+  orderDirection: "descending",
+  pageNum: 1,
+  pageSize: 10,
+  isPersonal: true, // 个人通知
+  userId: getToken().currentUser.userInfo.userId,
+  isNotRead: true
+})
 const getNotices = async () => {
   try {
     // 获取系统通知
@@ -153,7 +154,7 @@ const getNotices = async () => {
 const eventInfo = ref({})
 const inspectionInfo = ref({})
 const isIn = ref(false)
-const inspectionResult =ref("")
+const inspectionResult = ref("")
 const getEventInfo = (item) => {
   // alarmEventsInfo()
   if (item.eventId != null && item.eventId > 0) {
@@ -162,13 +163,13 @@ const getEventInfo = (item) => {
     }).catch(err => {
 
     })
-  } 
+  }
   if (item.inspectionRecordId != null && item.inspectionRecordId > 0) {
     dailyInspectionInfo(item.inspectionRecordId).then(res => {
       inspectionInfo.value = res.data
       eventInfo.value.type = "日常巡检"
       inspectionResult.value = res.data.inspectionResult
-     
+
     })
   }
 
@@ -204,16 +205,21 @@ function scrollChange(data) {
     console.error("sysNoticesNum.value", sysNoticesNum.value)
     console.error("notices.value[0].list.length", notices.value[0].list.length)
     if (data.scrollTop >= 70 * notices.value[0].list.length && sysReq.value.pageNum < Math.ceil(unreadSysNoticesNum.value / sysReq.value.pageSize)) {
-      sysReq.value.pageNum += 1;
-      getNotices();
+      throttle(() => {
+        sysReq.value.pageNum += 1;
+        getNotices();
+      }, 1000)();
     }
   } else {
-    if (data.scrollTop >= 70 * notices.value[1].list.length&& perReq.value.pageNum < Math.ceil(unreadPersonalNoticesNum.value / perReq.value.pageSize)) {
-      perReq.value.pageNum += 1;
-      getNotices();
+    if (data.scrollTop >= 70 * notices.value[1].list.length && perReq.value.pageNum < Math.ceil(unreadPersonalNoticesNum.value / perReq.value.pageSize)) {
+      // getNotices();
+      throttle(() => {
+        perReq.value.pageNum += 1;
+        getNotices();
+      }, 1000)();
     }
   }
-  
+
 }
 
 defineExpose({
@@ -237,7 +243,7 @@ defineExpose({
           <el-empty v-if="notices?.length === 0" description="暂无消息" :image-size="60" />
           <span v-else>
             <template v-for="item in notices" :key="item.key">
-              <el-popover  placement="left-start" trigger="click" :width="300">
+              <el-popover placement="left-start" trigger="click" :width="300">
                 <el-descriptions title="信息" :column="1">
                   <template v-if="eventInfo.type == '设备报警' || eventInfo.type == '工艺节点报警'">
                     <el-descriptions-item label="报警编号">{{ eventInfo?.eventId }}</el-descriptions-item>
@@ -261,10 +267,10 @@ defineExpose({
                     <el-descriptions-item label="类型">{{ eventInfo?.type }}</el-descriptions-item>
                     <el-descriptions-item label="报警描述">{{ eventInfo?.description }}</el-descriptions-item>
                     <el-descriptions-item label="环境描述">{{ eventInfo?.environment?.description + "-" +
-                      eventInfo?.environment?.unitName}}</el-descriptions-item>
+                      eventInfo?.environment?.unitName }}</el-descriptions-item>
                     <el-descriptions-item label="环境区域">{{ eventInfo?.environment?.earea }}</el-descriptions-item>
                   </template>
-                  <template v-if="eventInfo.type='日常巡检'">
+                  <template v-if="eventInfo.type = '日常巡检'">
                     <el-descriptions-item label="巡检编号">{{ inspectionInfo?.recordId }}</el-descriptions-item>
                     <el-descriptions-item label="巡检人">{{ inspectionInfo?.inspector }}</el-descriptions-item>
                     <el-descriptions-item label="巡检时间">{{ inspectionInfo?.inspectionDate }}</el-descriptions-item>
@@ -272,7 +278,7 @@ defineExpose({
                     <el-descriptions-item label="异常说明">{{ inspectionInfo?.anomalyDescription }}</el-descriptions-item>
                     <el-descriptions-item label="异常数">{{ inspectionInfo?.anomalyCount }}</el-descriptions-item>
                     <el-descriptions-item label="巡检结果">
-                      <ElInput  @change="submitResult" v-model="inspectionResult"  placeholder="输入回车进行提交" />
+                      <ElInput @change="submitResult" v-model="inspectionResult" placeholder="输入回车进行提交" />
                     </el-descriptions-item>
                   </template>
                 </el-descriptions>
@@ -289,7 +295,7 @@ defineExpose({
                   </el-tab-pane>
                 </template>
               </el-popover>
-              
+
 
             </template>
           </span>
