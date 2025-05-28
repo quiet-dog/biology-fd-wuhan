@@ -40,3 +40,9 @@ export const updateNotification = (notificationId: number, data: any) => {
     data
   });
 };
+
+export const createAppNotification = (data: any) => {
+  return http.request("post", "/manage/notification", {
+    data
+  });
+}

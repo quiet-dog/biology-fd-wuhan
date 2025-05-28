@@ -48,6 +48,10 @@
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
     >
+
+    <template #buttons>
+      <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
+    </template>
       <template v-slot="{ size, dynamicColumns }">
         <pure-table
           ref="tableRef"
@@ -116,6 +120,7 @@
       </template>
     </PureTableBar>
     <detailFromModal ref="detailRef" @list="archiveListFun" />
+    <AddFormModal v-model="AddModalVisible" />
   </div>
 </template>
 
@@ -132,10 +137,12 @@ import {
 import detailFromModal from "./detail-from-modal.vue";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { Refresh, Search, Star, StarFilled } from "@element-plus/icons-vue";
+import { Plus, Refresh, Search, Star, StarFilled } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { ElMessage, ElMessageBox } from "element-plus";
+import AddFormModal from "./add-from-modal.vue";
 
+const AddModalVisible = ref(false);
 const tableRef = ref();
 const timeRange = computed<[string, string] | null>({
   get() {
@@ -286,6 +293,13 @@ const onSearch = tableRef => {
   // 点击搜索的时候，需要重置排序，重新排序的时候会重置分页并发起查询请求
   tableRef.getTableRef().sort("createTime", "ascending");
 };
+
+const opType = ref("add");
+function openDialog(type: "add") {
+  opType.value = type;
+  AddModalVisible.value = true;
+}
+
 
 onMounted(() => {
   archiveListFun();

@@ -69,45 +69,48 @@ const personalNoticesNum = ref(0);
 // 添加未读消息数量的引用
 const unreadSysNoticesNum = ref(0);
 const unreadPersonalNoticesNum = ref(0);
-
-const getNotices = async () => {
-  try {
-    // 获取系统通知
-    const sysRes = await notificationList({
+const sysReq = ref({
       notificationTitle: "",
       notificationType: "",
       orderColumn: "createTime",
       orderDirection: "descending",
       pageNum: 1,
-      pageSize: 1000,
+      pageSize: 10,
       isPersonal: false, // 系统通知
       userId:getToken().currentUser.userInfo.userId,
       isNotRead:true
-    });
-
-    // 获取个人通知
-    const personalRes = await notificationList({
+})
+const perReq = ref({
       notificationTitle: "",
       notificationType: "",
       orderColumn: "createTime",
       orderDirection: "descending",
       pageNum: 1,
-      pageSize: 1000,
+      pageSize: 10,
       isPersonal: true, // 个人通知
       userId:getToken().currentUser.userInfo.userId,
       isNotRead:true
-    });
+    })
+const getNotices = async () => {
+  try {
+    // 获取系统通知
+    const sysRes = await notificationList(sysReq.value);
+
+    // 获取个人通知
+    const personalRes = await notificationList(perReq.value);
 
     const sysData = sysRes.data;
     const personalData = personalRes.data;
 
     // 分别计算系统和个人未读消息数量
-    unreadSysNoticesNum.value = sysData.rows.filter(
-      v => v.readStatus === 0
-    ).length;
-    unreadPersonalNoticesNum.value = personalData.rows.filter(
-      v => v.readStatus === 0
-    ).length;
+    // unreadSysNoticesNum.value = sysData.rows.filter(
+    //   v => v.readStatus === 0
+    // ).length;
+    // unreadPersonalNoticesNum.value = personalData.rows.filter(
+    //   v => v.readStatus === 0
+    // ).length;
+    unreadSysNoticesNum.value = sysData.total
+    unreadPersonalNoticesNum.value = personalData.total;
 
     // 总未读消息数量
     noticesNum.value =
@@ -194,6 +197,25 @@ const handleRead = async (key: number) => {
   await getNotices();
 };
 
+function scrollChange(data) {
+  console.error("data", data, activeKey.value)
+  if (activeKey.value === "1") {
+    console.error("sysReq.value.pageNum", sysReq.value.pageNum, Math.ceil(sysNoticesNum.value / sysReq.value.pageSize))
+    console.error("sysNoticesNum.value", sysNoticesNum.value)
+    console.error("notices.value[0].list.length", notices.value[0].list.length)
+    if (data.scrollTop >= 70 * notices.value[0].list.length && sysReq.value.pageNum < Math.ceil(unreadSysNoticesNum.value / sysReq.value.pageSize)) {
+      sysReq.value.pageNum += 1;
+      getNotices();
+    }
+  } else {
+    if (data.scrollTop >= 70 * notices.value[1].list.length&& perReq.value.pageNum < Math.ceil(unreadPersonalNoticesNum.value / perReq.value.pageSize)) {
+      perReq.value.pageNum += 1;
+      getNotices();
+    }
+  }
+  
+}
+
 defineExpose({
   getNotices
 })
@@ -259,7 +281,7 @@ defineExpose({
                     ? unreadSysNoticesNum
                     : unreadPersonalNoticesNum
                     })`" :name="`${item.key}`">
-                    <el-scrollbar max-height="330px">
+                    <el-scrollbar @scroll="scrollChange" max-height="330px">
                       <div class="noticeList-container">
                         <NoticeList @getInfo="getEventInfo" :list="item.list" @read="handleRead" />
                       </div>

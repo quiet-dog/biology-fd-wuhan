@@ -642,7 +642,11 @@ const toPath = (item) => {
             width: '100%',
             padding: '21px 24px'
           }">
-            <div @click="kuaisuShow = true">快速导航</div>
+              <div @click="kuaisuShow = true">快速导航 
+              &nbsp;&nbsp;
+              <el-icon style="vertical-align: middle">
+                <Search />
+              </el-icon></div>
             <div class="home_bl">
               <div v-for="item in routerList" :key="item.name" @click="routerClick(item)">
                 <img :src="item.back" alt="" />
@@ -685,7 +689,7 @@ const toPath = (item) => {
                     " />
                   <el-tag v-if="item.type" type="primary" size="small">{{
                     item.type
-                  }}</el-tag>
+                    }}</el-tag>
                   <el-tooltip class="box-item" effect="dark" :content="item.content" placement="top">
                     <span style="
                         white-space: nowrap;

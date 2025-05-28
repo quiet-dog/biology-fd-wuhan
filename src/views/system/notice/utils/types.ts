@@ -8,6 +8,7 @@ interface AddNoticeRequest {
   status: string;
   /** 备注 */
   noticeContent: string;
+  importance?: number;
 }
 
 interface FormProps {

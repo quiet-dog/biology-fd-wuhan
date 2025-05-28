@@ -72,18 +72,18 @@
             </el-col>
             </el-row>
 
-          <!-- <el-row>
-        <el-col :span="12">
+          <el-row>
+        <!-- <el-col :span="12">
           <el-form-item label="当前入库量：">
             <el-input v-model="formData.lastStock" autocomplete="off" readonly style="width: 300px" />
           </el-form-item>
-        </el-col>
+        </el-col> -->
         <el-col :span="12">
           <el-form-item label="批次：">
             <el-input v-model="formData.batch" autocomplete="off" readonly style="width: 300px" />
           </el-form-item>
         </el-col>
-      </el-row> -->
+      </el-row>
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="库存信息" name="库存信息">

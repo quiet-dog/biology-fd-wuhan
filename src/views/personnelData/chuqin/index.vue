@@ -30,7 +30,7 @@ const columns: TableColumnList = [
   },
   {
     label: "性别",
-    prop: "sex",
+    prop: "personnel.sex",
   },
   {
     label: "部门",
@@ -90,6 +90,8 @@ function resetForm() {
   // searchFormParams.contact = "";
 
   // 重置 pagination 中的属性
+  searchFormParams.beginTime = dayjs().startOf("day").format("YYYY-MM-DD");
+  searchFormParams.endTime= dayjs().startOf("day").format("YYYY-MM-DD");
   pagination.total = 0;
   pagination.pageSize = 10;
   pagination.currentPage = 1;
@@ -122,9 +124,11 @@ const importRef = ref();
 function openImportDialog() {
   importRef.value.handleOpened();
 }
+const doorDate = ref();
 
 onMounted(() => {
   archiveListFun();
+  doorDate.value = dayjs().startOf("day").valueOf();
 })
 </script>
 
@@ -136,7 +140,7 @@ onMounted(() => {
         <el-input class="!w-[200px]" placeholder="请输入姓名" clearable v-model="searchFormParams.name" />
       </el-form-item>
       <el-form-item label="出勤时间：">
-        <el-date-picker @change="changeDatePicker" v-model="searchFormParams.doorDate" type="date" format="[Week] ww" placeholder="请选择日期" />
+        <el-date-picker @change="changeDatePicker" v-model="doorDate" type="date"  placeholder="请选择日期" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
