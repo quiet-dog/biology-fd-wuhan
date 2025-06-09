@@ -36,6 +36,14 @@
           <el-option label="损坏" value="损坏" />
         </el-select>
       </el-form-item>
+      <el-form-item label="物料名称：">
+        <el-input
+          class="!w-[200px]"
+          placeholder="请输入物料名称"
+          clearable
+          v-model="searchFormParams.materialsName"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="archiveListFun"
           >搜索</el-button
@@ -212,7 +220,8 @@ const searchFormParams = reactive<reportListRes>({
   reporterName: "",
   reportType: "",
   pageNum: 1,
-  pageSize: 10
+  pageSize: 10,
+  materialsName: "",
 });
 
 const pagination: PaginationProps = {

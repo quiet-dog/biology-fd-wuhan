@@ -101,6 +101,9 @@ importers:
       sortablejs:
         specifier: ^1.15.0
         version: 1.15.6
+      ts-debounce-throttle:
+        specifier: ^1.0.0
+        version: 1.0.0
       typeit:
         specifier: ^8.7.1
         version: 8.8.7
@@ -2560,8 +2563,8 @@ packages:
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
-  jessibuca@https://codeload.github.com/langhuihui/jessibuca/tar.gz/f83792348ea661b4672e28d692a8125edb7d510f:
-    resolution: {tarball: https://codeload.github.com/langhuihui/jessibuca/tar.gz/f83792348ea661b4672e28d692a8125edb7d510f}
+  jessibuca@https://codeload.github.com/langhuihui/jessibuca/tar.gz/0d6dbcccefbd2ea5c9a4f9347dbcf753450e5a01:
+    resolution: {tarball: https://codeload.github.com/langhuihui/jessibuca/tar.gz/0d6dbcccefbd2ea5c9a4f9347dbcf753450e5a01}
     version: 3.3.19
     peerDependencies:
       postcss: ^8.1.6
@@ -4150,6 +4153,10 @@ packages:
   trim-newlines@4.1.1:
     resolution: {integrity: sha512-jRKj0n0jXWo6kh62nA5TEh3+4igKDXLvzBJcPpiizP7oOolUrYIxmVBG9TOtHYFHoddUk6YvAkGeGoSVTXfQXQ==}
     engines: {node: '>=12'}
+
+  ts-debounce-throttle@1.0.0:
+    resolution: {integrity: sha512-c1zNeawifC4TgB4xmHyHiUUag/Mc/27iag/iok4lBV2M3BCRF3KkzNSdqak1+uAJyLrGKJ1dMQ2TN5Pi+gyuqQ==}
+    engines: {node: '>=4.0.0'}
 
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
@@ -6997,7 +7004,7 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
-  jessibuca@https://codeload.github.com/langhuihui/jessibuca/tar.gz/f83792348ea661b4672e28d692a8125edb7d510f(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5)):
+  jessibuca@https://codeload.github.com/langhuihui/jessibuca/tar.gz/0d6dbcccefbd2ea5c9a4f9347dbcf753450e5a01(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5)):
     dependencies:
       element-plus: 2.2.25(vue@3.5.13(typescript@4.9.5))
       postcss: 8.5.3
@@ -8578,6 +8585,8 @@ snapshots:
 
   trim-newlines@4.1.1: {}
 
+  ts-debounce-throttle@1.0.0: {}
+
   ts-interface-checker@0.1.13: {}
 
   ts-node@10.9.2(@types/node@20.5.1)(typescript@4.9.5):
@@ -8771,7 +8780,7 @@ snapshots:
   vue-cli-plugin-jessibuca@0.0.2(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5)):
     dependencies:
       html-webpack-tags-plugin: 2.0.17
-      jessibuca: https://codeload.github.com/langhuihui/jessibuca/tar.gz/f83792348ea661b4672e28d692a8125edb7d510f(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5))
+      jessibuca: https://codeload.github.com/langhuihui/jessibuca/tar.gz/0d6dbcccefbd2ea5c9a4f9347dbcf753450e5a01(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5))
     transitivePeerDependencies:
       - '@vue/composition-api'
       - postcss

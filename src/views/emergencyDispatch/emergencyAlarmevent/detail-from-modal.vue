@@ -157,9 +157,9 @@ const formRef = ref<FormInstance>();
 
 const downloadFile = item => {
   // 如果没有包含 补上
-  if (!item.path.includes("/upload/")) {
-    item.path = "/upload/" + item.path;
-  }
+  // if (!item.path.includes("/upload/")) {
+  //   item.path = "/upload/" + item.path;
+  // }
 
   axios
     .get(`${defaultConfig.baseURL}/file/preview`+item.path, {
@@ -279,9 +279,9 @@ function getShortFileName(fileName: string): string {
 const previewVisible = ref(false);
 const previewVisibleUrl = ref("");
 const getPreviewUrl = item => {
-   if (item.path[0] === "/") {
-    item.path = item.path.substring(1);
-  }
+  //  if (item.path[0] === "/") {
+  //   item.path = item.path.substring(1);
+  // }
   previewVisibleUrl.value = item.path
   previewVisible.value = true;
 };

@@ -1,41 +1,21 @@
 <template>
-  <v-detail-dialog
-    show-full-screen
-    :fixed-body-height="false"
-    use-body-scrolling
-    :is-show-confirm="false"
-    title="环境数据分析"
-    v-model="visible"
-    :disableFooter="true"
-    @cancel="cancelConfirm"
-    @opened="handleOpened"
-  >
+  <v-detail-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :is-show-confirm="false"
+    title="环境数据分析" v-model="visible" :disableFooter="true" @cancel="cancelConfirm">
     <el-form :model="formData" class="form-container">
       <div class="form-row">
         <el-form-item label="描述：" class="form-item">
-          <el-select
-            v-model="formData.detectionId"
-            placeholder="请选择描述"
-            @change="selectChange"
-            style="width: 240px"
-          >
-            <el-option
-              v-for="item in dataList"
-              :key="item.detectionId"
-              :label="`${item.environment.description} - ${item.environment.unitName}`"
-              :value="item.detectionId"
-            />
+          <el-select v-model="formData.detectionId" placeholder="请选择描述" @change="selectChange" style="width: 240px">
+            <div v-infinite-scroll="loadArchiveListFun">
+              <el-option v-for="item in dataList" :key="item.detectionId"
+                :label="`${item.environment.description} - ${item.environment.unitName}`" :value="item.detectionId" />
+            </div>
+
           </el-select>
         </el-form-item>
 
         <el-form-item label="日期：" class="form-item">
-          <el-date-picker
-            v-model="formData.timeRange"
-            type="date"
-            placeholder="选择日期"
-            value-format="YYYY-MM-DD"
-            @change="handleTimeChange"
-          />
+          <el-date-picker v-model="formData.timeRange" type="date" placeholder="选择日期" value-format="YYYY-MM-DD"
+            @change="handleTimeChange" />
         </el-form-item>
       </div>
     </el-form>
@@ -97,7 +77,7 @@ const formData = ref({
 });
 
 const form = ref({
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
 
@@ -119,6 +99,11 @@ interface DetectionResponse {
   };
 }
 
+const loadArchiveListFun = () => {
+  form.value.pageNum++;
+  archiveListFun();
+}
+
 const archiveListFun = async () => {
   const { data } = (await detectionList({
     ...form.value,
@@ -126,12 +111,18 @@ const archiveListFun = async () => {
     tag: ""
   })) as DetectionResponse;
   const uniqueMap = new Map();
-  data.rows.forEach(item => {
-    if (!uniqueMap.has(item.environment.description)) {
-      uniqueMap.set(item.environment.description, item);
-    }
-  });
-  dataList.value = Array.from(uniqueMap.values());
+  if (data.rows && data.rows.length > 0) {
+    dataList.value.push(...data.rows.reduce((acc, item) => {
+      if (!uniqueMap.has(item.detectionId)) {
+        uniqueMap.set(item.detectionId, true);
+        acc.push({
+          detectionId: item.detectionId,
+          environment: item.environment
+        });
+      }
+      return acc;
+    }, []));
+  }
 };
 
 const detectionDataFun = async () => {
@@ -165,6 +156,7 @@ const detectionDataFun = async () => {
 
 const handleOpened = async () => {
   visible.value = true;
+  console.log("handleOpened");
   await archiveListFun();
 
   // 默认选中第一个

@@ -19,12 +19,15 @@
           @change="materialsCodeChange"
           style="width: 300px"
         >
+        <div v-infinite-scroll="loadArchiveListFun">
           <el-option
             v-for="item in dataList"
             :key="item.materialsId"
             :label="`${item.name}-${item.code}`"
             :value="item.materialsId"
           />
+        </div>
+         
         </el-select>
       </el-form-item>
       <el-form-item label="时间范围：">
@@ -92,7 +95,7 @@ const option = {
 const form = ref<materialFilesListRes>({
   name: "",
   materialsType: "",
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
 
@@ -102,11 +105,22 @@ const params = ref<any>({
 });
 
 const dataList = ref([]);
+const loadArchiveListFun = () => {
+  form.value.pageNum++;
+  archiveListFun();
+};
 const archiveListFun = async () => {
   const { data } = await materialFilesList(form.value);
-  dataList.value = data.rows;
-  formData.materialsId = data.rows[0].materialsId;
-  unit.value = data.rows[0].unit;
+  if (data.rows && data.rows.length > 0) {
+    dataList.value = [...dataList.value, ...data.rows];
+    if (formData.materialsId == null || formData.materialsId ==0) {
+      formData.materialsId = data.rows[0].materialsId;
+    }
+    if(unit.value == null || unit.value == "") {
+      unit.value = data.rows[0].unit;
+    }
+  }
+  
 };
 
 const materialsCodeChange = async val => {
@@ -157,7 +171,8 @@ const handleOpened = async () => {
   await archiveListFun();
 
   const response = await materialsNameStockNameType({
-    materialsName: dataList.value[0]?.name || "",
+    // materialsName: dataList.value[0]?.name || "",
+    materialsId:formData.materialsId,
     dateType: params.value.dateType
   });
 

@@ -45,13 +45,13 @@ const rules: FormRules = {
   operationDescription: [
     {
       required: true,
-      message: "操作描述不能为空"
+      message: "操作工序不能为空"
     }
   ],
   operationMethod: [
     {
       required: true,
-      message: "操作方法不能为空"
+      message: "操作要求不能为空"
     }
   ],
   requiredTime: [
@@ -139,13 +139,20 @@ const form = ref<archiveListRes>({
   craftArchiveName: "",
   ids: [],
   version: "",
-  pageSize: 10000
+  pageSize: 10,
+  pageNum: 1
 });
 const dataList = ref([]);
+const loadArchiveListFun= () => {
+  form.value.pageNum += 1;
+  archiveListFun();
+};
 const archiveListFun = async () => {
   // @ts-ignore
   const { data } = await archiveList(form.value);
-  dataList.value = data.rows;
+  if (data.rows.length > 0) {
+    dataList.value = [...dataList.value, ...data.rows];
+  }
 };
 
 const archiveinfo = ref({
@@ -155,15 +162,21 @@ const archiveinfo = ref({
   endPurchaseDate: undefined,
   usageStatus: "",
   equipmentType: "",
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
 const dataList2 = ref([]);
 
+const loadEquipmentListFun2 = () => {
+  archiveinfo.value.pageNum++;
+  equipmentListFun2();
+}
 const equipmentListFun2 = async () => {
   // @ts-ignore
   const { data } = await equipmentList(archiveinfo.value);
-  dataList2.value = data.rows;
+  if (data.rows.length > 0) {
+    dataList2.value = [...dataList2.value, ...data.rows];
+  } 
 };
 
 function handleOpened() {
@@ -224,12 +237,14 @@ function handleClosed() {
               style="width: 300px"
               clearable
             >
+            <div v-infinite-scroll="loadArchiveListFun">
               <el-option
                 v-for="item in dataList"
                 :label="item.craftArchiveName"
                 :value="item.craftArchiveId"
                 :key="item.craftArchiveId"
               />
+            </div>
             </el-select>
           </el-form-item>
         </el-col>
@@ -255,32 +270,35 @@ function handleClosed() {
               collapse-tags
               collapse-tags-tooltip
             >
+
+            <div v-infinite-scroll="loadEquipmentListFun2">
               <el-option
                 v-for="item in dataList2"
                 :label="item.equipmentName"
                 :value="item.equipmentId"
                 :key="item.equipmentId"
               />
+            </div>
             </el-select>
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="操作描述：" prop="operationDescription">
+      <el-form-item label="操作工序：" prop="operationDescription">
         <el-input
           v-model="formData.operationDescription"
           type="textarea"
           :rows="2"
-          placeholder="请输入操作描述"
+          placeholder="请输入操作工序"
           autocomplete="off"
           style="width: 760px"
         />
       </el-form-item>
-      <el-form-item label="操作方法：" prop="operationMethod">
+      <el-form-item label="操作要求：" prop="operationMethod">
         <el-input
           v-model="formData.operationMethod"
           type="textarea"
           :rows="2"
-          placeholder="请输入操作方法"
+          placeholder="请输入操作要求"
           autocomplete="off"
           style="width: 760px"
         />

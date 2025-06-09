@@ -122,9 +122,9 @@ const previewVisible = ref(false);
 const previewVisibleUrl = ref("");
 
 const getPreviewUrl = item => {
-   if (item.path[0] === "/") {
-    item.path = item.path.substring(1);
-  }
+  //  if (item.path[0] === "/") {
+  //   item.path = item.path.substring(1);
+  // }
   previewVisibleUrl.value =  item.path;
   previewVisible.value = true;
 };

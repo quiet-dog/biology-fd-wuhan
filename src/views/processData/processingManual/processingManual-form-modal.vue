@@ -97,20 +97,40 @@ const form = ref({
   craftArchiveName: "",
   craftArchiveId: null,
   pageNum: 1,
-  pageSize: 10000
+  pageSize: 10
 });
 
 const archiveDataList = ref([]);
 const nodeDataList = ref([]);
 
+const loadArchiveListFun = () => {
+  form.value.pageNum++;
+  archiveListFun();
+}
 const archiveListFun = async () => {
   const { data } = await archiveList(form.value);
-  archiveDataList.value = data.rows;
+  if (data.rows && data.rows.length > 0) {
+    archiveDataList.value = [...archiveDataList.value, ...data.rows];
+  }
 };
 
+const form2 = ref({
+  pageSize: 10,
+  pageNum: 1,
+  craftNodeId: null,
+  nodeName: "",
+  craftArchiveName: "",
+  craftArchiveId: null
+});
+const loadNodeListFun = () => {
+  form2.value.pageNum++;
+  nodeListFun();
+}
 const nodeListFun = async () => {
-  const { data } = await nodeList(form.value);
-  nodeDataList.value = data.rows;
+  const { data } = await nodeList(form2.value);
+  if (data.rows && data.rows.length > 0) {
+    nodeDataList.value = [...nodeDataList.value, ...data.rows];
+  }
 };
 
 function handleConfirm() {
@@ -176,12 +196,15 @@ function handleClosed() {
               style="width: 300px"
               clearable
             >
+            <div v-infinite-scroll="loadArchiveListFun">
               <el-option
                 v-for="item in archiveDataList"
                 :label="item.craftArchiveName"
                 :value="item.craftArchiveId"
                 :key="item.craftArchiveId"
               />
+
+            </div>
             </el-select>
           </el-form-item>
         </el-col>
@@ -193,12 +216,14 @@ function handleClosed() {
               style="width: 300px"
               clearable
             >
+            <div v-infinite-scroll="loadNodeListFun">
               <el-option
                 v-for="item in nodeDataList"
                 :label="item.nodeName"
                 :value="item.craftNodeId"
                 :key="item.craftNodeId"
               />
+              </div>
             </el-select>
           </el-form-item>
         </el-col>

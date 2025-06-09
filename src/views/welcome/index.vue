@@ -68,6 +68,14 @@ const viewMoreClick = () => {
 
 const nlist = ref([]);
 
+const noticForm = ref({
+  notificationTitle: "",
+  notificationType: "",
+  orderColumn: "createTime",
+  orderDirection: "descending",
+  pageNum: 1,
+  pageSize: 100
+});
 const notificationListFun = async () => {
   // @ts-ignore
   const { data } = await notificationList({
@@ -290,19 +298,42 @@ let isScrollingByWheel = false;
 const startNoticeScroll = () => {
   nextTick(() => {
     const noticeList = noticeListRef.value;
+    // if (noticeList && !isScrollingByWheel) {
+    //   const scrollHeight = noticeList.scrollHeight;
+    //   let currentHeight = noticeList.scrollTop;
+    //   scrollInterval = setInterval(() => {
+    //     if (currentHeight < scrollHeight) {
+    //       currentHeight += 1;
+    //       noticeList.scrollTop = currentHeight;
+    //     } else {
+    //       currentHeight = 0;
+    //       noticeList.scrollTop = 0;
+    //     }
+    //   }, 50);
+    // }
     if (noticeList && !isScrollingByWheel) {
-      const scrollHeight = noticeList.scrollHeight;
-      let currentHeight = noticeList.scrollTop;
-      scrollInterval = setInterval(() => {
-        if (currentHeight < scrollHeight) {
-          currentHeight += 1;
-          noticeList.scrollTop = currentHeight;
-        } else {
-          currentHeight = 0;
-          noticeList.scrollTop = 0;
-        }
-      }, 50);
+  const scrollHeight = noticeList.scrollHeight;
+  let currentHeight = noticeList.scrollTop;
+
+  scrollInterval = setInterval(() => {
+    // 获取容器可视高度
+    const containerHeight = noticeList.clientHeight;
+
+    // 每次向下滚动一点
+    currentHeight += 1;
+    noticeList.scrollTop = currentHeight;
+
+    // 判断是否到底部
+    if (noticeList.scrollTop + containerHeight >= scrollHeight) {
+      notificationListFun();
+      // console.log('已经滚动到底部！触发事件');
+      // 👉 执行你想要的事件（只触发一次可以加标志）
+      
+      // 可选：停止滚动
+      // clearInterval(scrollInterval);
     }
+  }, 50);
+}
   });
 };
 
@@ -518,6 +549,10 @@ const kuaisuSearchChange = (val) => {
 };
 const toPath = (item) => {
   router.push(item);
+}
+
+const loadNotice = () => {
+  
 }
 </script>
 

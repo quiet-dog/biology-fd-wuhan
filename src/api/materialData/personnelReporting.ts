@@ -4,6 +4,7 @@ import { http } from "@/utils/http";
 export interface reportListRes extends BasePageQuery {
   reporterName: string;
   reportType: string;
+  materialsName?: string;
 }
 export function reportList(params: reportListRes) {
   return http.request("get", "/manage/report", { params });

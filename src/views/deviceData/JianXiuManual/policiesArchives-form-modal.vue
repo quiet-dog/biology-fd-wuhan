@@ -92,13 +92,19 @@ const archiveinfo = ref({
   endPurchaseDate: undefined,
   usageStatus: "",
   equipmentType: "",
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
 const dataList = ref([]);
+const loadArchiveListFun = () => {
+  archiveinfo.value.pageNum += 1;
+  archiveListFun();
+};
 const archiveListFun = async () => {
   const { data } = await equipmentList(archiveinfo.value);
-  dataList.value = data.rows;
+  if(data.rows.length > 0) {
+    dataList.value = [...dataList.value, ...data.rows];
+  }
 };
 
 const equipmentChange = async value => {
@@ -145,12 +151,15 @@ function handleClosed() {
               @change="equipmentChange"
               style="width: 300px"
             >
+            <div v-infinite-scroll="loadArchiveListFun">
               <el-option
                 v-for="item in dataList"
                 :key="item.equipmentId"
                 :label="`${item.equipmentName}-${item.equipmentCode}`"
                 :value="item.equipmentId"
               />
+            </div>
+             
             </el-select>
           </el-form-item>
         </el-col>

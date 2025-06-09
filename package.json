@@ -59,6 +59,7 @@
     "qs": "^6.11.2",
     "responsive-storage": "^2.2.0",
     "sortablejs": "^1.15.0",
+    "ts-debounce-throttle": "^1.0.0",
     "typeit": "^8.7.1",
     "vue": "^3.3.4",
     "vue-cli-plugin-jessibuca": "^0.0.2",

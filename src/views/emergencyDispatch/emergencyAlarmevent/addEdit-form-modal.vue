@@ -100,6 +100,16 @@ function handleConfirm() {
     }
   });
 }
+const loadArchive = () => {
+  // console.log("加载更多数据");
+  form.value.pageNum++;
+  archiveListFun();
+}
+
+const loadAlarm = () => {
+  form2.value.pageNum++;
+  archiveListFun2();
+}
 
 const form = ref({
   name: "",
@@ -107,26 +117,30 @@ const form = ref({
   post: "",
   education: "",
   contact: "",
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
 const dataList = ref([]);
 const archiveListFun = async () => {
   const { data } = await personnelList(form.value);
-  dataList.value = data.rows;
+  // dataList.value = data.rows;
+  if (data.rows.length > 0) {
+    dataList.value = [...dataList.value, ...data.rows];
+  } 
 };
 
 const form2 = ref({
   type: "",
   level: "",
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
 const dataList2 = ref([]);
 const archiveListFun2 = async () => {
   const { data } = await alarmInformationList(form2.value);
-  dataList2.value = data.rows;
-  console.log("dataList2", dataList2.value);
+  if (data.rows.length > 0) {
+    dataList2.value = [...dataList2.value, ...data.rows];
+  }
 };
 
 function handleOpened() {
@@ -177,12 +191,14 @@ function handleClosed() {
               v-model="formData.handleIds"
               style="width: 300px"
             >
-              <el-option
+              <div v-infinite-scroll="loadArchive">
+                <el-option
                 v-for="item in dataList"
                 :key="item.personnelId"
                 :label="item.name"
                 :value="item.personnelId"
               />
+              </div>
             </el-select>
           </el-form-item>
         </el-col>
@@ -229,12 +245,14 @@ function handleClosed() {
           v-model="formData.emergencyAlarmIds"
           style="width: 760px"
         >
+        <div v-infinite-scroll="loadAlarm">
           <el-option
             v-for="item in dataList2"
             :key="item.emergencyAlarmId"
             :label="`${item.emergencyAlarmId}-${item.level}-${item.description}`"
             :value="item.emergencyAlarmId"
           />
+        </div>
         </el-select>
       </el-form-item>
     </el-form>

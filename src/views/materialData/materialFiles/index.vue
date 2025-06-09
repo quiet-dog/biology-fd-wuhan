@@ -114,6 +114,10 @@ const columns: TableColumnList = [
     prop: "name"
   },
   {
+    label: "物料规格",
+    prop: "specification"
+  },
+  {
     label: "物料类型",
     prop: "type"
   },

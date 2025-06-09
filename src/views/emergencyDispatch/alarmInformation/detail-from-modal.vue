@@ -62,6 +62,9 @@
           placeholder="请输入报警描述"
           style="width: 730px"
         />
+        <!-- <el-text v-for="item in formData.emergencyAlarmDTOs" truncated>
+          <span>{{ item.description }}</span>
+        </el-text> -->
       </el-form-item>
       <el-form-item label="参考文件：">
         <div class="file_list">
@@ -186,9 +189,9 @@ function getShortFileName(fileName: string): string {
 //下载文件
 const downloadFile = item => {
   // 如果没有包含 补上
-  if (!item.path.includes("/upload/")) {
-    item.path = "/upload/" + item.path;
-  }
+  // if (!item.path.includes("/upload/")) {
+  //   item.path = "/upload/" + item.path;
+  // }
 
   axios
     .get(`${defaultConfig.baseURL}/file/preview`+item.path, {
@@ -230,9 +233,9 @@ const previewVisible = ref(false);
 const previewVisibleUrl = ref("");
 
 const getPreviewUrl = item => {
-   if (item.path[0] === "/") {
-    item.path = item.path.substring(1);
-  }
+  //  if (item.path[0] === "/") {
+  //   item.path = item.path.substring(1);
+  // }
   previewVisibleUrl.value =item.path;
   previewVisible.value = true;
 };

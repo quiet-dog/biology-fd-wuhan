@@ -3,7 +3,6 @@ import { onMounted, ref } from "vue";
 // import { noticesData } from "./data";
 import NoticeList from "./noticeList.vue";
 import Bell from "@iconify-icons/ep/bell";
-import { debounce, throttle } from 'lodash'
 import {
   notificationInfo,
   notificationList,
@@ -17,6 +16,7 @@ import { useUserStore } from "@/store/modules/user";
 import { alarmEventsInfo } from "@/api/alarmPlatform/alarmEvents";
 import { dailyInspectionInfo, renewDailyInspection } from "@/api/deviceData/dailyInspectionRecords";
 import { getToken } from "@/utils/auth";
+import { throttle, debounce } from "ts-debounce-throttle";
 
 // 添加类型定义
 interface NoticeItem {
@@ -151,6 +151,144 @@ const getNotices = async () => {
   }
 };
 
+const getSysNoticesTh = async () => {
+  try {
+    // 获取系统通知
+    const sysRes = await notificationList(sysReq.value);
+
+    // 获取个人通知
+    // const personalRes = await notificationList(perReq.value);
+
+    const sysData = sysRes.data;
+    // const personalData = personalRes.data;
+
+    // 分别计算系统和个人未读消息数量
+    // unreadSysNoticesNum.value = sysData.rows.filter(
+    //   v => v.readStatus === 0
+    // ).length;
+    // unreadPersonalNoticesNum.value = personalData.rows.filter(
+    //   v => v.readStatus === 0
+    // ).length;
+    unreadSysNoticesNum.value = sysData.total
+    // unreadPersonalNoticesNum.value = personalData.total;
+
+    // 总未读消息数量
+    noticesNum.value =
+      unreadSysNoticesNum.value + unreadPersonalNoticesNum.value;
+
+    // 更新通知数量
+    useUserStore().SET_NOTICES_NUM(noticesNum.value);
+    if (notices.value[0] && notices.value[0].list && notices.value[0].list.length > 0) {
+      notices.value[0].list.push(...sysData.rows.map(v => ({
+        key: v.notificationId,
+        title: v.notificationTitle,
+        description: v.notificationContent,
+        type: v.notificationType,
+        datetime: v.sendTime,
+        readStatus: v.readStatus,
+        eventId: v.eventId,
+        inspectionRecordId: v.inspectionRecordId
+      })));
+    } else {
+      // 转换系统通知数据
+      notices.value[0].list = sysData.rows.map(v => ({
+        key: v.notificationId,
+        title: v.notificationTitle,
+        description: v.notificationContent,
+        type: v.notificationType,
+        datetime: v.sendTime,
+        readStatus: v.readStatus,
+        eventId: v.eventId,
+        inspectionRecordId: v.inspectionRecordId
+      }));
+    }
+
+
+
+    // 转换个人通知数据
+    // if (notices.value[1] && notices.value[1].list && notices.value[1].list.length > 0) {
+    //   notices.value[1].list.push(...personalData.rows.map(v => ({
+    //     key: v.notificationId,
+    //     title: v.notificationTitle,
+    //     description: v.notificationContent,
+    //     type: v.notificationType,
+    //     datetime: v.sendTime,
+    //     readStatus: v.readStatus,
+    //     eventId: v.eventId,
+    //     inspectionRecordId: v.inspectionRecordId
+    //   })));
+    // } else {
+    //   notices.value[1].list = personalData.rows.map(v => ({
+    //     key: v.notificationId,
+    //     title: v.notificationTitle,
+    //     description: v.notificationContent,
+    //     type: v.notificationType,
+    //     datetime: v.sendTime,
+    //     readStatus: v.readStatus,
+    //     eventId: v.eventId,
+    //     inspectionRecordId: v.inspectionRecordId
+    //   }));
+    // }
+
+    // 更新分页总数
+    // pagination.total = sysData.total;
+  } catch (error) {
+    console.error("获取通知列表失败:", error);
+  }
+}
+
+const getPerNoticesTh = async () => {
+  try {
+    // 获取个人通知
+    const personalRes = await notificationList(perReq.value);
+
+    const personalData = personalRes.data;
+
+    // 分别计算系统和个人未读消息数量
+    // unreadSysNoticesNum.value = sysData.rows.filter(
+    //   v => v.readStatus === 0
+    // ).length;
+    unreadPersonalNoticesNum.value = personalData.total;
+
+    // 总未读消息数量
+    noticesNum.value =
+      unreadSysNoticesNum.value + unreadPersonalNoticesNum.value;
+
+    // 更新通知数量
+    useUserStore().SET_NOTICES_NUM(noticesNum.value);
+    if (notices.value[1] && notices.value[1].list && notices.value[1].list.length > 0) {
+      notices.value[1].list.push(...personalData.rows.map(v => ({
+        key: v.notificationId,
+        title: v.notificationTitle,
+        description: v.notificationContent,
+        type: v.notificationType,
+        datetime: v.sendTime,
+        readStatus: v.readStatus,
+        eventId: v.eventId,
+        inspectionRecordId: v.inspectionRecordId
+      })));
+    } else {
+      // 转换个人通知数据
+      notices.value[1].list = personalData.rows.map(v => ({
+        key: v.notificationId,
+        title: v.notificationTitle,
+        description: v.notificationContent,
+        type: v.notificationType,
+        datetime: v.sendTime,
+        readStatus: v.readStatus,
+        eventId: v.eventId,
+        inspectionRecordId: v.inspectionRecordId
+      }));
+    }
+
+    console.log("notices",notices.value)
+    // 更新分页总数
+    pagination.total = personalData.total;
+  } catch (error) {
+    console.error("获取通知列表失败:", error);
+  }
+};
+
 const eventInfo = ref({})
 const inspectionInfo = ref({})
 const isIn = ref(false)
@@ -188,7 +326,9 @@ function submitResult(val) {
 
 
 onMounted(async () => {
-  await getNotices();
+  // await getNotices();
+  getPerNoticesTh();
+  getSysNoticesTh();
   console.log("notices", notices);
 });
 
@@ -197,29 +337,64 @@ const handleRead = async (key: number) => {
   await notificationInfo(key);
   await getNotices();
 };
+const noticeListContainerRef = ref()
+
+
 
 function scrollChange(data) {
-  console.error("data", data, activeKey.value)
-  if (activeKey.value === "1") {
-    console.error("sysReq.value.pageNum", sysReq.value.pageNum, Math.ceil(sysNoticesNum.value / sysReq.value.pageSize))
-    console.error("sysNoticesNum.value", sysNoticesNum.value)
-    console.error("notices.value[0].list.length", notices.value[0].list.length)
-    if (data.scrollTop >= 70 * notices.value[0].list.length && sysReq.value.pageNum < Math.ceil(unreadSysNoticesNum.value / sysReq.value.pageSize)) {
-      throttle(() => {
-        sysReq.value.pageNum += 1;
-        getNotices();
-      }, 1000)();
-    }
-  } else {
-    if (data.scrollTop >= 70 * notices.value[1].list.length && perReq.value.pageNum < Math.ceil(unreadPersonalNoticesNum.value / perReq.value.pageSize)) {
-      // getNotices();
-      throttle(() => {
-        perReq.value.pageNum += 1;
-        getNotices();
-      }, 1000)();
-    }
-  }
+  // console.error("data", data, activeKey.value, 75.5 * notices.value[0].list.length)
+  // // 获取noticeListContainerRef高度
+  // console.error("noticeListContainerRef", noticeListContainerRef.value)
+  // // 计算平均高度
+  // debounce(() => {
+  //   if (activeKey.value === "1") {
+  //   const noticeListContainerHeight = (noticeListContainerRef.value[0]?.offsetHeight || 0)- 330;
+  //     const averageHeight = noticeListContainerHeight / notices.value[0].list.length;
+  //     console.error("averageHeight", averageHeight, "noticeListContainerHeight", noticeListContainerHeight)
+  //     if (data.scrollTop >= (averageHeight * notices.value[0].list.length) - 10  && data.scrollTop < noticeListContainerHeight  && sysReq.value.pageNum < Math.ceil(unreadSysNoticesNum.value / sysReq.value.pageSize)) {
+  //       getSysNoticesTh()
+  //     }
+  //   } else {
 
+  //     const noticeListContainerHeight = (noticeListContainerRef.value[1]?.offsetHeight || 0)- 330;
+  //     const averageHeight = noticeListContainerHeight / notices.value[1].list.length;
+  //     if (data.scrollTop >= (averageHeight * notices.value[1].list.length)-2 && data.scrollTop < noticeListContainerHeight&& perReq.value.pageNum < Math.ceil(unreadPersonalNoticesNum.value / perReq.value.pageSize)) {
+  //       getPerNoticesTh();
+  //       // getNotices();
+  //       console.error("sysReq.value.pageNum", sysReq.value.pageNum, Math.ceil(sysNoticesNum.value / sysReq.value.pageSize))
+  //       console.error("sysNoticesNum.value", sysNoticesNum.value)
+  //       console.error("notices.value[0].list.length", notices.value[0].list.length)
+  //       // perReq.value.pageNum += 1;
+  //       // getNoticesTh();
+  //     }
+  //   }
+  // }, 500)()
+
+
+}
+const load = () => {
+  if (activeKey.value === "1") {
+    if (unreadSysNoticesNum.value <= 10) {
+      return
+    }
+    sysReq.value.pageNum += 1;
+    getSysNoticesTh()
+    
+  } else {
+    if (unreadPersonalNoticesNum.value <= 10) {
+      return
+    }
+    perReq.value.pageNum += 1;
+    getPerNoticesTh();
+  }
+}
+
+const tabChange = (val) => {
+  if (activeKey.value == "1") {
+    getSysNoticesTh()
+  } else {
+    getPerNoticesTh();
+  }
 }
 
 defineExpose({
@@ -286,9 +461,9 @@ defineExpose({
                   <el-tab-pane :label="`${item.name}(${item.key === '1'
                     ? unreadSysNoticesNum
                     : unreadPersonalNoticesNum
-                    })`" :name="`${item.key}`">
-                    <el-scrollbar @scroll="scrollChange" max-height="330px">
-                      <div class="noticeList-container">
+                    })`" :name="`${item.key}`" @tab-change="tabChange">
+                    <el-scrollbar   max-height="330px">
+                      <div v-infinite-scroll="load" class="noticeList-container" ref="noticeListContainerRef">
                         <NoticeList @getInfo="getEventInfo" :list="item.list" @read="handleRead" />
                       </div>
                     </el-scrollbar>

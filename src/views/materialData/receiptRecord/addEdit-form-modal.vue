@@ -54,13 +54,19 @@ const rules: FormRules = {
 const form = ref<materialFilesListRes>({
   name: "",
   materialsType: "",
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
 const dataList = ref([]);
+const loadArchiveListFun = () => {
+  form.value.pageNum++;
+  archiveListFun();
+}
 const archiveListFun = async () => {
   const { data } = await materialFilesList(form.value);
-  dataList.value = data.rows;
+  if (data.rows.length > 0) {
+    dataList.value = [...dataList.value, ...data.rows];
+  }
 };
 
 const form2 = ref({
@@ -69,13 +75,19 @@ const form2 = ref({
   post: "",
   education: "",
   contact: "",
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
 const dataList2 = ref([]);
+const loadArchiveListFun2 = () => {
+  form2.value.pageNum++;
+  archiveListFun2();
+}
 const archiveListFun2 = async () => {
   const { data } = await personnelList(form2.value);
-  dataList2.value = data.rows;
+  if (data.rows.length > 0) {
+    dataList2.value = [...dataList2.value, ...data.rows];
+  }
 };
 
 const props = defineProps<Props>();
@@ -174,12 +186,15 @@ const receiveChange = value => {
               v-model="formData.receiveUserId"
               style="width: 300px"
             >
+            <div v-infinite-scroll="loadArchiveListFun2">
               <el-option
                 v-for="item in dataList2"
                 :key="item.personnelId"
                 :label="item.name"
                 :value="item.personnelId"
               />
+            </div>
+             
             </el-select>
           </el-form-item>
         </el-col>
@@ -216,12 +231,15 @@ const receiveChange = value => {
               @change="materialsCodeChange"
               style="width: 300px"
             >
+            <div v-infinite-scroll="loadArchiveListFun">
               <el-option
                 v-for="item in dataList"
                 :key="item.materialsId"
                 :label="`${item.name}--${item.code}--${item.batch}--${item.stock}`"
                 :value="item.materialsId"
               />
+            </div>
+            
             </el-select>
           </el-form-item>
         </el-col>

@@ -115,12 +115,18 @@ const form = ref<equipmentListRes>({
   endPurchaseDate: undefined,
   usageStatus: "",
   equipmentType: "",
-  pageSize: 10000,
+  pageSize: 10,
   pageNum: 1
 });
+const loadArchiveListFun = () => {
+  form.value.pageNum +=1;
+  archiveListFun();
+}
 const archiveListFun = async () => {
   const { data } = await equipmentList(form.value);
-  dataList.value = data.rows;
+  if (data.rows.length > 0) {
+    dataList.value = [...dataList.value, ...data.rows];
+  }
 };
 
 //应急预案列表
@@ -314,12 +320,15 @@ function handleClosed() {
           placeholder="请选择所属设备"
           style="width: 300px"
         >
+        <div v-infinite-scroll="loadArchiveListFun">
           <el-option
             v-for="item in dataList"
             :key="item.equipmentId"
             :label="`${item.equipmentName}-${item.installationLocation}-${item.equipmentCode}`"
             :value="item.equipmentId"
           />
+        </div>
+        
         </el-select>
       </el-form-item>
       <!-- <el-form-item label="应急预案：" prop="emergencyIds">

@@ -7,7 +7,7 @@
         <el-form :model="formData" label-width="100px" ref="formRef">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="领用编号：">
+              <el-form-item label="物料编号：">
                 <el-input v-model="formData.code" autocomplete="off" readonly style="width: 300px" />
               </el-form-item>
             </el-col>
@@ -137,6 +137,9 @@ const handleOpened = (id: number) => {
   visible.value = true;
   materialFilesInfo(id).then(res => {
     formData.value = res.data;
+    getHistoryMaterials(formData.value.materialsId).then(res => {
+      tableList.value = res.data;
+    })
   });
 };
 

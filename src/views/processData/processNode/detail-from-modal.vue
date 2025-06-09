@@ -78,10 +78,10 @@
             </el-col>
             <el-col :span="12" />
           </el-row>
-          <el-form-item label="操作描述：">
+          <el-form-item label="操作工序：">
             <el-input
               v-model="formData.operationDescription"
-              placeholder="请输入操作描述"
+              placeholder="请输入操作工序"
               autocomplete="off"
               :rows="2"
               readonly
@@ -89,10 +89,10 @@
               style="width: 760px"
             />
           </el-form-item>
-          <el-form-item label="操作方法：">
+          <el-form-item label="操作要求：">
             <el-input
               v-model="formData.operationMethod"
-              placeholder="请输入操作方法"
+              placeholder="请输入操作要求"
               autocomplete="off"
               :rows="2"
               readonly
