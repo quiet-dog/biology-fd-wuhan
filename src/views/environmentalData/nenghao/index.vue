@@ -120,7 +120,7 @@ const getValueColorClass = row => {
 
 
    <PureTableBar
-      title="环境监测列表"
+      title="能耗监测列表"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
     >
