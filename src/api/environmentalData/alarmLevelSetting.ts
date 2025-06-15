@@ -3,6 +3,8 @@ import { http } from "@/utils/http";
 export interface detectionListRes extends BasePageQuery {
   description: string;
   tag: string;
+  type?: string;
+  environmentId?: number;
 }
 export function detectionList(params: detectionListRes) {
   return http.request("get", "/manage/detection", { params });
