@@ -72,3 +72,13 @@ export const deleteMoniApi = (moniId: number) => {
     }
   });
 }
+
+
+export const sendDataMoniApi = (moniId: number, data: number) => {
+  return http.request<ResponseData<MoniDTO>>("post", `/manage/moni/send`, {
+    data: {
+      moniId,
+      value: data
+    }
+  });
+}

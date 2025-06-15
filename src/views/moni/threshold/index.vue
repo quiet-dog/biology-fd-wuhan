@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { deleteMoniApi, getMoniApi, MoniDTO, SearchMoniCommand,startMoniApi,stopMoniApi } from '@/api/moni';
+import { deleteMoniApi, getMoniApi, MoniDTO, SearchMoniCommand,startMoniApi,stopMoniApi,sendDataMoniApi } from '@/api/moni';
 import { CommonUtils } from '@/utils/common';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
@@ -108,7 +108,21 @@ function stopMoniApiFunc(row) {
   });
 }
 
-
+const visible = ref(false);
+const sendData = ref(0);
+function cancelSend() {
+  visible.value = false;
+  sendData.value = 0;
+}
+function confirmSend(row) {
+  sendDataMoniApi(row.moniId,sendData.value).then(() => {
+    visible.value = false;
+    sendData.value = 0;
+  }).catch(() => {
+    visible.value = false;
+    sendData.value = 0;
+  });
+}
 
 onMounted(() => {
   archiveListFun();
@@ -145,6 +159,14 @@ onMounted(() => {
             <span v-if="row.pushFrequency >= 0 && row.pushFrequency < 60">{{ row.pushFrequency}}/秒</span>
           </template>
           <template #operation="{ row }">
+            <el-popover :visible="visible" placement="top" :width="180">
+                <el-input-number v-model="sendData"  />
+                <el-button text @click="cancelSend">取消</el-button>
+                <el-button  type="primary" @click="confirmSend(row)">确定</el-button>
+              <template #reference>
+                <el-button @click="visible = true">发送</el-button>
+              </template>
+            </el-popover>
             <el-button
               class="reset-margin"
               link
