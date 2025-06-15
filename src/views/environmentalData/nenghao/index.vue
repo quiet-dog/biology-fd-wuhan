@@ -29,10 +29,10 @@ const defaultSort: Sort = {
 const pageLoading = ref(true);
 const sortState = ref<Sort>(defaultSort);
 const columns: TableColumnList = [
-  {
-    label: "序号",
-    prop: "detectionId"
-  },
+  // {
+  //   label: "序号",
+  //   prop: "detectionId"
+  // },
   {
     label: "描述",
     prop: "environment",
