@@ -152,6 +152,7 @@ function handleClosed() {
   visible.value = false;
   formRef.value?.resetFields();
   tableList.value = [];
+  activeName.value = "物料信息";
 }
 
 const tableList = ref([]);

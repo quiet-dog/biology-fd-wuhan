@@ -70,6 +70,12 @@
           }"
           style="height: auto"
         >
+
+        <template #labelName="{ row }">
+            <el-tag v-if="row.labelName" :color="row.color != undefined ? row.color : '#409eff'">
+              {{ row.labelName }}
+            </el-tag>
+          </template>
           <template #nodeName="{ row }">
             <span
               :style="{
@@ -183,6 +189,15 @@ const columns: TableColumnList = [
     label: "是否为高风险",
     prop: "isHighRisk",
     slot: "isHighRisk"
+  },
+  {
+    label: "标签名称",
+    prop: "labelName",
+    slot: "labelName"
+  },
+  {
+    label: "标签描述",
+    prop: "colorDescription"
   },
   {
     label: "操作",

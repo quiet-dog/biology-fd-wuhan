@@ -325,7 +325,7 @@ const startNoticeScroll = () => {
 
     // 判断是否到底部
     if (noticeList.scrollTop + containerHeight >= scrollHeight) {
-      notificationListFun();
+      // notificationListFun();
       // console.log('已经滚动到底部！触发事件');
       // 👉 执行你想要的事件（只触发一次可以加标志）
       

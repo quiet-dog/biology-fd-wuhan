@@ -42,6 +42,7 @@ export interface AddMaterials {
   supplier?: "";
   color?: string;
   colorDescription?: string;
+  total?: number
 }
 export function addreceive(data: addreceiveRes) {
   return http.request("post", "/manage/receive", { data });

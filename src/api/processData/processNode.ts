@@ -22,6 +22,9 @@ export interface renewnodeRes {
     craftArchiveId: number;
     craftArchiveName: string;
   };
+  color: string;
+  colorDescription: string;
+  labelName: string;
 }
 export function renewnode(data: renewnodeRes) {
   const { craftNodeId, ...other } = data;
@@ -56,6 +59,9 @@ export interface addnodeRes {
   nodeTags: string;
   nodeCode: string;
   equipmentIds: number[];
+  color: string;
+  colorDescription: string;
+  labelName: string;
 }
 export function addnode(data: addnodeRes) {
   return http.request("post", "/manage/craft-node", { data });

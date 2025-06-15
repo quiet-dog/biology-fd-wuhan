@@ -20,6 +20,7 @@ const formData = reactive<AddMaterials>({
   supplier: "",
   color: "#000000",
   colorDescription: "",
+  // total: 0
 });
 interface Props {
   type: "add";
@@ -37,6 +38,12 @@ const visible = computed({
   }
 });
 const rules: FormRules = {
+  // total: [
+  //   {
+  //     required: true,
+  //     message: "可容纳数量不能为空"
+  //   }
+  // ],
   name: [
     {
       required: true,
@@ -152,6 +159,13 @@ function handleClosed() {
     @opened="handleOpened"
     @closed="handleClosed">
     <el-form :model="formData" label-width="130px" :rules="rules" ref="formRef">
+      <!-- <el-row>
+        <el-col :span="12">
+          <el-form-item label="可容纳数量" prop="total">
+            <el-input v-model="formData.total" clearable placeholder="请输入可容纳数量" />
+          </el-form-item>
+        </el-col>
+      </el-row> -->
       <el-row >
         <el-col :span="12">
           <el-form-item label="物料名称" prop="name">
@@ -167,12 +181,12 @@ function handleClosed() {
       <el-row>
         <el-col :span="12">
           <el-form-item label="物料类型" prop="type">
-            <!-- <el-input v-model="formData.type" clearable placeholder="请输入物料类型" /> -->
-             <el-select v-model="formData.type" clearable placeholder="请选择物料类型">
+            <el-input v-model="formData.type" clearable placeholder="请输入物料类型" />
+             <!-- <el-select v-model="formData.type" clearable placeholder="请选择物料类型">
               <el-option label="原材料" value="原材料" />
               <el-option label="半成品" value="半成品" />
               <el-option label="成品" value="成品" />
-              </el-select>
+              </el-select> -->
           </el-form-item>
         </el-col>
         <el-col :span="12">

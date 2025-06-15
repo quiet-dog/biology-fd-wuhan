@@ -33,6 +33,9 @@ export interface archiveListRes extends BasePageQuery {
   version: string;
   ids: number[];
   exportType?: string;
+  labelName?: string;
+  color?: string;
+  colorDescription?: string;
 }
 export function archiveList(params: archiveListRes) {
   return http.request("get", "/manage/craft-archive", { params });

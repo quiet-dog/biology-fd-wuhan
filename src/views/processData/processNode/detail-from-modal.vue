@@ -47,6 +47,35 @@
               </el-form-item>
             </el-col>
           </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="标签名称：">
+                <el-input
+                  v-model="formData.labelName"
+                  placeholder="请输入标签名称"
+                  style="width: 300px"
+                  readonly
+                >
+                  <template #append>
+                    <el-color-picker
+                      v-model="formData.color"
+                    />
+                  </template>
+              </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="标签描述：">
+                <el-input
+                  v-model="formData.colorDescription"
+                  placeholder="请输入标签描述"
+                  style="width: 300px"
+                  readonly
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
           <el-row>
             <el-col :span="12">
               <el-form-item label="所属工艺：" label-width="120">
@@ -229,7 +258,10 @@ const formData = ref<addnodeRes | renewnodeRes>({
   craftArchive: {
     craftArchiveId: null,
     craftArchiveName: ""
-  }
+  },
+  labelName: "",
+  color: "#FFFFFF",
+  colorDescription: ""
 });
 
 const ap = ref({

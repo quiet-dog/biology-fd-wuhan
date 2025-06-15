@@ -21,6 +21,9 @@ const rules: FormRules = {
   ],
   "values.*.value": [
     { required: true, message: "指标数值不能为空", trigger: "blur" }
+  ],
+  "total": [
+    { required: true, message: "可容纳数量不能为空", trigger: "blur" }
   ]
 };
 
@@ -42,6 +45,7 @@ const formData = reactive<renewmaterialFilesRes>({
   unit: "",
   type: "",
   specification: "",
+  total: 0,
   values: [
     {
       materialsValueId: 0,
@@ -87,6 +91,7 @@ function handleConfirm() {
     if (callback) {
       try {
         loading.value = true;
+        formData.total = Number(formData.total);
         await renewmaterialFiles(formData as renewmaterialFilesRes);
         ElMessage.success("提交成功");
         visible.value = false;
@@ -147,7 +152,18 @@ defineExpose({
     @opened="handleOpened"
   >
     <el-form :model="formData" label-width="120px" :rules="rules" ref="formRef">
-      <el-form-item label="级别层级：">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="可容纳数量" prop="total">
+            <el-input
+              v-model="formData.total"
+              clearable
+              placeholder="请输入可容纳数量"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item label="级别层级：" prop="listLight">
         <el-input-number
           v-model="listLight"
           :min="1"
@@ -187,10 +203,10 @@ defineExpose({
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="指标数值：">
+          <el-form-item label="指标百分数：">
             <el-input-number
               v-model="item.value"
-              placeholder="请输入报警数值"
+              placeholder="请输入指标百分数"
               :min="1"
               autocomplete="off"
               style="width: 300px"

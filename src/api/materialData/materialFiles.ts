@@ -19,6 +19,7 @@ export interface renewmaterialFilesRes {
     min: number;
     max: string;
   }[];
+  total?: number;
 }
 export function renewmaterialFiles(data: renewmaterialFilesRes) {
   const { materialsId, ...other } = data;

@@ -297,7 +297,8 @@ function handleClosed() {
         </el-col>
       </el-row>
       <el-form-item label="区域：" prop="earea">
-        <el-select
+        <el-input v-model="formData.earea" placeholder="请输入所在区域"  style="width: 300px" />
+        <!-- <el-select
           v-model="formData.earea"
           filterable
           placeholder="请选择区域"
@@ -314,7 +315,7 @@ function handleClosed() {
           <el-option label="CNC区" value="CNC区" />
           <el-option label="NC区" value="NC区" />
           <el-option label="有毒区" value="有毒区" />
-        </el-select>
+        </el-select> -->
       </el-form-item>
       <!-- <el-form-item label="应急预案：" prop="emergencyIds">
         <el-select
