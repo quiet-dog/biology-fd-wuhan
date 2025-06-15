@@ -6,6 +6,11 @@ export interface detectionListRes extends BasePageQuery {
   type?: string;
   environmentId?: number;
 }
+
+
+export interface nenghapListRes extends BasePageQuery {
+  type?: string;
+}
 export function detectionList(params: detectionListRes) {
   return http.request("get", "/manage/detection", { params });
 }
@@ -30,4 +35,8 @@ export function getNormalMaterails() {
 // /manage/detection/allGroup
 export function allGroup() {
   return http.request("get", "/manage/environment/allGroup");
+}
+
+export function getNenghaoList(params: nenghapListRes) {
+  return http.request("get", "/manage/getNenghao", { params });
 }

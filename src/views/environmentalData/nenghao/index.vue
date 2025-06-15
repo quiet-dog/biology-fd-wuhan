@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { detectionList, detectionListRes } from '@/api/environmentalData/alarmLevelSetting';
+import { getNenghaoList } from '@/api/environmentalData/alarmLevelSetting';
 import { environmentalFilesList, environmentalFilesListRes } from '@/api/environmentalData/environmentalArchives';
 import { CommonUtils } from '@/utils/common';
 import { PaginationProps } from '@pureadmin/table';
@@ -71,6 +71,8 @@ const columns: TableColumnList = [
 const searchFormParams = reactive<detectionListRes>({
   // description: "",
   // tag: ""
+  type: "",
+  environmentId: 0
 });
 
 function resetForm() {
@@ -90,7 +92,7 @@ const archiveListFun = async () => {
   CommonUtils.fillSortParams(searchFormParams, sortState.value);
   CommonUtils.fillPaginationParams(searchFormParams, pagination);
 
-  const { data } = await detectionList(toRaw(searchFormParams)).finally(() => {
+  const { data } = await getNenghaoList(toRaw(searchFormParams)).finally(() => {
     pageLoading.value = false;
   });
   dataList.value = data.rows;
