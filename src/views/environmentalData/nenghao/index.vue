@@ -54,12 +54,12 @@ const columns: TableColumnList = [
     prop: "environment.tag"
   },
   {
-    label: "数值",
+    label: "今日能耗量",
     prop: "value",
     slot: "value"
   },
   {
-    label: "本月使用量",
+    label: "本月能耗量",
     prop: "totalValue",
   },
   {
