@@ -10,6 +10,7 @@ import { onMounted } from 'vue';
 import { toRaw } from 'vue';
 import { h } from 'vue';
 import { ref } from 'vue';
+import { PureTableBar } from "@/components/RePureTableBar";
 
 const tableRef = ref();
 const dataList = ref([]);
