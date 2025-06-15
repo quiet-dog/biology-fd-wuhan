@@ -55,8 +55,8 @@ const columns: TableColumnList = [
   },
   {
     label: "数值",
-    prop: "currentValue",
-    slot: "currentValue"
+    prop: "value",
+    slot: "value"
   },
   {
     label: "本月使用量",
@@ -216,8 +216,8 @@ onMounted(() => {
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">
-          <template #currentValue="{ row }">
-            <span :class="getValueColorClass(row)">{{ row.currentValue }}</span>
+          <template #value="{ row }">
+            <span :class="getValueColorClass(row)">{{ row.value }}</span>
           </template>
           <template #createTime="{ row }">
             <span>{{
