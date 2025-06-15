@@ -40,3 +40,5 @@ export function allGroup() {
 export function getNenghaoList(params: nenghapListRes) {
   return http.request("get", "/manage/detection/getNenghao", { params });
 }
+
+

@@ -66,3 +66,12 @@ export function editenvironmental(data: editenvironmentalRes) {
     data: other
   });
 }
+
+export function exportNenghao(params) {
+  return http.request(
+    "get",
+    "/manage/detection/exportNenghao",
+    { params },
+    { responseType: "blob" }
+  );
+}
