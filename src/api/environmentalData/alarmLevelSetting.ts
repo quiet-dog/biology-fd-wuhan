@@ -38,5 +38,5 @@ export function allGroup() {
 }
 
 export function getNenghaoList(params: nenghapListRes) {
-  return http.request("get", "/manage/getNenghao", { params });
+  return http.request("get", "/manage/environment/getNenghao", { params });
 }
