@@ -159,7 +159,7 @@ onMounted(() => {
             <span v-if="row.pushFrequency >= 0 && row.pushFrequency < 60">{{ row.pushFrequency }}/秒</span>
           </template>
           <template #operation="{ row }">
-            <el-popover :visible="visible" placement="top" :width="180">
+            <el-popover placement="top" :width="180">
                 <el-input-number v-model="sendData"  />
                 <el-button text @click="cancelSend">取消</el-button>
                 <el-button  type="primary" @click="confirmSend(row)">确定</el-button>
