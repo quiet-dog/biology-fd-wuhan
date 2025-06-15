@@ -70,7 +70,7 @@ export function editenvironmental(data: editenvironmentalRes) {
 export function exportNenghao(params) {
   return http.request(
     "get",
-    "/manage/detection/exportNenghao",
+    "/manage/detection/exportNengHao",
     { params },
     { responseType: "blob" }
   );
