@@ -181,10 +181,11 @@ onMounted(() => {
       <el-form-item label="描述：" class="form-item">
           <el-select v-model="searchFormParams.environmentId" placeholder="请选择描述"  style="width: 240px">
            <div v-infinite-scroll="loadArchiveListFun">
+            <!-- {{ row.description }}{{ "--" }}{{ row.unitName }} -->
               <el-option
                 v-for="item in selectDataList"
                 :key="item.environmentId"
-                :label="`${item.equipmentCode}`"
+                :label="`${item.description}--${item.unitName}`"
                 :value="item.environmentId"
               />
             </div>
