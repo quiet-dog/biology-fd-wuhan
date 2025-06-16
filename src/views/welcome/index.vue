@@ -781,7 +781,7 @@ const loadNotice = () => {
               <TuTwo v-if="activeName == '四层'" />
             </ElTabPane>
           </ElTabs> -->
-        <iframe src="http://www.baidu.com" frameborder="0"></iframe>
+        <iframe src="http://10.10.12.5:8011" frameborder="0" style="width: 100%;height: 100%;"></iframe>
         </div>
       </el-card>
       <el-card :body-style="{
