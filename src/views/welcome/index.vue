@@ -328,7 +328,7 @@ const startNoticeScroll = () => {
       // notificationListFun();
       // console.log('已经滚动到底部！触发事件');
       // 👉 执行你想要的事件（只触发一次可以加标志）
-      
+
       // 可选：停止滚动
       // clearInterval(scrollInterval);
     }
@@ -552,7 +552,7 @@ const toPath = (item) => {
 }
 
 const loadNotice = () => {
-  
+
 }
 </script>
 
@@ -677,7 +677,7 @@ const loadNotice = () => {
             width: '100%',
             padding: '21px 24px'
           }">
-              <div @click="kuaisuShow = true">快速导航 
+              <div @click="kuaisuShow = true">快速导航
               &nbsp;&nbsp;
               <el-icon style="vertical-align: middle">
                 <Search />
@@ -781,7 +781,7 @@ const loadNotice = () => {
               <TuTwo v-if="activeName == '四层'" />
             </ElTabPane>
           </ElTabs> -->
-        <iframe src="http://www.baidu.com" frameborder="0"></iframe>
+        <iframe src="http://10.10.12.5:8011" style="width: 100%;height: 100%;" frameborder="0"></iframe>
         </div>
       </el-card>
       <el-card :body-style="{
