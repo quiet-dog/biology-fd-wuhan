@@ -767,7 +767,7 @@ const loadNotice = () => {
           <span>车间平面图</span>
         </div>
         <div class="home_bb">
-          <ElTabs v-model="activeName" style="margin: 0 30px">
+          <!-- <ElTabs v-model="activeName" style="margin: 0 30px">
             <ElTabPane label="一层" name="一层">
               <TuOne v-if="activeName == '一层'" />
             </ElTabPane>
@@ -780,7 +780,8 @@ const loadNotice = () => {
             <ElTabPane label="四层" name="四层">
               <TuTwo v-if="activeName == '四层'" />
             </ElTabPane>
-          </ElTabs>
+          </ElTabs> -->
+        <iframe src="http://www.baidu.com" frameborder="0"></iframe>
         </div>
       </el-card>
       <el-card :body-style="{

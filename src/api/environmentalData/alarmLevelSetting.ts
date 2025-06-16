@@ -1,10 +1,11 @@
 import { http } from "@/utils/http";
 //获取报警级别列表
 export interface detectionListRes extends BasePageQuery {
-  description: string;
-  tag: string;
+  description?: string;
+  tag?: string;
   type?: string;
   environmentId?: number;
+  dayType?: string;
 }
 
 
@@ -40,5 +41,11 @@ export function allGroup() {
 export function getNenghaoList(params: nenghapListRes) {
   return http.request("get", "/manage/detection/getNenghao", { params });
 }
+
+
+export function getTongJiNenghaoApi(params: detectionListRes) {
+  return http.request("get", "/manage/detection/getTongJiNenghao", { params });
+}
+
 
 

@@ -4,19 +4,19 @@
     <el-form :model="formData" class="form-container">
       <div class="form-row">
         <el-form-item label="描述：" class="form-item">
-          <el-select v-model="formData.detectionId" placeholder="请选择描述" @change="selectChange" style="width: 240px">
+          <el-select v-model="formData.environmentId" placeholder="请选择描述" @change="selectChange" style="width: 240px">
             <div v-infinite-scroll="loadArchiveListFun">
-              <el-option v-for="item in dataList" :key="item.detectionId"
-                :label="`${item.environment.description} - ${item.environment.unitName}`" :value="item.detectionId" />
+              <el-option v-for="item in dataList" :key="item.environmentId"
+                :label="`${item.description} - ${item.unitName}`" :value="item.environmentId" />
             </div>
 
           </el-select>
         </el-form-item>
 
-        <el-form-item label="日期：" class="form-item">
+        <!-- <el-form-item label="日期：" class="form-item">
           <el-date-picker v-model="formData.timeRange" type="date" placeholder="选择日期" value-format="YYYY-MM-DD"
             @change="handleTimeChange" />
-        </el-form-item>
+        </el-form-item> -->
       </div>
     </el-form>
 
@@ -25,12 +25,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { FormInstance } from "element-plus";
+import { ref, onMounted, onUnmounted, reactive, toRaw } from "vue";
+import { FormInstance, Sort } from "element-plus";
 import VDetailDialog from "@/components/VDetailDialog/VDetailDialog.vue";
 import * as echarts from "echarts";
-import { detectionList } from "@/api/environmentalData/alarmLevelSetting";
+import { detectionList, getTongJiNenghaoApi } from "@/api/environmentalData/alarmLevelSetting";
 import dayjs from "dayjs";
+import { environmentalFilesList, environmentalFilesListRes } from "@/api/environmentalData/environmentalArchives";
+import { PaginationProps } from "@pureadmin/table";
+import { CommonUtils } from "@/utils/common";
 
 const visible = ref(false);
 const formRef = ref<FormInstance>();
@@ -47,12 +50,7 @@ const option = {
   },
   tooltip: {},
   xAxis: {
-    type: "time",
-    axisLabel: {
-      formatter: value => {
-        return dayjs(value).format("HH:mm:ss");
-      }
-    }
+    type: 'category',
   },
   yAxis: {
     type: "value",
@@ -63,22 +61,24 @@ const option = {
       name: "数值",
       type: "line",
       data: [],
-      itemStyle: { color: "#409EFF" }
+      itemStyle: { color: "#409EFF" },
     }
   ]
 };
 
 const formData = ref({
-  detectionId: null,
-  beginTime: "",
-  des: "",
-  endTime: "",
-  timeRange: ""
+  // detectionId: null,
+  // beginTime: "",
+  // des: "",
+  // endTime: "",
+  // timeRange: ""
+  dayType: "week",
+  environmentId: 0,
 });
 
 const form = ref({
   pageSize: 10,
-  pageNum: 1,
+  pageNum: 1
 });
 
 const dataList = ref([]);
@@ -100,52 +100,58 @@ interface DetectionResponse {
 }
 
 const loadArchiveListFun = () => {
-  form.value.pageNum++;
+  if(searchFormParams.pageNum * searchFormParams.pageSize >= pagination.total) {
+    return;
+  }
+  searchFormParams.pageNum++;
   archiveListFun();
 }
 
+const searchFormParams = reactive<environmentalFilesListRes>({
+  description: "",
+  tag: "",
+  environmentIds: [],
+  exportType: "pdf",
+  type: ["水", "电"],
+  pageSize: 10,
+  pageNum: 1,
+});
+const defaultSort: Sort = {
+  prop: "createTime",
+  order: "descending"
+};
+const sortState = ref<Sort>(defaultSort);
+const pagination: PaginationProps = {
+  total: 0,
+  pageSize: 10,
+  currentPage: 1,
+  background: true
+};
+
 const archiveListFun = async () => {
-  const { data } = (await detectionList({
-    ...form.value,
-    description: "",
-    tag: ""
-  })) as DetectionResponse;
-  const uniqueMap = new Map();
-  if (data.rows && data.rows.length > 0) {
-    dataList.value.push(...data.rows.reduce((acc, item) => {
-      if (!uniqueMap.has(item.detectionId)) {
-        uniqueMap.set(item.detectionId, true);
-        acc.push({
-          detectionId: item.detectionId,
-          environment: item.environment
-        });
-      }
-      return acc;
-    }, []));
+  CommonUtils.fillSortParams(searchFormParams, sortState.value);
+  CommonUtils.fillPaginationParams(searchFormParams, pagination);
+
+  const { data } = await environmentalFilesList(
+    toRaw(searchFormParams)
+  ).finally(() => {
+  });
+  if (data.rows.length > 0 && dataList.value.length === 0) {
+    dataList.value = [...dataList.value, ...data.rows];
+  } else {
+    dataList.value = data.rows;
   }
+  pagination.total = data.total;
 };
 
 const detectionDataFun = async () => {
-  const currentEnv = dataList.value.find(
-    item => item.detectionId === formData.value.detectionId
-  )?.environment;
-
-  const { data } = (await detectionList({
-    description: currentEnv.description,
-    pageSize: 10000,
-    pageNum: 1,
-    startCreateTime: dayjs(formData.value.beginTime).format("YYYY-MM-DD"),
-    tag: ""
-  })) as DetectionResponse;
-
-  // 过滤出当前环境的数据
-  const filteredData = data.rows
-    .filter(item => item.environmentId === currentEnv.environmentId)
-    .map(item => [item.createTime, item.value])
-    .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
+  const data = await getTongJiNenghaoApi(formData.value)
+  console.log("获取的统计数据：", data);
 
   // 更新图表数据
-  option.series[0].data = filteredData;
+  option.series[0].data = data.data.data
+  // 设置x轴
+  option.xAxis.data = data.data.time;
 
   // 初始化或更新图表
   if (!myChart.value) {
@@ -161,14 +167,14 @@ const handleOpened = async () => {
 
   // 默认选中第一个
   if (dataList.value.length > 0) {
-    formData.value.detectionId = dataList.value[0].detectionId;
+    formData.value.environmentId = dataList.value[0].environmentId;
   }
 
   // 设置默认时间为今天，使用 ISO 格式
   const today = dayjs().format("YYYY-MM-DD");
-  formData.value.timeRange = today;
-  formData.value.beginTime = `${today}T00:00:00.000Z`;
-  formData.value.endTime = `${today}T23:59:59.999Z`;
+  // formData.value.timeRange = today;
+  // formData.value.beginTime = `${today}T00:00:00.000Z`;
+  // formData.value.endTime = `${today}T23:59:59.999Z`;
 
   await detectionDataFun();
 };
@@ -184,22 +190,6 @@ const selectChange = async val => {
   }
 };
 
-const handleTimeChange = val => {
-  if (val) {
-    formData.value.beginTime = `${val} 00:00:00`;
-    formData.value.endTime = `${val} 23:59:59`;
-  } else {
-    // 当清空时间时，设置为今天
-    const today = dayjs().format("YYYY-MM-DD");
-    formData.value.timeRange = today;
-    formData.value.beginTime = `${today} 00:00:00`;
-    formData.value.endTime = `${today}T23:59:59.999Z`;
-  }
-
-  if (formData.value.detectionId) {
-    detectionDataFun();
-  }
-};
 
 // 添加窗口resize监听
 onMounted(() => {

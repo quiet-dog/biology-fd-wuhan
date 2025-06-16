@@ -14,6 +14,7 @@ import { PureTableBar } from "@/components/RePureTableBar";
 import { ExportDownload, ExportPdfDownload, ExportWordDownload } from "@/utils/exportdownload";
 import { Download, Refresh, Search, Upload } from "@element-plus/icons-vue";
 import { computed } from 'vue';
+import analyzeFormModal from "./analyze-from-modal.vue";
 
 const tableRef = ref();
 const dataList = ref([]);
@@ -211,6 +212,11 @@ const timeRange = computed<[string, string] | null>({
   }
 });
 
+const analyzeFormModalRef = ref();
+const analyzeFormModalClick = () => {
+  analyzeFormModalRef.value.handleOpened();
+};
+
 
 onMounted(() => {
   archiveListFun();
@@ -266,9 +272,10 @@ onMounted(() => {
 
     <PureTableBar title="能耗监测列表" :columns="columns" :tableRef="tableRef?.getTableRef()">
       <template #buttons>
-        <!-- <el-button type="primary" @click="analyzeFormModalClick"
-          >环境数据分析</el-button
-        > -->
+
+        <el-button type="primary" @click="analyzeFormModalClick"
+          >能耗数据分析</el-button
+        >
 
          <el-dropdown>
           <el-button type="warning" :icon="Download" >导出</el-button>
@@ -301,6 +308,8 @@ onMounted(() => {
         </pure-table>
       </template>
     </PureTableBar>
+
+    <analyzeFormModal ref="analyzeFormModalRef" />
   </div>
 </template>
 

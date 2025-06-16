@@ -72,7 +72,7 @@
         />
       </el-form-item>
       <el-form-item label="报警信息：" prop="emergencyAlarmIds">
-        <!-- <el-select
+        <el-select
           placeholder="请选择报警信息"
           multiple
           disabled
@@ -85,9 +85,9 @@
             :label="`${item.emergencyAlarmId}-${item.type}`"
             :value="item.emergencyAlarmId"
           />
-        </el-select> -->
+        </el-select>
 
-        <div class="file_list">
+        <!-- <div class="file_list">
           <div
             v-for="(item, index) in paths"
             :key="index"
@@ -116,7 +116,7 @@
               >
             </div>
           </div>
-        </div>
+        </div> -->
       </el-form-item>
     </el-form>
 
