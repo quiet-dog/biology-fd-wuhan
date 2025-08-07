@@ -36,6 +36,10 @@
       @refresh="onSearch"
     >
       <template #buttons>
+        <el-button type="primary" @click="toAnalyzeFormModalClick"
+          >区域环境数据分析</el-button
+        >
+
         <el-button type="primary" @click="analyzeFormModalClick"
           >环境数据分析</el-button
         >
@@ -75,6 +79,7 @@
       </template>
     </PureTableBar>
     <analyzeFormModal ref="analyzeFormModalRef" />
+    <toAnalyzeFormModal ref="toAnalyzeFormModalRef" />
   </div>
 </template>
 
@@ -87,6 +92,7 @@ import {
   detectionList
 } from "@/api/environmentalData/alarmLevelSetting";
 import analyzeFormModal from "./analyze-from-modal.vue";
+import toAnalyzeFormModal from "./to-analyze-from-modal.vue";
 import { Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
 import { Plus, Refresh, Search } from "@element-plus/icons-vue";
@@ -177,6 +183,12 @@ const analyzeFormModalRef = ref();
 const analyzeFormModalClick = () => {
   analyzeFormModalRef.value.handleOpened();
 };
+
+const toAnalyzeFormModalRef = ref();
+const toAnalyzeFormModalClick = () => {
+  toAnalyzeFormModalRef.value.handleOpened();
+};
+
 
 const onSearch = tableRef => {
   archiveListFun();

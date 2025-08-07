@@ -45,15 +45,17 @@ function getUploadFileRef() {
 
 function onRemove(f) {
   // 如果有response字段
+  console.error("onRemove", f,model.value);
   if (f.response) {
     if (model.value.indexOf(f.response.data.fileName) != -1) {
       model.value.splice(model.value.indexOf(f.response.data.fileName), 1);
     }
     return;
   } else {
-    if (model.value.indexOf(f.name) != -1) {
-      model.value.splice(model.value.indexOf(f.name), 1);
-    }
+    // if (model.value.indexOf(f.name) != -1) {
+    //   model.value.splice(model.value.indexOf(f.name), 1);
+    // }
+    model.value = model.value.filter(item => !item.includes(f.name));
   }
 }
 

@@ -116,6 +116,9 @@ importers:
       vue-demi:
         specifier: 0.14.6
         version: 0.14.6(vue@3.5.13(typescript@4.9.5))
+      vue-echarts:
+        specifier: ^7.0.3
+        version: 7.0.3(@vue/runtime-core@3.5.13)(echarts@5.6.0)(vue@3.5.13(typescript@4.9.5))
       vue-i18n:
         specifier: ^10.0.0
         version: 10.0.7(vue@3.5.13(typescript@4.9.5))
@@ -2563,9 +2566,9 @@ packages:
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
-  jessibuca@https://codeload.github.com/langhuihui/jessibuca/tar.gz/0d6dbcccefbd2ea5c9a4f9347dbcf753450e5a01:
-    resolution: {tarball: https://codeload.github.com/langhuihui/jessibuca/tar.gz/0d6dbcccefbd2ea5c9a4f9347dbcf753450e5a01}
-    version: 3.3.19
+  jessibuca@https://codeload.github.com/langhuihui/jessibuca/tar.gz/f32935eedba25adf39d5f61bb287a21966d42c74:
+    resolution: {tarball: https://codeload.github.com/langhuihui/jessibuca/tar.gz/f32935eedba25adf39d5f61bb287a21966d42c74}
+    version: 3.3.21
     peerDependencies:
       postcss: ^8.1.6
 
@@ -4343,6 +4346,17 @@ packages:
   vue-cli-plugin-jessibuca@0.0.2:
     resolution: {integrity: sha512-rwODtOMgf0jksBafBvKi0X5oZ+kN1nvJyCB9xyGMgHKMGgahy6znkGALUOlaEVPJpg2Kdpm88FO5JZeyrI9XOg==}
 
+  vue-demi@0.13.11:
+    resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
     engines: {node: '>=12'}
@@ -4363,6 +4377,16 @@ packages:
       vue: ^3.0.0-0 || ^2.6.0
     peerDependenciesMeta:
       '@vue/composition-api':
+        optional: true
+
+  vue-echarts@7.0.3:
+    resolution: {integrity: sha512-/jSxNwOsw5+dYAUcwSfkLwKPuzTQ0Cepz1LxCOpj2QcHrrmUa/Ql0eQqMmc1rTPQVrh2JQ29n2dhq75ZcHvRDw==}
+    peerDependencies:
+      '@vue/runtime-core': ^3.0.0
+      echarts: ^5.5.1
+      vue: ^2.7.0 || ^3.1.1
+    peerDependenciesMeta:
+      '@vue/runtime-core':
         optional: true
 
   vue-eslint-parser@9.4.3:
@@ -7004,7 +7028,7 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
-  jessibuca@https://codeload.github.com/langhuihui/jessibuca/tar.gz/0d6dbcccefbd2ea5c9a4f9347dbcf753450e5a01(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5)):
+  jessibuca@https://codeload.github.com/langhuihui/jessibuca/tar.gz/f32935eedba25adf39d5f61bb287a21966d42c74(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5)):
     dependencies:
       element-plus: 2.2.25(vue@3.5.13(typescript@4.9.5))
       postcss: 8.5.3
@@ -8780,11 +8804,15 @@ snapshots:
   vue-cli-plugin-jessibuca@0.0.2(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5)):
     dependencies:
       html-webpack-tags-plugin: 2.0.17
-      jessibuca: https://codeload.github.com/langhuihui/jessibuca/tar.gz/0d6dbcccefbd2ea5c9a4f9347dbcf753450e5a01(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5))
+      jessibuca: https://codeload.github.com/langhuihui/jessibuca/tar.gz/f32935eedba25adf39d5f61bb287a21966d42c74(postcss@8.5.3)(vue@3.5.13(typescript@4.9.5))
     transitivePeerDependencies:
       - '@vue/composition-api'
       - postcss
       - vue
+
+  vue-demi@0.13.11(vue@3.5.13(typescript@4.9.5)):
+    dependencies:
+      vue: 3.5.13(typescript@4.9.5)
 
   vue-demi@0.14.10(vue@3.5.13(typescript@4.9.5)):
     dependencies:
@@ -8793,6 +8821,16 @@ snapshots:
   vue-demi@0.14.6(vue@3.5.13(typescript@4.9.5)):
     dependencies:
       vue: 3.5.13(typescript@4.9.5)
+
+  vue-echarts@7.0.3(@vue/runtime-core@3.5.13)(echarts@5.6.0)(vue@3.5.13(typescript@4.9.5)):
+    dependencies:
+      echarts: 5.6.0
+      vue: 3.5.13(typescript@4.9.5)
+      vue-demi: 0.13.11(vue@3.5.13(typescript@4.9.5))
+    optionalDependencies:
+      '@vue/runtime-core': 3.5.13
+    transitivePeerDependencies:
+      - '@vue/composition-api'
 
   vue-eslint-parser@9.4.3(eslint@8.57.1):
     dependencies:

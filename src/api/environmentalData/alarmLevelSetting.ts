@@ -49,3 +49,10 @@ export function getTongJiNenghaoApi(params: detectionListRes) {
 
 
 
+export function getBuTongApi(data) {
+  return http.request("post", "/manage/detection/getBuTong", {
+    data: data
+  });
+}
+
+

@@ -133,7 +133,9 @@ const form2 = ref({
   type: "",
   level: "",
   pageSize: 10,
-  pageNum: 1
+  pageNum: 1,
+  orderColumn: "createTime",
+  orderDirection: "descending",
 });
 const dataList2 = ref([]);
 const archiveListFun2 = async () => {

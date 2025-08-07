@@ -225,4 +225,11 @@
 	}
 }
 
+:9000 {
+	reverse_proxy http://192.168.0.11:9000
+}
+:9001 {
+	reverse_proxy http://192.168.0.11:9001
+}
+
 # Import additional caddy config files in /etc/caddy/conf.d/

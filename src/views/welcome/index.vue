@@ -328,7 +328,7 @@ const startNoticeScroll = () => {
       // notificationListFun();
       // console.log('已经滚动到底部！触发事件');
       // 👉 执行你想要的事件（只触发一次可以加标志）
-      
+
       // 可选：停止滚动
       // clearInterval(scrollInterval);
     }
@@ -552,7 +552,11 @@ const toPath = (item) => {
 }
 
 const loadNotice = () => {
-  
+
+}
+
+function clickToLuanSheng() {
+  window.open("http://10.10.12.5:8011/carshopweb", "_blank");
 }
 </script>
 
@@ -677,7 +681,7 @@ const loadNotice = () => {
             width: '100%',
             padding: '21px 24px'
           }">
-              <div @click="kuaisuShow = true">快速导航 
+              <div @click="kuaisuShow = true">快速导航
               &nbsp;&nbsp;
               <el-icon style="vertical-align: middle">
                 <Search />
@@ -765,6 +769,8 @@ const loadNotice = () => {
       }">
         <div class="home_bt">
           <span>车间平面图</span>
+          &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+          <el-button type="primary" text @click="clickToLuanSheng">进入车间</el-button>
         </div>
         <div class="home_bb">
           <!-- <ElTabs v-model="activeName" style="margin: 0 30px">
@@ -781,7 +787,7 @@ const loadNotice = () => {
               <TuTwo v-if="activeName == '四层'" />
             </ElTabPane>
           </ElTabs> -->
-        <iframe src="http://10.10.12.5:8011" frameborder="0" style="width: 100%;height: 100%;"></iframe>
+        <iframe src="http://10.10.12.5:8011/carshopweb/" frameborder="0" style="width: 100%;height: 100%;"></iframe>
         </div>
       </el-card>
       <el-card :body-style="{

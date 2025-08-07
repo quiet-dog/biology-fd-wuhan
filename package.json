@@ -64,6 +64,7 @@
     "vue": "^3.3.4",
     "vue-cli-plugin-jessibuca": "^0.0.2",
     "vue-demi": "0.14.6",
+    "vue-echarts": "^7.0.3",
     "vue-i18n": "^10.0.0",
     "vue-pdf-embed": "^2.1.1",
     "vue-router": "^4.2.2",

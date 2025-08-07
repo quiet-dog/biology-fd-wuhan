@@ -83,7 +83,7 @@ function getUserList() {
       // 处理用户列表数据
       userList.value = res.data.rows;
       console.log(res.data);
-   
+
   }).catch((error) => {
     console.error("获取用户列表时发生错误:", error);
     ElMessage.error("获取用户列表时发生错误");
@@ -109,11 +109,13 @@ function handleClosed() {
   // personnelId.value = "";
 }
 
-function changeNotiType(value) { 
+function changeNotiType(value) {
   if (value === "通知1") {
     formData.notificationTitle = "系统更新通知";
+    formData.notificationType = "通知"
   } else if (value === "通知2") {
     formData.notificationTitle = "系统公告";
+    formData.notificationType = "提醒"
   }
 }
 
@@ -165,7 +167,7 @@ onMounted(() => {
           </el-form-item>
         </el-col>
         </el-row>
-     
+
     </el-form>
   </v-dialog>
 </template>

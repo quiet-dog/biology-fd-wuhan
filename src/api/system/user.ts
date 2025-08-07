@@ -6,6 +6,7 @@ export interface UserQuery extends BasePageQuery {
   status?: number;
   userId?: number;
   username?: string;
+  userIds?: number[];
 }
 
 /**
