@@ -329,6 +329,7 @@ const startNoticeScroll = () => {
       // console.log('已经滚动到底部！触发事件');
       // 👉 执行你想要的事件（只触发一次可以加标志）
 
+
       // 可选：停止滚动
       // clearInterval(scrollInterval);
     }
