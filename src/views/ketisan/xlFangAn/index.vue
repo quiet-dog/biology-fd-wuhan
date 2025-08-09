@@ -10,6 +10,7 @@ import { PureTableBar } from "@/components/RePureTableBar";
 import addEditFormModal from "./addEdit-form-modal.vue";
 import detailFormModal from "./detai-form-modal.vue";
 
+
 const tableRef = ref();
 const searchFormParams = reactive<XlFangAnListReq>({
   pageNum: 1,

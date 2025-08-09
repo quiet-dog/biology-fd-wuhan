@@ -37,6 +37,8 @@ export interface DialogProps {
   draggable?: boolean;
 
   hiddenFooter?: boolean;
+
+  beforeClose: () => boolean;
 }
 
 export type DialogEmits = {

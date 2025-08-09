@@ -1,20 +1,21 @@
 <script lang='ts' setup>
-import { SmDataListReq } from '@/api/smData/types';
+import { XlArchiveListReq } from '@/api/xlArchive/types';
 import { onMounted, reactive, ref, toRaw } from 'vue';
 import { Plus, Refresh, Search } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { smDataList } from '@/api/smData';
+import { xlArchiveList } from '@/api/xlArchive';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
-import XinDianEchart from "@/components/XinDianEchart/index.vue";
-import HuXiEchart from "@/components/HuXiEchart/index.vue";
+import addEditFormModal from "./addEdit-form-modal.vue";
+import history from './history.vue';
 
 const tableRef = ref();
-const searchFormParams = reactive<SmDataListReq>({
+const historyRef = ref<InstanceType<typeof history>>()
+const searchFormParams = reactive<XlArchiveListReq>({
   pageNum: 1,
   pageSize: 10,
-  smDeviceSn: "",
+  name:""
 });
 const defaultSort: Sort = {
   prop: "createTime",
@@ -31,42 +32,27 @@ const pagination: PaginationProps = {
   background: true
 };
 
+
 const columns: TableColumnList = [
   {
-    label: "序号",
-    prop: "smDataId"
+    label: "人员工号",
+    prop: "jobCode"
   },
   {
-    label: "设备sn号",
-    prop: "deviceSn"
+    label: "人员姓名",
+    prop: "nickname"
   },
   {
-    label: "操作员",
-    prop: "personnelName"
+    label: "账号",
+    prop: "username"
   },
   {
-    label: "心率",
-    prop: "xinlv",
-  },
-  {
-    label: "血氧",
-    prop: "xueYang",
-  },
-  {
-    label: "体温",
-    prop: "temp",
-  },
-  {
-    label: "二氧化碳浓度",
-    prop: "co2",
+    label: "所属部门",
+    prop: "deptName",
   },
   {
     label: "状态",
-    prop: "co2",
-  },
-  {
-    label: "时间",
-    prop: "sendTime",
+    prop: "重点关注",
   },
   {
     label: "操作",
@@ -75,16 +61,13 @@ const columns: TableColumnList = [
     slot: "operation"
   }
 ];
-const xinDianEchartRef = ref<InstanceType<typeof XinDianEchart>>()
-const huXiEchartRef = ref<InstanceType<typeof HuXiEchart>>()
 
 const archiveListFun = async () => {
   pageLoading.value = true;
 
   CommonUtils.fillSortParams(searchFormParams, sortState.value);
   CommonUtils.fillPaginationParams(searchFormParams, pagination);
-  // @ts-expect-error
-  const { data } = await smDataList(toRaw(searchFormParams)).finally(() => {
+  const { data } = await xlArchiveList(toRaw(searchFormParams)).finally(() => {
     pageLoading.value = false;
   });
   dataList.value = data.rows;
@@ -93,7 +76,7 @@ const archiveListFun = async () => {
 
 //重置
 function resetForm() {
-  searchFormParams.smDeviceSn = "";
+  searchFormParams.name = "";
   searchFormParams.beginTime = undefined;
   searchFormParams.endTime = undefined;
 
@@ -111,14 +94,21 @@ const onSearch = tableRef => {
   tableRef.getTableRef();
 };
 
-function handleXinDianDetail(id:number) {
-  xinDianEchartRef.value.handleOpened(id)
+const opType = ref<"add" | "edit">("add");
+const modalVisible = ref(false);
+const opRow = ref()
+function openDialog(type: "add" | "edit", row?) {
+  opType.value = type;
+  modalVisible.value = true;
+  opRow.value = row;
 }
 
-function handleHuXiDetail(id:number) {
-  huXiEchartRef.value.handleOpened(id)
+const detailVisible = ref(false)
+const detailRow = ref()
+function openDetailDialog(row) {
+  detailRow.value = row
+  detailVisible.value = true
 }
-
 onMounted(() => {
   archiveListFun()
 })
@@ -128,18 +118,29 @@ onMounted(() => {
   <div class="main">
     <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
-      <el-form-item label="设备sn号：">
-        <el-input class="!w-[200px]" placeholder="请输入设备sn号" clearable v-model="searchFormParams.smDeviceSn" />
+      <el-form-item label="人员姓名：">
+        <el-input class="!w-[200px]" placeholder="请输入人员姓名" clearable v-model="searchFormParams.name" />
       </el-form-item>
+      <!-- <el-form-item label="设备名称：">
+        <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.name" />
+      </el-form-item>
+      <el-form-item label="所属区域：">
+        <el-input class="!w-[200px]" placeholder="请输入所属区域：" clearable v-model="searchFormParams.area" />
+      </el-form-item>
+      <el-form-item label="设备状态：">
+        <el-options>
+
+        </el-options>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
         <el-button :icon="Refresh" @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
-    <PureTableBar title="设备数据列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
-      <!-- <template #buttons>
+    <PureTableBar title="心理测评方案列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
+      <template #buttons>
         <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
-      </template> -->
+      </template>
 
       <template v-slot="{ size, dynamicColumns }">
         <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
@@ -151,19 +152,17 @@ onMounted(() => {
           }" style="height: auto">
 
           <template #operation="{ row }">
-            <el-button class="reset-margin" link type="primary" :size="size" @click="handleHuXiDetail(row.smDataId)">
-              查看呼吸率
+            <el-button class="reset-margin" link type="primary" :size="size" @click="historyRef.handleOpen(row.userId)">
+              修改
             </el-button>
-            <el-button class="reset-margin" link type="primary" :size="size" @click="handleXinDianDetail(row.smDataId)">
-              查看心电
-            </el-button>
+          
           </template>
         </pure-table>
       </template>
 
     </PureTableBar>
-    <XinDianEchart ref="xinDianEchartRef"/>
-    <HuXiEchart ref="huXiEchartRef"/>
+    <addEditFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)" />
+    <history ref="historyRef" />
   </div>
 </template>
 

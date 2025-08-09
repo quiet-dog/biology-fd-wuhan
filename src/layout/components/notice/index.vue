@@ -17,6 +17,8 @@ import { alarmEventsInfo } from "@/api/alarmPlatform/alarmEvents";
 import { dailyInspectionInfo, renewDailyInspection } from "@/api/deviceData/dailyInspectionRecords";
 import { getToken } from "@/utils/auth";
 import { throttle, debounce } from "ts-debounce-throttle";
+import { storageSession } from "@pureadmin/utils";
+import { TokenDTO } from "@/api/common/login";
 
 // 添加类型定义
 interface NoticeItem {
@@ -32,6 +34,8 @@ interface NoticeGroup {
   name: string;
   list: NoticeItem[];
 }
+
+const userInfo = storageSession().getItem<TokenDTO>("user-info")?.currentUser.userInfo
 
 // 修改notices的类型定义
 const notices = ref<NoticeGroup[]>([
@@ -403,9 +407,9 @@ defineExpose({
 </script>
 
 <template>
-  <el-dropdown trigger="click" placement="bottom-end">
+  <el-dropdown  v-if="userInfo.roleId != 7"  trigger="click" placement="bottom-end">
     <span class="dropdown-badge navbar-bg-hover select-none">
-      <el-badge :value="noticesNum" :max="99">
+      <el-badge  :value="noticesNum" :max="99">
         <span class="header-notice-icon">
           <IconifyIconOffline :icon="Bell" />
         </span>

@@ -6,10 +6,11 @@ import SidebarItem from "./sidebarItem.vue";
 import leftCollapse from "./leftCollapse.vue";
 import { useNav } from "@/layout/hooks/useNav";
 import { responsiveStorageNameSpace } from "@/config";
-import { storageLocal, isAllEmpty } from "@pureadmin/utils";
+import { storageLocal, isAllEmpty, storageSession } from "@pureadmin/utils";
 import { findRouteByPath, getParentPaths } from "@/layout/router/utils";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+import { TokenDTO } from "@/api/common/login";
 
 const route = useRoute();
 const showLogo = ref(
@@ -21,11 +22,15 @@ const showLogo = ref(
 const { device, pureApp, isCollapse, menuSelect, toggleSideBar } = useNav();
 
 const subMenuData = ref([]);
-
+const userInfo = storageSession().getItem<TokenDTO>("user-info")?.currentUser.userInfo
 const menuData = computed(() => {
-  return pureApp.layout === "mix" && device.value !== "mobile"
+
+  let data = pureApp.layout === "mix" && device.value !== "mobile"
     ? subMenuData.value
-    : usePermissionStoreHook().wholeMenus;
+    : usePermissionStoreHook().wholeMenus
+
+
+  return data;
 });
 
 const loading = computed(() =>
@@ -63,6 +68,8 @@ watch(
   }
 );
 
+
+
 onMounted(() => {
   getSubMenuData();
 
@@ -78,38 +85,18 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    v-loading="loading"
-    :class="['sidebar-container', showLogo ? 'has-logo' : '']"
-  >
+  <div v-loading="loading" :class="['sidebar-container', showLogo ? 'has-logo' : '']">
     <Logo v-if="showLogo" :collapse="isCollapse" />
-    <el-scrollbar
-      wrap-class="scrollbar-wrapper"
-      :class="[device === 'mobile' ? 'mobile' : 'pc']"
-    >
-      <el-menu
-        router
-        unique-opened
-        mode="vertical"
-        class="outer-most select-none"
-        :collapse="isCollapse"
-        :default-active="defaultActive"
-        :collapse-transition="false"
-      >
-        <sidebar-item
-          v-for="routes in menuData"
-          :key="routes.path"
-          :item="routes"
-          :base-path="routes.path"
-          class="outer-most select-none"
-        />
+    <el-scrollbar wrap-class="scrollbar-wrapper" :class="[device === 'mobile' ? 'mobile' : 'pc']">
+      <el-menu router unique-opened mode="vertical" class="outer-most select-none" :collapse="isCollapse"
+        :default-active="defaultActive" :collapse-transition="false">
+        <template v-for="routes in menuData" :key="routes.path">
+          <sidebar-item v-if="!(routes.name=='Home' && userInfo.roleId == 7)" :item="routes" :base-path="routes.path" class="outer-most select-none" />
+        </template>
+
       </el-menu>
     </el-scrollbar>
-    <leftCollapse
-      v-if="device !== 'mobile'"
-      :is-active="pureApp.sidebar.opened"
-      @toggleClick="toggleSideBar"
-    />
+    <leftCollapse v-if="device !== 'mobile'" :is-active="pureApp.sidebar.opened" @toggleClick="toggleSideBar" />
   </div>
 </template>
 

@@ -1,6 +1,12 @@
+import { TokenDTO } from "@/api/common/login";
+import { store } from "@/store";
+import { useUserStore } from "@/store/modules/user";
+import { storageSession } from "@pureadmin/utils";
+
 const { VITE_HIDE_HOME } = import.meta.env;
 const Layout = () => import("@/layout/index.vue");
 
+// useUserStore.
 export default {
   path: "/",
   name: "Home",

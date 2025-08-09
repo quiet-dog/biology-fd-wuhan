@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { addXlFangAn } from '@/api/xlFangAn';
+import { addXlFangAn, getXiLiGroup } from '@/api/xlFangAn';
 import { AddXlFangAnReq, XlFangAnRow } from '@/api/xlFangAn/types';
 import { ElMessage, FormRules } from 'element-plus';
 import { computed, reactive, ref } from 'vue';
@@ -7,6 +7,7 @@ import VDialog from "@/components/VDialog/VDialog.vue";
 import { personnelList } from '@/api/personnelData/personnelProfile';
 import { getDeptTree } from '@/api/system/dept';
 import { getUserListApi } from '@/api/system/user';
+import { xlArchiveList } from '@/api/xlArchive';
 
 interface Props {
   type: "add" | "edit";
@@ -63,10 +64,10 @@ async function handleConfirm() {
     loading.value = true;
     if (Array.isArray(formData.userIds) && formData.userIds.length > 0) {
       // formData.userIds = formData.userIds.map(item => {
-        
+
       // })
     }
-   
+
     await addXlFangAn({
       ...formData,
     });
@@ -118,29 +119,42 @@ const lazyLoad = (node, resolve) => {
   console.log("node", node)
   if (node.isLeaf) return resolve([])
   if (level == 0) {
-    getDeptTree().then(res => {
+
+    getXiLiGroup().then(res => {
+      let groups = [];
       // @ts-expect-error
-      markLeafNodes(res.data)
-      resolve(res.data)
-    })
-  } else if (data != undefined && (data.value as string).includes("dept") && data.children.length > 0) {
-    resolve(data.children)
-  } else {
-    getUserListApi({
-      deptId: node.data.id,
-      pageNum: 1,
-      pageSize: 100
-    }).then(res => {
-      resolve(res.data.rows.map(item => {
-        return {
-          label: item.nickname,
-          value:  item.userId,
-          isLeaf: true,
-          children: []
-        }
-      }))
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        // @ts-expect-error
+        res.data.forEach(element => {
+          groups.push({
+            label: element,
+            value: element,
+            children: [],
+            isLeaf: false
+          })
+        });
+      }
+      resolve(groups)
     })
 
+  } else if (data != null && data.value != "") {
+    xlArchiveList({
+      pageNum: 1,
+      pageSize: 1000,
+      deptName: data.value
+    }).then(res => {
+      // @ts-expect-error
+      if (Array.isArray(res.data.rows) && res.data.rows.length > 0) {
+        // @ts-expect-error
+        resolve(res.data.rows.map(e => {
+          return {
+            value: e.userId,
+            label: `${e.nickname}-${e.jobCode}`,
+            isLeaf:true
+          }
+        }))
+      }
+    })
   }
 }
 
@@ -166,8 +180,8 @@ function handleClosed() {
         <el-col :span="12">
           <el-form-item label="参与人员：" prop="userIds">
             <!-- <el-input v-model="formData.userIds" placeholder="请输入设备名称" style="width: 300px" /> -->
-            <el-tree-select  multiple v-model="formData.userIds" lazy :load="lazyLoad"
-              style="width: fit-content" :props="treeProps" />
+            <el-tree-select multiple v-model="formData.userIds" lazy :load="lazyLoad" style="width: fit-content"
+              :props="treeProps" />
           </el-form-item>
         </el-col>
       </el-row>

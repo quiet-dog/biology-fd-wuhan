@@ -12,3 +12,9 @@ export function addXlFangAn(data: AddXlFangAnReq) {
     data
   })
 }
+
+
+export function getXiLiGroup() {
+  return http.request<string[]>("get", `/manage/xlFangAn/getDeptGroup`, {
+  });
+}

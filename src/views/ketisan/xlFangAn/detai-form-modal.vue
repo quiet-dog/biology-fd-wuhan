@@ -5,6 +5,7 @@ import { ElMessage, FormRules } from 'element-plus';
 import { computed, reactive, ref } from 'vue';
 import VDialog from "@/components/VDialog/VDialog.vue";
 import { getUserListApi } from '@/api/system/user';
+import { xlArchiveList } from '@/api/xlArchive';
 
 interface Props {
   modelValue: boolean;
@@ -60,14 +61,15 @@ function handleOpened() {
   if (props.row) {
     Object.assign(formData, props.row);
   }
-  getUserListApi({
+  xlArchiveList({
     userIds: formData.userIds,
   }).then(res => {
+    // @ts-ignore
     if (Array.isArray(res.data.rows)) {
+      // @ts-ignore
       userInfos.value = res.data.rows.map(item => {
         return `${item.nickname}-${item.deptName}`
       })
-      console.log("userInfos.value", userInfos.value)
     }
   })
 }

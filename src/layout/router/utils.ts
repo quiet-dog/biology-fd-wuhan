@@ -364,8 +364,16 @@ function hasAuth(value: string | Array<string>): boolean {
 
 /** 获取所有菜单中的第一个菜单（顶级菜单）*/
 function getTopMenu(tag = false): menuType {
-  const topMenu = usePermissionStoreHook().wholeMenus[0]?.children[0];
+  let topMenu = {};
+  let userInfo = storageSession().getItem<TokenDTO>(sessionKey)?.currentUser.userInfo;
+  if (userInfo != null && userInfo != undefined && userInfo.roleId == 7) {
+    topMenu = usePermissionStoreHook().wholeMenus[1]?.children[0];
+  } else {
+    topMenu = usePermissionStoreHook().wholeMenus[0]?.children[0];
+  }
   tag && useMultiTagsStoreHook().handleTags("push", topMenu);
+
+  // @ts-expect-error
   return topMenu;
 }
 

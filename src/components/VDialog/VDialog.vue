@@ -93,7 +93,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   useBodyScrolling: false,
   fixedBodyHeight: true,
   draggable: true,
-  loading: false
+  loading: false,
 });
 const emits = defineEmits<DialogEmits>();
 
@@ -160,6 +160,11 @@ function handleCancel() {
 }
 
 function handleCloseClick() {
+  if (props.beforeClose != undefined && typeof props.beforeClose === 'function') {
+    if (!props.beforeClose()) {
+      return
+    }
+  }
   visible.value = false;
 }
 </script>
