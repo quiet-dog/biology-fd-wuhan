@@ -1,18 +1,21 @@
 <script lang='ts' setup>
-import { XwAlarmListReq } from '@/api/xwAlarm/types';
+import { XsDeviceListReq } from '@/api/xsDevice/types';
 import { onMounted, reactive, ref, toRaw } from 'vue';
 import { Plus, Refresh, Search } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { xwAlarmList } from '@/api/xwAlarm';
+import { xsDeviceList } from '@/api/xsDevice';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
+import addEditFormModal from "./addEdit-form-modal.vue";
 import detailFormModal from "./detai-form-modal.vue";
 
 const tableRef = ref();
-const searchFormParams = reactive<XwAlarmListReq>({
-  cameraId: "",
-  seatNumer: "",
+const searchFormParams = reactive<XsDeviceListReq>({
+  pageNum: 1,
+  pageSize: 10,
+  deviceSn: "",
+  area: "",
 });
 const defaultSort: Sort = {
   prop: "createTime",
@@ -32,26 +35,28 @@ const pagination: PaginationProps = {
 
 const columns: TableColumnList = [
   {
-    label: "报警序号",
-    prop: "xwAlarmId"
+    label: "设备sn",
+    prop: "deviceSn"
   },
   {
-    label: "机位号",
-    prop: "seatNumber"
+    label: "设备名称",
+    prop: "name"
   },
   {
-    label: "摄像头ID",
-    prop: "cameraId"
+    label: "操作员",
+    prop: "personnelName"
   },
   {
-    label: "报警标志",
-    prop: "flag",
-    slot: "flag"
+    label: "所属区域",
+    prop: "area",
   },
   {
-    label: "报警时间",
-    prop: "timeStamp",
-    slot: "timeStamp"
+    label: "状态",
+    prop: "isOnline",
+  },
+  {
+    label: "最后通讯时间",
+    prop: "lastTime",
   },
   {
     label: "操作",
@@ -67,7 +72,7 @@ const archiveListFun = async () => {
   CommonUtils.fillSortParams(searchFormParams, sortState.value);
   CommonUtils.fillPaginationParams(searchFormParams, pagination);
   // @ts-expect-error
-  const { data } = await xwAlarmList(toRaw(searchFormParams)).finally(() => {
+  const { data } = await xsDeviceList(toRaw(searchFormParams)).finally(() => {
     pageLoading.value = false;
   });
   dataList.value = data.rows;
@@ -76,7 +81,8 @@ const archiveListFun = async () => {
 
 //重置
 function resetForm() {
-  searchFormParams.cameraId = "";
+  searchFormParams.area = "";
+  searchFormParams.deviceSn = "";
   searchFormParams.beginTime = undefined;
   searchFormParams.endTime = undefined;
 
@@ -94,24 +100,20 @@ const onSearch = tableRef => {
   tableRef.getTableRef();
 };
 
+const opType = ref<"add" | "edit">("add");
+const modalVisible = ref(false);
+const opRow = ref()
+function openDialog(type: "add" | "edit", row?) {
+  opType.value = type;
+  modalVisible.value = true;
+  opRow.value = row;
+}
+
 const detailVisible = ref(false)
 const detailRow = ref()
 function openDetailDialog(row) {
   detailRow.value = row
   detailVisible.value = true
-}
-
-function getFlag(flag: number | null) {
-  if (flag == 0) {
-    return "未审核"
-  }
-  if (flag == 1) {
-    return "报警"
-  }
-  if (flag == 2) {
-    return "误报"
-  }
-  return "未知"
 }
 onMounted(() => {
   archiveListFun()
@@ -122,29 +124,25 @@ onMounted(() => {
   <div class="main">
     <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
-      <el-form-item label="摄像头ID：">
-        <el-input class="!w-[200px]" placeholder="请输入设备sn号" clearable v-model="searchFormParams.cameraId" />
-      </el-form-item>
-      <!-- <el-form-item label="设备名称：">
-        <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.name" />
+      <el-form-item label="设备编号：">
+        <el-input class="!w-[200px]" placeholder="请输入设备sn号" clearable v-model="searchFormParams.deviceSn" />
       </el-form-item>
       <el-form-item label="所属区域：">
-        <el-input class="!w-[200px]" placeholder="请输入所属区域：" clearable v-model="searchFormParams.area" />
+        <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.area" />
       </el-form-item>
       <el-form-item label="设备状态：">
         <el-options>
-
         </el-options>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
         <el-button :icon="Refresh" @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
-    <PureTableBar title="行为监测设备列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
-      <!-- <template #buttons>
+    <PureTableBar title="消杀设备列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
+      <template #buttons>
         <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
-      </template> -->
+      </template>
 
       <template v-slot="{ size, dynamicColumns }">
         <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
@@ -155,15 +153,10 @@ onMounted(() => {
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">
 
-          <template #flag="{ row }">
-            {{ getFlag(row.flag) }}
-          </template>
-          <template #timeStamp="{ row }">
-            {{ dayjs(row.timeStamp).format("YYYY-MM-DD HH:mm:ss") }}
-          </template>
-
           <template #operation="{ row }">
-
+            <el-button class="reset-margin" link type="primary" :size="size" @click="openDialog('edit', row)">
+              修改
+            </el-button>
             <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row)">
               查看
             </el-button>
@@ -172,6 +165,7 @@ onMounted(() => {
       </template>
 
     </PureTableBar>
+    <addEditFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)" />
     <detailFormModal v-model="detailVisible" :row="detailRow" />
   </div>
 </template>

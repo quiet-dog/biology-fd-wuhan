@@ -154,9 +154,9 @@ onMounted(() => {
             <el-button class="reset-margin" link type="primary" :size="size" @click="openDialog('edit', row)">
               修改
             </el-button>
-            <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row)">
+            <!-- <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row)">
               查看
-            </el-button>
+            </el-button> -->
           </template>
         </pure-table>
       </template>
