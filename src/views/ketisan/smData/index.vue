@@ -1,14 +1,15 @@
 <script lang='ts' setup>
 import { SmDataListReq } from '@/api/smData/types';
 import { onMounted, reactive, ref, toRaw } from 'vue';
-import { Plus, Refresh, Search } from "@element-plus/icons-vue";
+import { Download, Plus, Refresh, Search } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { smDataList } from '@/api/smData';
+import { exportSmData, smDataList } from '@/api/smData';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
 import XinDianEchart from "@/components/XinDianEchart/index.vue";
 import HuXiEchart from "@/components/HuXiEchart/index.vue";
+import { ExportDownload } from '@/utils/exportdownload';
 
 const tableRef = ref();
 const searchFormParams = reactive<SmDataListReq>({
@@ -32,6 +33,10 @@ const pagination: PaginationProps = {
 };
 
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "序号",
     prop: "smDataId"
@@ -96,6 +101,7 @@ function resetForm() {
   searchFormParams.smDeviceSn = "";
   searchFormParams.beginTime = undefined;
   searchFormParams.endTime = undefined;
+  searchFormParams.smDataId = [];
 
   // 重置 pagination 中的属性
   pagination.total = 0;
@@ -111,12 +117,38 @@ const onSearch = tableRef => {
   tableRef.getTableRef();
 };
 
-function handleXinDianDetail(id:number) {
+function handleXinDianDetail(id: number) {
   xinDianEchartRef.value.handleOpened(id)
 }
 
-function handleHuXiDetail(id:number) {
+function handleHuXiDetail(id: number) {
   huXiEchartRef.value.handleOpened(id)
+}
+
+const multipleSelection = ref([]);
+const exportClick = () => {
+  if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1,
+    });
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined,
+    });
+  }
+
+  exportSmData(
+    toRaw({ ...searchFormParams, smDataIds: multipleSelection.value })
+  ).then(res => {
+    console.log(res);
+    ExportDownload(res, "生命数据列表");
+  });
 }
 
 onMounted(() => {
@@ -137,15 +169,17 @@ onMounted(() => {
       </el-form-item>
     </el-form>
     <PureTableBar title="设备数据列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
-      <!-- <template #buttons>
-        <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
-      </template> -->
+      <template #buttons>
+        <el-button type="warning" :icon="Download" @click="exportClick">导出</el-button>
+      </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
-          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table @selection-change="
+          rows => (multipleSelection = rows.map(item => item.smDataId))
+        " ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center" row-key="smDataId"
+          showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns" :data="dataList"
+          :pagination="pagination" :paginationSmall="size === 'small' ? true : false" @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">
@@ -162,8 +196,8 @@ onMounted(() => {
       </template>
 
     </PureTableBar>
-    <XinDianEchart ref="xinDianEchartRef"/>
-    <HuXiEchart ref="huXiEchartRef"/>
+    <XinDianEchart ref="xinDianEchartRef" />
+    <HuXiEchart ref="huXiEchartRef" />
   </div>
 </template>
 

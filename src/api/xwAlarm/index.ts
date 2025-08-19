@@ -12,3 +12,14 @@ export function addXwAlarm(data: AddXwAlarmReq) {
     data
   })
 }
+
+export function exportXwAlarm(params: XwAlarmListReq) {
+  return http.request(
+    "get",
+    "/manage/xwAlarm/excel",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}

@@ -17,3 +17,14 @@ export function addSmData(data: AddSmDataReq) {
 export function getSmData(data: number) {
   return http.request("get", `/manage/smData/` + data)
 }
+
+export function exportSmData(params: SmDataListReq) {
+  return http.request(
+    "get",
+    "/manage/smData/excel",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}

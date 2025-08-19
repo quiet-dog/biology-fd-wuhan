@@ -1,16 +1,17 @@
 <script lang='ts' setup>
 import { ResultShiJuanListReq } from '@/api/resultShiJuan/types';
 import { onMounted, reactive, ref, toRaw } from 'vue';
-import { Plus, Refresh, Search } from "@element-plus/icons-vue";
+import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { resultShiJuanList, resultShiJuanListByCreator } from '@/api/resultShiJuan';
+import { exportResultShiJuanByCreator, resultShiJuanList, resultShiJuanListByCreator } from '@/api/resultShiJuan';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useUserStoreHook } from '@/store/modules/user';
 import ShiJuanDetail from "@/components/ShiJuanDetail/index.vue";
 import GanYuEdit from "@/components/GanYuEdit/index.vue";
 import { getXiLiGroup } from '@/api/xlFangAn';
+import { ExportDownload } from '@/utils/exportdownload';
 
 
 const tableRef = ref();
@@ -42,6 +43,10 @@ const pagination: PaginationProps = {
 
 
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "测试编号",
     prop: "resultId"
@@ -135,6 +140,33 @@ function openDetailDialog(row) {
 }
 const groups = ref([])
 const xinLiGroup = ["心理调查评估问卷", "SAS量表", "SDS量表"]
+
+
+const multipleSelection = ref([]);
+const exportClick = () => {
+  if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1,
+    });
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined,
+    });
+  }
+
+  exportResultShiJuanByCreator(
+    toRaw({ ...searchFormParams, resultIds: multipleSelection.value })
+  ).then(res => {
+    console.log(res);
+    ExportDownload(res, "心理测评数据列表");
+  });
+}
 onMounted(() => {
   archiveListFun()
   getXiLiGroup().then(res => {
@@ -170,11 +202,17 @@ onMounted(() => {
       </el-form-item>
     </el-form>
     <PureTableBar title="心理测评数据列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
+
+      <template #buttons>
+        <el-button type="warning" :icon="Download" @click="exportClick">导出</el-button>
+      </template>
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
-          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table @selection-change="
+          rows => (multipleSelection = rows.map(item => item.resultId))
+        " ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center" row-key="resultId"
+          showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns" :data="dataList"
+          :pagination="pagination" :paginationSmall="size === 'small' ? true : false" @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">

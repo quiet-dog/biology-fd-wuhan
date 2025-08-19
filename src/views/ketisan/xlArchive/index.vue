@@ -1,21 +1,23 @@
 <script lang='ts' setup>
 import { XlArchiveListReq } from '@/api/xlArchive/types';
 import { onMounted, reactive, ref, toRaw } from 'vue';
-import { Plus, Refresh, Search } from "@element-plus/icons-vue";
+import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { xlArchiveList } from '@/api/xlArchive';
+import { exportXlArchive, xlArchiveList } from '@/api/xlArchive';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
 import addEditFormModal from "./addEdit-form-modal.vue";
 import history from './history.vue';
+import { ExportDownload } from '@/utils/exportdownload';
+import ImportArchive from './import-archive.vue';
 
 const tableRef = ref();
 const historyRef = ref<InstanceType<typeof history>>()
 const searchFormParams = reactive<XlArchiveListReq>({
   pageNum: 1,
   pageSize: 10,
-  name:""
+  name: ""
 });
 const defaultSort: Sort = {
   prop: "createTime",
@@ -32,8 +34,11 @@ const pagination: PaginationProps = {
   background: true
 };
 
-
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "人员工号",
     prop: "jobCode"
@@ -109,6 +114,39 @@ function openDetailDialog(row) {
   detailRow.value = row
   detailVisible.value = true
 }
+
+
+const multipleSelection = ref([]);
+const exportClick = () => {
+  if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1,
+    });
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined,
+    });
+  }
+
+  exportXlArchive(
+    toRaw({ ...searchFormParams, xlArchiveIds: multipleSelection.value })
+  ).then(res => {
+    console.log(res);
+    ExportDownload(res, "心理档案列表");
+  });
+}
+
+const importArchiveRef = ref<InstanceType<typeof ImportArchive>>()
+
+function handleImport() {
+  importArchiveRef.value.handleOpened()
+}
 onMounted(() => {
   archiveListFun()
 })
@@ -140,13 +178,17 @@ onMounted(() => {
     <PureTableBar title="心理测评方案列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
       <template #buttons>
         <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
+        <el-button type="primary" :icon="Plus" @click="handleImport">导入</el-button>
+        <el-button type="warning" :icon="Download" @click="exportClick">导出</el-button>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
-          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table @selection-change="
+          rows => (multipleSelection = rows.map(item => item.xlArchiveId))
+        " ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center" row-key="xlArchiveId"
+          showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns" :data="dataList"
+          :pagination="pagination" :paginationSmall="size === 'small' ? true : false" @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">
@@ -155,7 +197,7 @@ onMounted(() => {
             <el-button class="reset-margin" link type="primary" :size="size" @click="historyRef.handleOpen(row.userId)">
               修改
             </el-button>
-          
+
           </template>
         </pure-table>
       </template>
@@ -163,6 +205,7 @@ onMounted(() => {
     </PureTableBar>
     <addEditFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)" />
     <history ref="historyRef" />
+    <ImportArchive @refresh="archiveListFun" ref="importArchiveRef" />
   </div>
 </template>
 

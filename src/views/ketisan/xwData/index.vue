@@ -4,10 +4,11 @@ import { onMounted, reactive, ref, toRaw } from 'vue';
 import { Plus, Refresh, Search } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { xwAlarmList } from '@/api/xwAlarm';
+import { exportXwAlarm, xwAlarmList } from '@/api/xwAlarm';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
 import detailFormModal from "./detai-form-modal.vue";
+import { ExportDownload } from '@/utils/exportdownload';
 
 const tableRef = ref();
 const searchFormParams = reactive<XwAlarmListReq>({
@@ -31,6 +32,10 @@ const pagination: PaginationProps = {
 
 
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "报警序号",
     prop: "xwAlarmId"
@@ -113,6 +118,32 @@ function getFlag(flag: number | null) {
   }
   return "未知"
 }
+
+
+const multipleSelection = ref([]);
+const exportClick = () => {
+  if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1,
+    });
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined,
+    });
+  }
+
+  exportXwAlarm(
+    toRaw({ ...searchFormParams, xwAlarmIds: multipleSelection.value })
+  ).then(res => {
+    ExportDownload(res, "行为监测数据列表");
+  });
+}
 onMounted(() => {
   archiveListFun()
 })
@@ -141,16 +172,19 @@ onMounted(() => {
         <el-button :icon="Refresh" @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
-    <PureTableBar title="行为监测设备列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
-      <!-- <template #buttons>
-        <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
-      </template> -->
+    <PureTableBar title="行为监测数据列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
+
+      <template #buttons>
+        <el-button type="warning" :icon="Plus" @click="exportClick">导出</el-button>
+      </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
-          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table @selection-change="
+          rows => (multipleSelection = rows.map(item => item.xwAlarmId))
+        " ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center" row-key="xwAlarmId"
+          showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns" :data="dataList"
+          :pagination="pagination" :paginationSmall="size === 'small' ? true : false" @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">

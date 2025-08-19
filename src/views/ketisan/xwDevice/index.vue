@@ -4,17 +4,18 @@ import { onMounted, reactive, ref, toRaw } from 'vue';
 import { Plus, Refresh, Search } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { xwDeviceList } from '@/api/xwDevice';
+import { exportXwDevice, xwDeviceList } from '@/api/xwDevice';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
 import addEditFormModal from "./addEdit-form-modal.vue";
 import detailFormModal from "./detai-form-modal.vue";
+import { ExportDownload } from '@/utils/exportdownload';
 
 const tableRef = ref();
 const searchFormParams = reactive<XwDeviceListReq>({
   pageNum: 1,
   pageSize: 10,
-  cameraId:""
+  cameraId: ""
 });
 const defaultSort: Sort = {
   prop: "createTime",
@@ -33,6 +34,10 @@ const pagination: PaginationProps = {
 
 
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "摄像头ID",
     prop: "cameraId"
@@ -108,6 +113,31 @@ function openDetailDialog(row) {
   detailRow.value = row
   detailVisible.value = true
 }
+
+const multipleSelection = ref([]);
+const exportClick = () => {
+  if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1,
+    });
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined,
+    });
+  }
+
+  exportXwDevice(
+    toRaw({ ...searchFormParams, xwDeviceIds: multipleSelection.value })
+  ).then(res => {
+    ExportDownload(res, "行为设备列表");
+  });
+}
 onMounted(() => {
   archiveListFun()
 })
@@ -139,11 +169,14 @@ onMounted(() => {
     <PureTableBar title="行为监测设备列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
       <template #buttons>
         <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
+        <el-button type="warning" :icon="Plus" @click="exportClick">导出</el-button>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
+        <pure-table @selection-change="
+          rows => (multipleSelection = rows.map(item => item.xwDeviceId))
+        " ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
+          row-key="xwDeviceId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
           :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
           @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',

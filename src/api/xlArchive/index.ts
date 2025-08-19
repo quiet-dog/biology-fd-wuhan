@@ -12,3 +12,28 @@ export function addXlArchive(data: AddXlArchiveReq) {
     data
   })
 }
+
+
+export function exportXlArchive(params: XlArchiveListReq) {
+  return http.request(
+    "get",
+    "/manage/xlArchive/excel",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}
+
+
+export function downloadTemplate() {
+  return http.request(
+    "get",
+    "/manage/xlArchive/excelTemplate",
+    {},
+    {
+      responseType: "blob"
+    }
+  );
+}
+

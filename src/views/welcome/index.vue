@@ -557,7 +557,7 @@ const loadNotice = () => {
 }
 
 function clickToLuanSheng() {
-  window.open("http://10.10.12.5:8011/carshopweb", "_blank");
+  window.open("/carshopweb", "_blank");
 }
 </script>
 
@@ -788,7 +788,8 @@ function clickToLuanSheng() {
               <TuTwo v-if="activeName == '四层'" />
             </ElTabPane>
           </ElTabs> -->
-        <iframe src="http://10.10.12.5:8011/carshopweb/" frameborder="0" style="width: 100%;height: 100%;"></iframe>
+          <!-- http://10.10.12.5:8011 -->
+        <iframe src="/carshopweb/" frameborder="0" style="width: 100%;height: 100%;"></iframe>
         </div>
       </el-card>
       <el-card :body-style="{

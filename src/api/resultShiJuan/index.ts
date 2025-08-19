@@ -55,3 +55,26 @@ export function resultShiJuanListByUser(params: ResultShiJuanListReq) {
     params: params
   });
 }
+
+
+export function exportResultShiJuanByCreator(params: ResultShiJuanListReq) {
+  return http.request(
+    "get",
+    "/manage/resultShiJuan/excelByCreator",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}
+
+export function exportResultShiJuanByUser(params: ResultShiJuanListReq) {
+  return http.request(
+    "get",
+    "/manage/resultShiJuan/excelByUser",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}

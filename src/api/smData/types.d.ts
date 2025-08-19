@@ -17,7 +17,8 @@ export interface UpdateSmDataReq extends AddSmDataReq {
 }
 
 export interface SmDataListReq extends BasePageQuery {
-  smDeviceSn?: string
+  smDeviceSn?: string;
+  smDataId?: number[];
 }
 
 export interface SmDataRow extends UpdateSmDataReq {

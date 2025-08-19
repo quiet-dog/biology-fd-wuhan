@@ -1,14 +1,16 @@
 <script lang='ts' setup>
 import { SmDeviceListReq } from '@/api/smDevice/types';
 import { onMounted, reactive, ref, toRaw } from 'vue';
-import { Plus, Refresh, Search } from "@element-plus/icons-vue";
+import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { smDeviceList } from '@/api/smDevice';
+import { exportSmDevice, smDeviceList } from '@/api/smDevice';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
 import addEditFormModal from "./addEdit-form-modal.vue";
 import detailFormModal from "./detai-form-modal.vue";
+import SmThreshold from './sm-threshold.vue';
+import { ExportDownload } from '@/utils/exportdownload';
 
 const tableRef = ref();
 const searchFormParams = reactive<SmDeviceListReq>({
@@ -18,6 +20,7 @@ const searchFormParams = reactive<SmDeviceListReq>({
   deviceSn: "",
   area: "",
   personnelName: "",
+  online: ""
 });
 const defaultSort: Sort = {
   prop: "createTime",
@@ -36,6 +39,10 @@ const pagination: PaginationProps = {
 
 
 const columns: TableColumnList = [
+  {
+    type: "selection",
+    align: "left"
+  },
   {
     label: "设备sn",
     prop: "deviceSn"
@@ -87,6 +94,8 @@ function resetForm() {
   searchFormParams.personnelName = "";
   searchFormParams.area = "";
   searchFormParams.deviceSn = "";
+  searchFormParams.online = "";
+  searchFormParams.smDeviceIds= []
   searchFormParams.beginTime = undefined;
   searchFormParams.endTime = undefined;
 
@@ -119,6 +128,38 @@ function openDetailDialog(row) {
   detailRow.value = row
   detailVisible.value = true
 }
+
+const smThresholdRef = ref<InstanceType<typeof SmThreshold>>()
+function openSmThrehold(id) {
+  smThresholdRef.value.open(id)
+}
+const multipleSelection = ref([]);
+const exportClick = () => {
+  if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1,
+    });
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined,
+    });
+  }
+
+  exportSmDevice(
+    toRaw({ ...searchFormParams, smDeviceIds: multipleSelection.value })
+  ).then(res => {
+    console.log(res);
+    ExportDownload(res, "生命设备列表");
+  });
+}
+
+
 onMounted(() => {
   archiveListFun()
 })
@@ -138,9 +179,10 @@ onMounted(() => {
         <el-input class="!w-[200px]" placeholder="请输入所属区域：" clearable v-model="searchFormParams.area" />
       </el-form-item>
       <el-form-item label="设备状态：">
-        <el-options>
-
-        </el-options>
+        <el-select v-model="searchFormParams.online">
+          <el-option label="在线" :value="'在线'" />
+          <el-option label="离线" :value="'离线'" />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
@@ -150,13 +192,16 @@ onMounted(() => {
     <PureTableBar title="人员上报列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
       <template #buttons>
         <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
+        <el-button type="warning" :icon="Download" @click="exportClick">导出</el-button>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
-          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table @selection-change="
+          rows => (multipleSelection = rows.map(item => item.smDeviceId))
+        " ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center" :row-key="'smDeviceId'"
+          showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns" :data="dataList"
+          :pagination="pagination" :paginationSmall="size === 'small' ? true : false" @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun" :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">
@@ -168,6 +213,9 @@ onMounted(() => {
             <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row)">
               查看
             </el-button>
+            <el-button class="reset-margin" link type="danger" :size="size" @click="openSmThrehold(row.smDeviceId)">
+              阈值设置
+            </el-button>
           </template>
         </pure-table>
       </template>
@@ -175,6 +223,7 @@ onMounted(() => {
     </PureTableBar>
     <addEditFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)" />
     <detailFormModal v-model="detailVisible" :row="detailRow" />
+    <SmThreshold ref="smThresholdRef" />
   </div>
 </template>
 

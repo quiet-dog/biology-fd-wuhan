@@ -12,3 +12,18 @@ export function addXwDevice(data: AddXwDeviceReq) {
     data
   })
 }
+
+
+
+
+export function exportXwDevice(params: XwDeviceListReq) {
+  return http.request(
+    "get",
+    "/manage/xwDevice/excel",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}
+
