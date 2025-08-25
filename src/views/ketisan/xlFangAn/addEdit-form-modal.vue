@@ -54,7 +54,8 @@ const rules: FormRules = {
 const formData = reactive<AddXlFangAnReq>({
   name: "",
   userIds: [],
-  shiJuanTypes: []
+  shiJuanTypes: [],
+  pingGuTime: 0
 });
 
 
@@ -150,7 +151,7 @@ const lazyLoad = (node, resolve) => {
           return {
             value: e.userId,
             label: `${e.nickname}-${e.jobCode}`,
-            isLeaf:true
+            isLeaf: true
           }
         }))
       }
@@ -174,7 +175,6 @@ function handleClosed() {
         <el-col :span="12">
           <el-form-item label="方案名称：" prop="name">
             <el-input v-model="formData.name" filterable placeholder="请输入方案名称" style="width: 300px" />
-
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -182,6 +182,13 @@ function handleClosed() {
             <!-- <el-input v-model="formData.userIds" placeholder="请输入设备名称" style="width: 300px" /> -->
             <el-tree-select multiple v-model="formData.userIds" lazy :load="lazyLoad" style="width: fit-content"
               :props="treeProps" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="评估时间：">
+            <el-date-picker value-format="x" v-model="formData.pingGuTime" />
           </el-form-item>
         </el-col>
       </el-row>

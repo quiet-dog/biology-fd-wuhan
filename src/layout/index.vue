@@ -116,10 +116,10 @@ useResizeObserver(appWrapperRef, entries => {
 
 // WebSocket客户端配置
 const stompClient = new Client({
-  brokerURL:"/ws-api/ws"
-    // process.env.NODE_ENV === "development"
-    //   ? "ws://home.icepie.net:9020/ws"
-    //   : "/ws-api/ws"
+  brokerURL: "/ws-api/ws"
+  // process.env.NODE_ENV === "development"
+  //   ? "ws://home.icepie.net:9020/ws"
+  //   : "/ws-api/ws"
 });
 const audu = ref();
 stompClient.onConnect = frame => {
@@ -167,6 +167,35 @@ stompClient.onConnect = frame => {
     });
     navbarRef.value.getNotice();
   });
+
+  stompClient.subscribe("/topic/ketisan", greeting => {
+    const data = JSON.parse(greeting.body);
+    let iconColor = "";
+    switch (data.content.type) {
+      case "sm_alarm": {
+        iconColor = "#FF4D4F"; // 红色
+      }
+      default: {
+        iconColor = "#1890FF"; // 蓝色
+      }
+    }
+    if (audu.value.paused) {
+      audu.value.play().catch(err => {
+        console.log(err);
+      });
+    }
+    ElNotification({
+      title: data.content.type,
+      message: data.content.description,
+      customClass: "custom-notification",
+      position: "bottom-right",
+      icon: h(IconifyIconOffline, {
+        icon: "alarmIcon",
+        style: `color: ${iconColor};`
+      })
+    });
+    navbarRef.value.getNotice();
+  })
 };
 
 stompClient.onWebSocketError = error => {
@@ -224,7 +253,7 @@ const layoutHeader = defineComponent({
       {
         default: () => [
           !pureSetting.hiddenSideBar &&
-          (layout.value.includes("vertical") || layout.value.includes("mix"))
+            (layout.value.includes("vertical") || layout.value.includes("mix"))
             ? h(navbar, {
               ref: navbarRef,
               ref_key: "navbarRef",
@@ -243,37 +272,24 @@ const layoutHeader = defineComponent({
 
 <template>
   <div ref="appWrapperRef" :class="['app-wrapper', set.classes]">
-    <div
-      v-show="
-        set.device === 'mobile' &&
-        set.sidebar.opened &&
-        layout.includes('vertical')
-      "
-      class="app-mask"
-      @click="useAppStoreHook().toggleSideBar()"
-    />
-    <Vertical
-      v-show="
-        !pureSetting.hiddenSideBar &&
-        (layout.includes('vertical') || layout.includes('mix'))
-      "
-    />
-    <div
-      :class="[
-        'main-container',
-        pureSetting.hiddenSideBar ? 'main-hidden' : ''
-      ]"
-    >
+    <div v-show="set.device === 'mobile' &&
+      set.sidebar.opened &&
+      layout.includes('vertical')
+      " class="app-mask" @click="useAppStoreHook().toggleSideBar()" />
+    <Vertical v-show="!pureSetting.hiddenSideBar &&
+      (layout.includes('vertical') || layout.includes('mix'))
+      " />
+    <div :class="[
+      'main-container',
+      pureSetting.hiddenSideBar ? 'main-hidden' : ''
+    ]">
       <div v-if="set.fixedHeader">
         <layout-header />
         <!-- 主体内容 -->
         <app-main :fixed-header="set.fixedHeader" />
       </div>
       <el-scrollbar v-else>
-        <el-backtop
-          title="回到顶部"
-          target=".main-container .el-scrollbar__wrap"
-        >
+        <el-backtop title="回到顶部" target=".main-container .el-scrollbar__wrap">
           <backTop />
         </el-backtop>
         <layout-header />
@@ -283,9 +299,9 @@ const layoutHeader = defineComponent({
     </div>
     <!-- 系统设置 -->
     <!-- <setting /> -->
-     <audio style="display: none;" controls  ref="audu">
+    <audio style="display: none;" controls ref="audu">
       <source :src="Vide" type="audio/mpeg" />
-     </audio>
+    </audio>
   </div>
 </template>
 

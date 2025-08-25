@@ -1,14 +1,15 @@
 <script lang='ts' setup>
 import { XsDeviceListReq } from '@/api/xsDevice/types';
 import { onMounted, reactive, ref, toRaw } from 'vue';
-import { Plus, Refresh, Search } from "@element-plus/icons-vue";
+import { Download, Plus, Refresh, Search } from "@element-plus/icons-vue";
 import { dayjs, Sort } from 'element-plus';
 import { CommonUtils } from '@/utils/common';
-import { xsDeviceList } from '@/api/xsDevice';
+import { exportXsDevice, xsDeviceList } from '@/api/xsDevice';
 import { PaginationProps } from '@pureadmin/table';
 import { PureTableBar } from "@/components/RePureTableBar";
 import addEditFormModal from "./addEdit-form-modal.vue";
 import detailFormModal from "./detai-form-modal.vue";
+import { ExportDownload } from '@/utils/exportdownload';
 
 const tableRef = ref();
 const searchFormParams = reactive<XsDeviceListReq>({
@@ -34,8 +35,12 @@ const pagination: PaginationProps = {
 
 
 const columns: TableColumnList = [
+     {
+    type: "selection",
+    align: "left"
+  },
   {
-    label: "设备sn",
+    label: "设备编号",
     prop: "deviceSn"
   },
   {
@@ -43,17 +48,21 @@ const columns: TableColumnList = [
     prop: "name"
   },
   {
-    label: "操作员",
-    prop: "personnelName"
-  },
-  {
     label: "所属区域",
     prop: "area",
   },
   {
-    label: "状态",
-    prop: "isOnline",
+    label: "设备状态",
+    prop: "isOnlineStr",
   },
+  {
+    label: "工作状态",
+    prop: "workStatus",
+  },
+  // {
+  //   label: "高压状态",
+  //   prop: "highStatus",
+  // },
   {
     label: "最后通讯时间",
     prop: "lastTime",
@@ -115,6 +124,31 @@ function openDetailDialog(row) {
   detailRow.value = row
   detailVisible.value = true
 }
+
+const multipleSelection = ref([]);
+const exportClick = () => {
+  if (multipleSelection.value.length == 0) {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: 10000,
+      currentPage: 1,
+    });
+  } else {
+    CommonUtils.fillSortParams(searchFormParams, sortState.value);
+    CommonUtils.fillPaginationParams(searchFormParams, {
+      ...pagination,
+      pageSize: undefined,
+      currentPage: undefined,
+    });
+  }
+
+  exportXsDevice(
+    toRaw({ ...searchFormParams, xsDeviceIds: multipleSelection.value })
+  ).then(res => {
+  ExportDownload(res, "消杀设备列表");
+  });
+}
 onMounted(() => {
   archiveListFun()
 })
@@ -142,10 +176,13 @@ onMounted(() => {
     <PureTableBar title="消杀设备列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
       <template #buttons>
         <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
+        <el-button type="warning" :icon="Download" @click="exportClick">导出</el-button>
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
+        <pure-table  @selection-change="
+          rows => (multipleSelection = rows.map(item => item.xsDeviceId))
+        "  ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
           row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
           :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
           @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{

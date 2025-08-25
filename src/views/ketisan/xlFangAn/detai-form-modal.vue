@@ -101,6 +101,13 @@ function handleClosed() {
       </el-row>
       <el-row>
         <el-col :span="12">
+          <el-form-item label="评估时间：">
+            <el-date-picker readonly value-format="x" v-model="formData.pingGuTime" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
           <el-form-item label="筛选量表：" prop="shiJuanTypes">
             <!-- <el-input :placeholder="formData.shiJuanTypes" disabled autocomplete="off"  style="width: 300px"  /> -->
             <el-checkbox-group disabled v-model="formData.shiJuanTypes">

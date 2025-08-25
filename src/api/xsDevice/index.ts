@@ -12,3 +12,15 @@ export function addXsDevice(data: AddXsDeviceReq) {
     data
   })
 }
+
+export function exportXsDevice(params: XsDeviceListReq) {
+  return http.request(
+    "get",
+    "/manage/xsDevice/excel",
+    { params },
+    {
+      responseType: "blob"
+    }
+  );
+}
+

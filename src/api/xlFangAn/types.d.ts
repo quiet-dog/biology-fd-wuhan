@@ -2,6 +2,7 @@ export interface AddXlFangAnReq {
   name: string;
   userIds: number[];
   shiJuanTypes: string[];
+  pingGuTime?: number
 }
 
 export interface UpdateXlFangAnReq extends AddXlFangAnReq {

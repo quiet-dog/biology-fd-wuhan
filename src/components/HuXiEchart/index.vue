@@ -35,7 +35,7 @@ use([
 //   smDataId:number
 // }>()
 const smDataId = ref(0)
-const vChartRef = ref<InstanceType<typeof VEcharts>>() 
+const vChartRef = ref<InstanceType<typeof VEcharts>>()
 
 const option = ref({
   title: {
@@ -52,7 +52,7 @@ const option = ref({
     type: 'category',
     show: false,
     // data: breathData.map((_, i) => i)
-    data:[]
+    data: []
   },
   yAxis: {
     type: 'value',
@@ -84,7 +84,7 @@ const option = ref({
 const smDataInfo = ref()
 function handleOpened(id) {
   smDataId.value = id
-  getSmData(id).then((res:SmDataRow) => {
+  getSmData(id).then((res: SmDataRow) => {
     // @ts-expect-error
     smDataInfo.value = res.data
     option.value.xAxis.data = smDataInfo.value.huxi.map((_, index) => index)
@@ -92,11 +92,11 @@ function handleOpened(id) {
     vChartRef.value.render()
   })
   visible.value = true;
-  
+
 }
 
 function handleClosed() {
-  
+
 }
 
 defineExpose({
@@ -107,7 +107,7 @@ defineExpose({
 
 <template>
   <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling title="心电" v-model="visible"
-     @closed="handleClosed">
+    @closed="handleClosed">
     <div class="auto-div">
       <v-echarts :option="option" ref="vChartRef" class="echart" />
     </div>
@@ -115,13 +115,15 @@ defineExpose({
 </template>
 
 <style scoped>
-.auto-div{
+.auto-div {
   margin: auto;
   justify-items: center;
 }
+
 .echart {
-    height: 400px;
-    width: 700px;;
-    margin-top: 10px;
+  height: 400px;
+  width: 700px;
+  ;
+  margin-top: 10px;
 }
 </style>
