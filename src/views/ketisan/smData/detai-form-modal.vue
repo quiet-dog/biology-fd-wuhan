@@ -137,8 +137,8 @@ function changePersonnel(item) {
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
-          <el-form-item label="设备sn号：" prop="deviceSn">
-            <el-input v-model="formData.deviceSn" disabled filterable placeholder="请输入设备sn号" style="width: 300px" />
+          <el-form-item label="设备SN号：" prop="deviceSn">
+            <el-input v-model="formData.deviceSn" disabled filterable placeholder="请输入设备SN号" style="width: 300px" />
           </el-form-item>
         </el-col>
         <el-col :span="12">

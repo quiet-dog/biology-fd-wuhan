@@ -1,15 +1,15 @@
-<script lang='ts' setup>
-import { addSmDevice } from '@/api/smDevice';
-import { AddSmDeviceReq, SmDeviceRow } from '@/api/smDevice/types';
-import { ElMessage, FormRules } from 'element-plus';
-import { computed, reactive, ref } from 'vue';
+<script lang="ts" setup>
+import { addSmDevice } from "@/api/smDevice";
+import { AddSmDeviceReq, SmDeviceRow } from "@/api/smDevice/types";
+import { ElMessage, FormRules } from "element-plus";
+import { computed, reactive, ref } from "vue";
 import VDialog from "@/components/VDialog/VDialog.vue";
-import { personnelList } from '@/api/personnelData/personnelProfile';
+import { personnelList } from "@/api/personnelData/personnelProfile";
 
 interface Props {
   type: "add" | "edit";
   modelValue: boolean;
-  row: SmDeviceRow
+  row: SmDeviceRow;
 }
 const props = defineProps<Props>();
 const loading = ref(false);
@@ -56,19 +56,19 @@ const rules: FormRules = {
 
 const formData = reactive<AddSmDeviceReq>({
   name: "",
-  personnelId: 0,
+  personnelId: null,
   area: "",
-  deviceSn: ''
+  deviceSn: ""
 });
 
 const personnelParams = ref({
   total: 0,
   pageSize: 10,
-  page: 1
-})
+  page: 0
+});
 
-const personnelSelect = ref([])
-const personnelInfo = ref({})
+const personnelSelect = ref([]);
+const personnelInfo = ref({});
 
 async function handleConfirm() {
   try {
@@ -90,29 +90,33 @@ function cancelConfirm() {
 }
 
 function getPersonnelList() {
-  if (personnelParams.value.total != 0 && personnelParams.value.page * personnelParams.value.pageSize > personnelParams.value.total) {
-    return
+  if (
+    personnelParams.value.total != 0 &&
+    personnelParams.value.page * personnelParams.value.pageSize >=
+      personnelParams.value.total
+  ) {
+    return;
   }
 
+  personnelParams.value.page++;
   // @ts-expect-error
   personnelList({
     pageNum: personnelParams.value.page,
     pageSize: personnelParams.value.pageSize
   }).then(res => {
     // @ts-expect-error
-    personnelSelect.value = res.data.rows;
-    console.log("personnelSelect", personnelSelect.value)
+    personnelSelect.value = [...personnelSelect.value, ...res.data.rows];
+    console.log("personnelSelect", personnelSelect.value);
     // @ts-expect-error
     personnelParams.value.total = res.data.total;
-    personnelParams.value.page++;
-  })
+  });
 }
 
 function handleOpened() {
   if (props.row) {
     Object.assign(formData, props.row);
   }
-  getPersonnelList()
+  getPersonnelList();
 }
 
 function handleClosed() {
@@ -123,26 +127,51 @@ function handleClosed() {
 }
 
 function changePersonnel(item) {
-  personnelInfo.value = item
+  personnelInfo.value = item;
 }
-
 </script>
 
 <template>
-  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :title="type == 'add' ? '添加生命设备' : '更新生命设备'"
-    v-model="visible" :loading="loading" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
-    @closed="handleClosed">
-    <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
+  <v-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    :title="type == 'add' ? '新增生命体征设备' : '编辑生命体征设备'"
+    v-model="visible"
+    :loading="loading"
+    @confirm="handleConfirm"
+    @cancel="cancelConfirm"
+    @opened="handleOpened"
+    @closed="handleClosed"
+  >
+    <el-form
+      :model="formData"
+      label-width="100px"
+      :rules="rules"
+      ref="formRef"
+      inline
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
+    >
       <el-row>
         <el-col :span="12">
-          <el-form-item label="设备sn号：" prop="deviceSn">
-            <el-input v-model="formData.deviceSn" filterable placeholder="请输入设备sn号" style="width: 300px" />
-
+          <el-form-item label="设备SN号：" prop="deviceSn">
+            <el-input
+              v-model="formData.deviceSn"
+              filterable
+              placeholder="请输入设备SN号"
+              style="width: 300px"
+              :disabled="type != 'add'"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="设备名称：">
-            <el-input v-model="formData.name" placeholder="请输入设备名称" style="width: 300px" />
+            <el-input
+              v-model="formData.name"
+              placeholder="请输入设备名称"
+              style="width: 300px"
+              :disabled="type != 'add'"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -150,18 +179,33 @@ function changePersonnel(item) {
         <el-col :span="12">
           <el-form-item label="操作人员：" prop="personnelId">
             <!-- <el-input-number v-model="formData.reportNum" placeholder="请输入物料数量" :min="1" style="width: 300px" /> -->
-            <div v-infinite-scroll="getPersonnelList" style="width: 300px">
-              <el-select v-model="formData.personnelId">
-                <el-option @click="changePersonnel(item)" v-for="item in personnelSelect" :key="item.personnelId"
-                  :label="`${item.name}`" :value="item.personnelId" />
-              </el-select>
-            </div>
+            <el-select
+              v-model="formData.personnelId"
+              placeholder="请选择操作人员"
+              filterable
+              style="width: 300px"
+            >
+              <div v-infinite-scroll="getPersonnelList">
+                <el-option
+                  @click="changePersonnel(item)"
+                  v-for="item in personnelSelect"
+                  :key="item.personnelId"
+                  :label="`${item.name}`"
+                  :value="item.personnelId"
+                />
+              </div>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="部门：">
             <!-- @vue-expect-error -->
-            <el-input :placeholder="personnelInfo.department" autocomplete="off" disabled style="width: 300px" />
+            <el-input
+              :placeholder="personnelInfo.department"
+              autocomplete="off"
+              disabled
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -169,13 +213,22 @@ function changePersonnel(item) {
         <el-col :span="12">
           <el-form-item label="联系方式：" prop="contact">
             <!-- @vue-expect-error -->
-            <el-input :placeholder="personnelInfo.contact" autocomplete="off" disabled style="width: 300px" />
+            <el-input
+              :placeholder="personnelInfo.contact"
+              autocomplete="off"
+              disabled
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
 
         <el-col :span="12">
           <el-form-item label="所属区域：" prop="area">
-            <el-input v-model="formData.area" placeholder="请输入所属区域"  style="width: 300px" />
+            <el-input
+              v-model="formData.area"
+              placeholder="请输入所属区域"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>

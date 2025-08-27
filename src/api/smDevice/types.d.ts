@@ -3,6 +3,7 @@ export interface AddSmDeviceReq {
   personnelId: number;
   name: string;
   area: string;
+  lastTimeStr?: string;
 }
 
 export interface UpdateSmDeviceReq extends AddSmDeviceReq {

@@ -105,7 +105,7 @@ function handleClosed() {
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
-          <el-form-item label="设备sn号：" prop="deviceSn">
+          <el-form-item label="设备SN号：" prop="deviceSn">
             <el-input v-model="formData.deviceSn" filterable placeholder="请输入设备编号" style="width: 300px" />
           </el-form-item>
         </el-col>

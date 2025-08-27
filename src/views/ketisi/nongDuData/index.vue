@@ -139,7 +139,7 @@ onMounted(() => {
     <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
       <el-form-item label="设备编号：">
-        <el-input class="!w-[200px]" placeholder="请输入设备sn号" clearable v-model="searchFormParams.deviceSn" />
+        <el-input class="!w-[200px]" placeholder="请输入设备SN号" clearable v-model="searchFormParams.deviceSn" />
       </el-form-item>
       <el-form-item label="所属区域：">
         <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.area" />

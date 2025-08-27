@@ -148,7 +148,7 @@ onMounted(() => {
     <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
       <el-form-item label="摄像头ID：">
-        <el-input class="!w-[200px]" placeholder="请输入设备sn号" clearable v-model="searchFormParams.cameraId" />
+        <el-input class="!w-[200px]" placeholder="请输入设备SN号" clearable v-model="searchFormParams.cameraId" />
       </el-form-item>
       <!-- <el-form-item label="设备名称：">
         <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.name" />
