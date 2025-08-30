@@ -11,6 +11,8 @@ export interface UpdateNongDuDeviceReq extends AddNongDuDeviceReq {
 export interface NongDuDeviceListReq extends BasePageQuery {
   deviceSn?: string;
   area?: string;
+  online?: string;
+  workStatus?: string;
 }
 
 export interface NongDuDeviceRow extends UpdateNongDuDeviceReq {

@@ -11,6 +11,7 @@ export interface UpdateJianCeDeviceReq extends AddJianCeDeviceReq {
 export interface JianCeDeviceListReq extends BasePageQuery {
   deviceSn?: string;
   area?: string;
+  online?: string;
 }
 
 export interface JianCeDeviceRow extends UpdateJianCeDeviceReq {

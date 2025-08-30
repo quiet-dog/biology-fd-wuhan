@@ -1,14 +1,17 @@
-<script lang='ts' setup>
-import { addXwDevice } from '@/api/xwDevice/index';
-import { AddXwDeviceReq, XwDeviceRow } from '@/api/xwDevice/types';
-import { ElMessage, FormRules } from 'element-plus';
-import { computed, reactive, ref } from 'vue';
+<script lang="ts" setup>
+import { addXwDevice } from "@/api/xwDevice/index";
+import { AddXwDeviceReq, XwDeviceRow } from "@/api/xwDevice/types";
+import { ElMessage, FormRules } from "element-plus";
+import { computed, reactive, ref } from "vue";
 import VDialog from "@/components/VDialog/VDialog.vue";
-import { personnelInfo, personnelList } from '@/api/personnelData/personnelProfile';
+import {
+  personnelInfo,
+  personnelList
+} from "@/api/personnelData/personnelProfile";
 
 interface Props {
   modelValue: boolean;
-  row: XwDeviceRow
+  row: XwDeviceRow;
 }
 const props = defineProps<Props>();
 const loading = ref(false);
@@ -57,16 +60,8 @@ const formData = reactive<AddXwDeviceReq>({
   name: "",
   cameraId: "",
   seatNumber: "",
-  content:""
+  content: ""
 });
-
-const personnelParams = ref({
-  total: 0,
-  pageSize: 10,
-  page: 1
-})
-
-const personnelSelect = ref([])
 
 async function handleConfirm() {
   try {
@@ -87,51 +82,71 @@ function cancelConfirm() {
   visible.value = false;
 }
 
-
-
-
-
 function handleOpened() {
   if (props.row) {
     Object.assign(formData, props.row);
   }
 }
 
-function handleClosed() {
-
-}
-
-function changePersonnel(item) {
-}
-
+function handleClosed() {}
 </script>
 
 <template>
-  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling title="信息"
-    v-model="visible" :loading="loading" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
-    @closed="handleClosed">
+  <v-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    title="信息"
+    v-model="visible"
+    :loading="loading"
+    @confirm="handleConfirm"
+    @cancel="cancelConfirm"
+    @opened="handleOpened"
+    @closed="handleClosed"
+  >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
           <el-form-item label="设备SN号：" prop="cameraId">
-            <el-input v-model="formData.cameraId" disabled filterable placeholder="请输入摄像头Id" style="width: 300px" />
+            <el-input
+              v-model="formData.cameraId"
+              disabled
+              filterable
+              placeholder="请输入摄像头Id"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="设备名称：" prop="name">
-            <el-input v-model="formData.name" disabled placeholder="请输入设备名称" style="width: 300px" />
+            <el-input
+              v-model="formData.name"
+              disabled
+              placeholder="请输入设备名称"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="机位号：" prop="seatNumber">
-            <el-input :placeholder="formData.seatNumber" disabled autocomplete="off"  style="width: 300px"  />
+            <el-input
+              :placeholder="formData.seatNumber"
+              disabled
+              autocomplete="off"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="对应内容：" prop="content">
-            <el-input disabled :placeholder="formData.content" autocomplete="off"  style="width: 300px" />
+            <el-input
+              disabled
+              :placeholder="formData.content"
+              autocomplete="off"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>

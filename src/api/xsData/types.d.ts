@@ -10,6 +10,7 @@ export interface UpdateXsDataReq extends AddXsDataReq {
 export interface XsDataListReq extends BasePageQuery {
   deviceSn?: string;
   area?: string;
+  cameraId?: string;
 }
 
 export interface XsDataRow extends UpdateXsDataReq {

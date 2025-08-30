@@ -10,6 +10,7 @@ export interface UpdateNongDuDataReq extends AddNongDuDataReq {
 export interface NongDuDataListReq extends BasePageQuery {
   deviceSn?: string;
   area?: string;
+  workStatus?: string;
 }
 
 export interface NongDuDataRow extends UpdateNongDuDataReq {

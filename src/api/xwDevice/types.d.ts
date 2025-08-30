@@ -11,6 +11,8 @@ export interface UpdateXwDeviceReq extends AddXwDeviceReq {
 
 export interface XwDeviceListReq extends BasePageQuery {
   cameraId: string;
+  seatNumber?: string;
+  online?: string;
 }
 
 export interface XwDeviceRow extends UpdateXwDeviceReq {

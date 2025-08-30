@@ -1,22 +1,25 @@
-<script lang='ts' setup>
-import { ResultShiJuanListReq } from '@/api/resultShiJuan/types';
-import { onMounted, reactive, ref, toRaw } from 'vue';
+<script lang="ts" setup>
+import { ResultShiJuanListReq } from "@/api/resultShiJuan/types";
+import { onMounted, reactive, ref, toRaw } from "vue";
 import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
-import { dayjs, Sort } from 'element-plus';
-import { CommonUtils } from '@/utils/common';
-import { exportResultShiJuanByCreator, resultShiJuanList, resultShiJuanListByCreator } from '@/api/resultShiJuan';
-import { PaginationProps } from '@pureadmin/table';
+import { dayjs, Sort } from "element-plus";
+import { CommonUtils } from "@/utils/common";
+import {
+  exportResultShiJuanByCreator,
+  resultShiJuanList,
+  resultShiJuanListByCreator
+} from "@/api/resultShiJuan";
+import { PaginationProps } from "@pureadmin/table";
 import { PureTableBar } from "@/components/RePureTableBar";
-import { useUserStoreHook } from '@/store/modules/user';
+import { useUserStoreHook } from "@/store/modules/user";
 import ShiJuanDetail from "@/components/ShiJuanDetail/index.vue";
 import GanYuEdit from "@/components/GanYuEdit/index.vue";
-import { getXiLiGroup } from '@/api/xlFangAn';
-import { ExportDownload } from '@/utils/exportdownload';
-
+import { getXiLiGroup } from "@/api/xlFangAn";
+import { ExportDownload } from "@/utils/exportdownload";
 
 const tableRef = ref();
-const shiJuanDetailRef = ref<InstanceType<typeof ShiJuanDetail>>()
-const ganYuEditRef = ref<InstanceType<typeof GanYuEdit>>()
+const shiJuanDetailRef = ref<InstanceType<typeof ShiJuanDetail>>();
+const ganYuEditRef = ref<InstanceType<typeof GanYuEdit>>();
 const searchFormParams = reactive<ResultShiJuanListReq>({
   pageNum: 1,
   pageSize: 10,
@@ -24,7 +27,7 @@ const searchFormParams = reactive<ResultShiJuanListReq>({
   deptIds: [],
   types: [],
   deptName: "",
-  type: ''
+  type: ""
 });
 const defaultSort: Sort = {
   prop: "createTime",
@@ -38,9 +41,8 @@ const pagination: PaginationProps = {
   total: 0,
   pageSize: 10,
   currentPage: 1,
-  background: true,
+  background: true
 };
-
 
 const columns: TableColumnList = [
   {
@@ -61,19 +63,19 @@ const columns: TableColumnList = [
   },
   {
     label: "所属部门",
-    prop: "deptName",
+    prop: "deptName"
   },
   {
     label: "量表名称",
-    prop: "type",
+    prop: "type"
   },
   {
     label: "最终得分",
-    prop: "score",
+    prop: "score"
   },
   {
     label: "评估结果",
-    prop: "cePing",
+    prop: "cePing"
   },
   {
     label: "评估时间",
@@ -93,7 +95,9 @@ const archiveListFun = async () => {
 
   CommonUtils.fillSortParams(searchFormParams, sortState.value);
   CommonUtils.fillPaginationParams(searchFormParams, pagination);
-  const { data } = await resultShiJuanListByCreator(toRaw(searchFormParams)).finally(() => {
+  const { data } = await resultShiJuanListByCreator(
+    toRaw(searchFormParams)
+  ).finally(() => {
     pageLoading.value = false;
   });
   dataList.value = data.rows;
@@ -125,22 +129,21 @@ const onSearch = tableRef => {
 
 const opType = ref<"add" | "edit">("add");
 const modalVisible = ref(false);
-const opRow = ref()
+const opRow = ref();
 function openDialog(type: "add" | "edit", row?) {
   opType.value = type;
   modalVisible.value = true;
   opRow.value = row;
 }
 
-const detailVisible = ref(false)
-const detailRow = ref()
+const detailVisible = ref(false);
+const detailRow = ref();
 function openDetailDialog(row) {
-  detailRow.value = row
-  detailVisible.value = true
+  detailRow.value = row;
+  detailVisible.value = true;
 }
-const groups = ref([])
-const xinLiGroup = ["心理调查评估问卷", "SAS量表", "SDS量表"]
-
+const groups = ref([]);
+const xinLiGroup = ["心理调查评估问卷", "SAS量表", "SDS量表"];
 
 const multipleSelection = ref([]);
 const exportClick = () => {
@@ -149,14 +152,14 @@ const exportClick = () => {
     CommonUtils.fillPaginationParams(searchFormParams, {
       ...pagination,
       pageSize: 10000,
-      currentPage: 1,
+      currentPage: 1
     });
   } else {
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, {
       ...pagination,
       pageSize: undefined,
-      currentPage: undefined,
+      currentPage: undefined
     });
   }
 
@@ -166,69 +169,129 @@ const exportClick = () => {
     console.log(res);
     ExportDownload(res, "心理测评数据列表");
   });
-}
+};
 onMounted(() => {
-  archiveListFun()
+  archiveListFun();
   getXiLiGroup().then(res => {
     // @ts-expect-error
-    groups.value = res.data
-  })
-})
+    groups.value = res.data;
+  });
+});
 </script>
 
 <template>
   <div class="main">
-    <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
-      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
+    <el-form
+      ref="searchFormRef"
+      :inline="true"
+      :model="searchFormParams"
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
+    >
       <el-form-item label="人员姓名：">
-        <el-input class="!w-[200px]" placeholder="请输入人员姓名" clearable v-model="searchFormParams.userName" />
+        <el-input
+          class="!w-[200px]"
+          placeholder="请输入人员姓名"
+          clearable
+          v-model="searchFormParams.userName"
+        />
       </el-form-item>
       <el-form-item label="所属部门：">
         <el-select :clearable="true" v-model="searchFormParams.deptName">
-          <el-option v-for="item in groups" :value="item" :label="item" :key="item" />
+          <el-option
+            v-for="item in groups"
+            :value="item"
+            :label="item"
+            :key="item"
+          />
         </el-select>
         <!-- <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.deptIds" /> -->
       </el-form-item>
       <el-form-item label="量表名称：">
         <el-select :clearable="true" v-model="searchFormParams.type">
-          <el-option v-for="item in xinLiGroup" :value="item" :label="item" :key="item" />
+          <el-option
+            v-for="item in xinLiGroup"
+            :value="item"
+            :label="item"
+            :key="item"
+          />
         </el-select>
         <!-- <el-input class="!w-[200px]" placeholder="请输入所属区域：" clearable v-model="searchFormParams.area" /> -->
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
+        <el-button type="primary" :icon="Search" @click="archiveListFun"
+          >搜索</el-button
+        >
         <el-button :icon="Refresh" @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
-    <PureTableBar title="心理测评数据列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
-
+    <PureTableBar
+      title="心理测评数据列表"
+      :columns="columns"
+      :tableRef="tableRef?.getTableRef()"
+      @refresh="onSearch"
+    >
       <template #buttons>
-        <el-button type="warning" :icon="Download" @click="exportClick">导出</el-button>
+        <el-button type="warning" :icon="Download" @click="exportClick"
+          >导出</el-button
+        >
       </template>
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table @selection-change="
-          rows => (multipleSelection = rows.map(item => item.resultId))
-        " ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center" row-key="resultId"
-          showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns" :data="dataList"
-          :pagination="pagination" :paginationSmall="size === 'small' ? true : false" @page-size-change="archiveListFun"
-          @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table
+          @selection-change="
+            rows => (multipleSelection = rows.map(item => item.resultId))
+          "
+          ref="tableRef"
+          adaptive
+          :adaptiveConfig="{ offsetBottom: 32 }"
+          align-whole="center"
+          row-key="resultId"
+          showOverflowTooltip
+          table-layout="auto"
+          :size="size"
+          :columns="dynamicColumns"
+          :data="dataList"
+          :pagination="pagination"
+          :paginationSmall="size === 'small' ? true : false"
+          @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun"
+          :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
-          }" style="height: auto">
-
+          }"
+          style="height: auto"
+        >
           <template #lastTime="{ row }">
-            <span>{{ row.lastTime != null ? dayjs(row.lastTime).format("YYYY-MM-DD") : "" }}</span>
+            <span>{{
+              row.lastTime != null
+                ? dayjs(row.lastTime).format("YYYY-MM-DD")
+                : ""
+            }}</span>
           </template>
 
           <template #operation="{ row }">
-            <el-button class="reset-margin" link type="primary" :size="size"
-              @click="shiJuanDetailRef.handleOpen(row.resultId)">
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="shiJuanDetailRef.handleOpen(row.resultId)"
+            >
               查看
             </el-button>
             <el-button
-              v-if="row.lastTime != null && row.cePing != '正常范围' && row.cePing != '无明显抑郁症状' && row.cePing != '无明显焦虑症状'"
-              class="reset-margin" link type="primary" :size="size" @click="ganYuEditRef.handleOpen(row.resultId)">
+              v-if="
+                row.lastTime != null &&
+                row.cePing != '正常范围' &&
+                row.cePing != '无明显抑郁症状' &&
+                row.cePing != '无明显焦虑症状'
+              "
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="ganYuEditRef.handleOpen(row.resultId)"
+            >
               干预措施
             </el-button>
           </template>

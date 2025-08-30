@@ -1,19 +1,19 @@
-<script lang='ts' setup>
-import { XlArchiveListReq } from '@/api/xlArchive/types';
-import { onMounted, reactive, ref, toRaw } from 'vue';
+<script lang="ts" setup>
+import { XlArchiveListReq } from "@/api/xlArchive/types";
+import { onMounted, reactive, ref, toRaw } from "vue";
 import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
-import { dayjs, Sort } from 'element-plus';
-import { CommonUtils } from '@/utils/common';
-import { exportXlArchive, xlArchiveList } from '@/api/xlArchive';
-import { PaginationProps } from '@pureadmin/table';
+import { dayjs, Sort } from "element-plus";
+import { CommonUtils } from "@/utils/common";
+import { exportXlArchive, xlArchiveList } from "@/api/xlArchive";
+import { PaginationProps } from "@pureadmin/table";
 import { PureTableBar } from "@/components/RePureTableBar";
 import addEditFormModal from "./addEdit-form-modal.vue";
-import history from './history.vue';
-import { ExportDownload } from '@/utils/exportdownload';
-import ImportArchive from './import-archive.vue';
+import history from "./history.vue";
+import { ExportDownload } from "@/utils/exportdownload";
+import ImportArchive from "./import-archive.vue";
 
 const tableRef = ref();
-const historyRef = ref<InstanceType<typeof history>>()
+const historyRef = ref<InstanceType<typeof history>>();
 const searchFormParams = reactive<XlArchiveListReq>({
   pageNum: 1,
   pageSize: 10,
@@ -53,11 +53,11 @@ const columns: TableColumnList = [
   },
   {
     label: "所属部门",
-    prop: "deptName",
+    prop: "deptName"
   },
   {
     label: "状态",
-    prop: "重点关注",
+    prop: "重点关注"
   },
   {
     label: "操作",
@@ -101,20 +101,19 @@ const onSearch = tableRef => {
 
 const opType = ref<"add" | "edit">("add");
 const modalVisible = ref(false);
-const opRow = ref()
+const opRow = ref();
 function openDialog(type: "add" | "edit", row?) {
   opType.value = type;
   modalVisible.value = true;
   opRow.value = row;
 }
 
-const detailVisible = ref(false)
-const detailRow = ref()
+const detailVisible = ref(false);
+const detailRow = ref();
 function openDetailDialog(row) {
-  detailRow.value = row
-  detailVisible.value = true
+  detailRow.value = row;
+  detailVisible.value = true;
 }
-
 
 const multipleSelection = ref([]);
 const exportClick = () => {
@@ -123,14 +122,14 @@ const exportClick = () => {
     CommonUtils.fillPaginationParams(searchFormParams, {
       ...pagination,
       pageSize: 10000,
-      currentPage: 1,
+      currentPage: 1
     });
   } else {
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, {
       ...pagination,
       pageSize: undefined,
-      currentPage: undefined,
+      currentPage: undefined
     });
   }
 
@@ -140,24 +139,33 @@ const exportClick = () => {
     console.log(res);
     ExportDownload(res, "心理档案列表");
   });
-}
+};
 
-const importArchiveRef = ref<InstanceType<typeof ImportArchive>>()
+const importArchiveRef = ref<InstanceType<typeof ImportArchive>>();
 
 function handleImport() {
-  importArchiveRef.value.handleOpened()
+  importArchiveRef.value.handleOpened();
 }
 onMounted(() => {
-  archiveListFun()
-})
+  archiveListFun();
+});
 </script>
 
 <template>
   <div class="main">
-    <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
-      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
+    <el-form
+      ref="searchFormRef"
+      :inline="true"
+      :model="searchFormParams"
+      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
+    >
       <el-form-item label="人员姓名：">
-        <el-input class="!w-[200px]" placeholder="请输入人员姓名" clearable v-model="searchFormParams.name" />
+        <el-input
+          class="!w-[200px]"
+          placeholder="请输入人员姓名"
+          clearable
+          v-model="searchFormParams.name"
+        />
       </el-form-item>
       <!-- <el-form-item label="设备名称：">
         <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.name" />
@@ -171,39 +179,75 @@ onMounted(() => {
         </el-options>
       </el-form-item> -->
       <el-form-item>
-        <el-button type="primary" :icon="Search" @click="archiveListFun">搜索</el-button>
+        <el-button type="primary" :icon="Search" @click="archiveListFun"
+          >搜索</el-button
+        >
         <el-button :icon="Refresh" @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
-    <PureTableBar title="心理测评方案列表" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
+    <PureTableBar
+      title="心理健康档案列表"
+      :columns="columns"
+      :tableRef="tableRef?.getTableRef()"
+      @refresh="onSearch"
+    >
       <template #buttons>
-        <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
-        <el-button type="primary" :icon="Plus" @click="handleImport">导入</el-button>
-        <el-button type="warning" :icon="Download" @click="exportClick">导出</el-button>
+        <el-button type="primary" :icon="Plus" @click="openDialog('add')"
+          >新增</el-button
+        >
+        <el-button type="success" :icon="Download" @click="handleImport"
+          >导入</el-button
+        >
+        <el-button type="warning" :icon="Download" @click="exportClick"
+          >导出</el-button
+        >
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table @selection-change="
-          rows => (multipleSelection = rows.map(item => item.xlArchiveId))
-        " ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center" row-key="xlArchiveId"
-          showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns" :data="dataList"
-          :pagination="pagination" :paginationSmall="size === 'small' ? true : false" @page-size-change="archiveListFun"
-          @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table
+          @selection-change="
+            rows => (multipleSelection = rows.map(item => item.xlArchiveId))
+          "
+          ref="tableRef"
+          adaptive
+          :adaptiveConfig="{ offsetBottom: 32 }"
+          align-whole="center"
+          row-key="xlArchiveId"
+          showOverflowTooltip
+          table-layout="auto"
+          :size="size"
+          :columns="dynamicColumns"
+          :data="dataList"
+          :pagination="pagination"
+          :paginationSmall="size === 'small' ? true : false"
+          @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun"
+          :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
-          }" style="height: auto">
-
+          }"
+          style="height: auto"
+        >
           <template #operation="{ row }">
-            <el-button class="reset-margin" link type="primary" :size="size" @click="historyRef.handleOpen(row.userId)">
-              修改
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="historyRef.handleOpen(row.userId)"
+            >
+              查看
             </el-button>
-
           </template>
         </pure-table>
       </template>
-
     </PureTableBar>
-    <addEditFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)" />
+    <addEditFormModal
+      v-model="modalVisible"
+      :type="opType"
+      :row="opRow"
+      @success="onSearch(tableRef)"
+    />
     <history ref="historyRef" />
     <ImportArchive @refresh="archiveListFun" ref="importArchiveRef" />
   </div>

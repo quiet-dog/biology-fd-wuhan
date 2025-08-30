@@ -10,15 +10,12 @@ export function xlFangAnList(params: XlFangAnListReq) {
 export function addXlFangAn(data: AddXlFangAnReq) {
   return http.request("post", "/manage/xlFangAn", {
     data
-  })
-}
-
-
-export function getXiLiGroup() {
-  return http.request<string[]>("get", `/manage/xlFangAn/getDeptGroup`, {
   });
 }
 
+export function getXiLiGroup() {
+  return http.request<string[]>("get", `/manage/xlFangAn/getDeptGroup`, {});
+}
 
 export function exportXlFangAnDevice(params: XlFangAnListReq) {
   return http.request(
@@ -30,5 +27,3 @@ export function exportXlFangAnDevice(params: XlFangAnListReq) {
     }
   );
 }
-
-

@@ -10,7 +10,7 @@ export function xsDataList(params: XsDataListReq) {
 export function addXsData(data: AddXsDataReq) {
   return http.request("post", "/manage/xsData", {
     data
-  })
+  });
 }
 
 export function exportXsData(params: XsDataListReq) {
@@ -23,4 +23,3 @@ export function exportXsData(params: XsDataListReq) {
     }
   );
 }
-

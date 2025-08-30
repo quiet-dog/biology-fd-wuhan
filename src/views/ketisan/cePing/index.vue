@@ -1,4 +1,4 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { TokenDTO } from "@/api/common/login";
 import { getResultShiJuan, resultShiJuanListByUser } from "@/api/resultShiJuan";
 import TouXiang from "@/assets/touxiang.png";
@@ -9,12 +9,13 @@ import { Sort } from "element-plus";
 import { onMounted, reactive, ref, toRaw } from "vue";
 import ShiJuan from "@/components/ShiJuan/index.vue";
 
-const userInfo = storageSession().getItem<TokenDTO>("user-info")?.currentUser.userInfo
-const shiJuanRef = ref<InstanceType<typeof ShiJuan>>()
+const userInfo =
+  storageSession().getItem<TokenDTO>("user-info")?.currentUser.userInfo;
+const shiJuanRef = ref<InstanceType<typeof ShiJuan>>();
 
 const searchFormParams = reactive({
-  isNull:["score"]
-})
+  isNull: ["score"]
+});
 const defaultSort: Sort = {
   prop: "createTime",
   order: "descending"
@@ -23,17 +24,19 @@ const pagination: PaginationProps = {
   total: 0,
   pageSize: 9,
   currentPage: 1,
-  background: true,
+  background: true
 };
 const pageLoading = ref(true);
 const sortState = ref<Sort>(defaultSort);
-const table = ref([])
+const table = ref([]);
 async function resultShiJuanListByUserFunc() {
-  pageLoading.value = true
+  pageLoading.value = true;
   CommonUtils.fillSortParams(searchFormParams, sortState.value);
   CommonUtils.fillPaginationParams(searchFormParams, pagination);
   // @ts-expect-error
-  const { data } = await resultShiJuanListByUser(toRaw(searchFormParams)).finally(() => {
+  const { data } = await resultShiJuanListByUser(
+    toRaw(searchFormParams)
+  ).finally(() => {
     pageLoading.value = false;
   });
   table.value = data.rows;
@@ -44,29 +47,43 @@ function startCePing(id: number) {
   shiJuanRef.value.handleOpen(id);
 }
 
-function loadMore() {
+function loadMore() {}
 
+function getTiMuShuLiang(type: string) {
+  if (type == "心理调查评估问卷") {
+    return 90;
+  } else if (type == "SAS量表") {
+    return 20;
+  } else if (type == "SDS量表") {
+    return 20;
+  }
 }
 
 onMounted(() => {
-  resultShiJuanListByUserFunc()
-})
-
+  resultShiJuanListByUserFunc();
+});
 </script>
 
 <template>
   <div class="main">
     <el-container>
-      <el-header height="200px" class="change search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
+      <el-header
+        height="200px"
+        class="change search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
+      >
         <div class="info">
           <div>
             <el-avatar size="large" :src="TouXiang" />
           </div>
-          <div style="width: 400px;">
+          <div style="width: 400px">
             <!-- @vue-ignore -->
             <el-descriptions :title="userInfo.nickname">
-              <el-descriptions-item label="性别">{{ userInfo.sex === 0 ? '男' : "女" }}</el-descriptions-item>
-              <el-descriptions-item label="部门">{{ userInfo.deptName }}</el-descriptions-item>
+              <el-descriptions-item label="性别">{{
+                userInfo.sex === 0 ? "男" : "女"
+              }}</el-descriptions-item>
+              <el-descriptions-item label="部门">{{
+                userInfo.deptName
+              }}</el-descriptions-item>
             </el-descriptions>
           </div>
         </div>
@@ -74,28 +91,38 @@ onMounted(() => {
       <el-main>
         <el-scrollbar @end-reached="loadMore" height="800px">
           <template v-for="(item, index) in table">
-            <el-row :gutter="20" v-if="(index % 3) == 0">
+            <el-row :gutter="20" v-if="index % 3 == 0" :key="index">
               <template v-for="(info, infoIndex) in [0, 1, 2]">
-                <template v-if="(index + infoIndex) < table.length">
-                  <el-col :span="8">
+                <template v-if="index + infoIndex < table.length">
+                  <el-col :span="8" :key="index + infoIndex">
                     <el-card>
                       <template #header>
                         <span>{{ table[infoIndex + index].type }}</span>
                       </template>
                       <el-descriptions :column="1">
-                        <el-descriptions-item label="类型">
+                        <!-- <el-descriptions-item label="类型">
                           <el-tag>{{ table[infoIndex + index].type }}</el-tag>
-                        </el-descriptions-item>
-                        <el-descriptions-item label="数量">
-                          <el-tag>90道</el-tag>
+                        </el-descriptions-item> -->
+                        <el-descriptions-item label="题目数量">
+                          <el-tag
+                            >{{
+                              getTiMuShuLiang(table[infoIndex + index].type)
+                            }}道</el-tag
+                          >
                         </el-descriptions-item>
                         <el-descriptions-item label="预计时间">
                           <el-tag>20分钟</el-tag>
                         </el-descriptions-item>
                       </el-descriptions>
                       <div>
-                        <el-button :disabled="table[infoIndex + index].score > 0" type="primary"
-                          @click="startCePing(table[infoIndex + index].resultId)">开始测评</el-button>
+                        <el-button
+                          :disabled="table[infoIndex + index].score > 0"
+                          type="primary"
+                          @click="
+                            startCePing(table[infoIndex + index].resultId)
+                          "
+                          >开始测评</el-button
+                        >
                       </div>
                     </el-card>
                   </el-col>

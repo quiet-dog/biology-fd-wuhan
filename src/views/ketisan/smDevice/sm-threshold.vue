@@ -1,56 +1,56 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { getSmThreshold, setSmThrehold } from "@/api/smDevice";
 import { GetSmThresholdRes, SetSmThreshold } from "@/api/smDevice/types";
 import VDialog from "@/components/VDialog/VDialog.vue";
 import { ElForm } from "element-plus";
 import { ref } from "vue";
-import { ElMessage } from 'element-plus';
-const dialogVisible = ref(false)
-const deviceId = ref(0)
-const info = ref<GetSmThresholdRes[]>()
+import { ElMessage } from "element-plus";
+const dialogVisible = ref(false);
+const deviceId = ref(0);
+const info = ref<GetSmThresholdRes[]>();
 function open(id) {
   deviceId.value = id;
   dialogVisible.value = true;
 }
 
-const dataMap = ref(new Map())
+const dataMap = ref(new Map());
 
 function handleConfirm() {
-  let result: SetSmThreshold = {
+  const result: SetSmThreshold = {
     id: deviceId.value,
     data: []
-  }
+  };
   info.value.forEach(item => {
     result.data.push({
       type: item.type,
       values: item.data
-    })
-  })
+    });
+  });
 
   setSmThrehold(result).then(res => {
-    dialogVisible.value = false
-    ElMessage.success("设备成功")
-  })
+    dialogVisible.value = false;
+    ElMessage.success("设备成功");
+  });
 }
 
 function cancelConfirm() {
-  dialogVisible.value = false
+  dialogVisible.value = false;
 }
 
 function handleOpened() {
   getSmThreshold(deviceId.value).then(res => {
-    info.value = res.data
+    info.value = res.data;
     info.value.forEach(item => {
-      dataMap.value.set(item.type, item.data.length)
-    })
-  })
+      dataMap.value.set(item.type, item.data.length);
+    });
+  });
 }
 
 function changeNum(val: number, type: string) {
   info.value.forEach(item => {
     if (item.type === type) {
       while (item.data.length > val) {
-        item.data.shift()
+        item.data.shift();
       }
 
       while (item.data.length < val) {
@@ -60,26 +60,28 @@ function changeNum(val: number, type: string) {
           max: 0,
           type: type,
           level: "轻微"
-        })
+        });
       }
-
     }
-  })
+  });
 }
 
-function handleClosed() {
-
-}
+function handleClosed() {}
 
 defineExpose({
   open
-})
-
+});
 </script>
 
 <template>
-  <VDialog title="阈值设置" v-model="dialogVisible" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
-    @closed="handleClosed">
+  <VDialog
+    title="阈值设置"
+    v-model="dialogVisible"
+    @confirm="handleConfirm"
+    @cancel="cancelConfirm"
+    @opened="handleOpened"
+    @closed="handleClosed"
+  >
     <!-- <el-tabs>
         <el-tab-pane v-for="item in info" :label="item.type" :name="item.type+'阈值设置'">
           <el-form>
@@ -91,7 +93,6 @@ defineExpose({
       </el-tabs> -->
 
     <el-form>
-
       <template v-for="item in info">
         <el-row>
           <el-col :span="12">
@@ -101,8 +102,11 @@ defineExpose({
           </el-col>
           <el-col :span="12">
             <el-form-item label="级别层级">
-              <el-input-number style="width: 300px" @change="changeNum($event, item.type)"
-                v-model="dataMap[item.type]" />
+              <el-input-number
+                style="width: 300px"
+                @change="changeNum($event, item.type)"
+                v-model="dataMap[item.type]"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -125,7 +129,7 @@ defineExpose({
                 <el-col :span="11">
                   <el-input type="number" v-model="threhold.min" />
                 </el-col>
-                <el-col style="text-align: center;" :span="2">
+                <el-col style="text-align: center" :span="2">
                   <span>至</span>
                 </el-col>
                 <el-col :span="11">
@@ -136,8 +140,6 @@ defineExpose({
           </el-col>
         </el-row>
       </template>
-
-
     </el-form>
   </VDialog>
 </template>

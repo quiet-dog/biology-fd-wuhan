@@ -20,11 +20,12 @@ export interface AddXwAlarmReq {
 
 export interface UpdateXwAlarmReq extends AddXwAlarmReq {
   xwAlarmId: number;           // id
+  flagStr: string;
 }
 
 export interface XwAlarmListReq extends BasePageQuery {
   cameraId: string;
-  seatNumer?: string;
+  seatNumber?: string;
 }
 
 export interface XwAlarmRow extends UpdateXwAlarmReq {

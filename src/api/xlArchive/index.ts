@@ -10,9 +10,8 @@ export function xlArchiveList(params: XlArchiveListReq) {
 export function addXlArchive(data: AddXlArchiveReq) {
   return http.request("post", "/manage/xlArchive", {
     data
-  })
+  });
 }
-
 
 export function exportXlArchive(params: XlArchiveListReq) {
   return http.request(
@@ -25,7 +24,6 @@ export function exportXlArchive(params: XlArchiveListReq) {
   );
 }
 
-
 export function downloadTemplate() {
   return http.request(
     "get",
@@ -36,4 +34,3 @@ export function downloadTemplate() {
     }
   );
 }
-

@@ -11,6 +11,8 @@ export interface UpdateXsDeviceReq extends AddXsDeviceReq {
 export interface XsDeviceListReq extends BasePageQuery {
   deviceSn?: string;
   area?: string;
+  online?: string;
+  workStatus?: string;
 }
 
 export interface XsDeviceRow extends UpdateXsDeviceReq {
