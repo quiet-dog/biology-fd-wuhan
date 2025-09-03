@@ -106,7 +106,7 @@ function changePersonnel(item) {
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="设备名称：">
+          <el-form-item label="设备名称：" prop="name">
             <el-input v-model="formData.name" disabled placeholder="请输入设备名称" style="width: 300px" />
           </el-form-item>
         </el-col>

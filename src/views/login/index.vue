@@ -23,7 +23,7 @@ import { operates, thirdParty } from "./utils/enums";
 import { useLayout } from "@/layout/hooks/useLayout";
 import { rsaEncrypt } from "@/utils/crypt";
 import { getTopMenu, initRouter } from "@/layout/router/utils";
-import { avatar, bg, illustration,my,ll } from "./utils/static";
+import { avatar, bg, illustration, my, ll } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 // v-detail-dialog
@@ -293,13 +293,13 @@ onBeforeUnmount(() => {
     <div class="login-container">
       <div class="img">
         <!-- 登录页面的背景图 -->
-        <component  :is="toRaw(ll)" />
+        <component :is="toRaw(ll)" />
       </div>
       <div class="login-box">
         <div class="login-form">
           <!-- 登录窗口上面的LOGO -->
           <!-- <avatar class="avatar" /> -->
-            <h2>你好！</h2>
+          <h2>你好！</h2>
 
           <Motion>
             <h2 class="outline-none">
@@ -528,5 +528,4 @@ onBeforeUnmount(() => {
     left: 20px;
   }
 }
-
 </style>

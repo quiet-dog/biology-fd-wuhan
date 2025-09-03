@@ -59,6 +59,7 @@ function getList() {
     ...pageInfo.value,
     orderColumn: "createTime",
     orderDirection: "descending",
+    timeRangeColumn:"create_time"
   }).then(res => {
     // @ts-expect-error
     list.value = res.data.rows;

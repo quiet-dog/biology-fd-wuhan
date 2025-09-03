@@ -87,6 +87,7 @@ function handleOpened() {
 
 function handleClosed() {
   formRef.value?.resetFields();
+  formData.name = ""
   personnelParams.value.page = 1;
   personnelParams.value.pageSize = 10;
   personnelParams.value.total = 0;
@@ -97,7 +98,7 @@ function handleClosed() {
 </script>
 
 <template>
-  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :title="type == 'add' ? '添加浓度设备' : '更新浓度设备'"
+  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :title="type == 'add' ? '添加采样设备' : '编辑采样设备'"
     v-model="visible" :loading="loading" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
     @closed="handleClosed">
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
@@ -108,7 +109,7 @@ function handleClosed() {
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="设备名称：">
+          <el-form-item label="设备名称：" prop="name">
             <el-input v-model="formData.name" placeholder="请输入设备名称" style="width: 300px" />
           </el-form-item>
         </el-col>
