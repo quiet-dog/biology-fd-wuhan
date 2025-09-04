@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { addXwDevice } from "@/api/xwDevice";
+import { addXwDevice, editXwDevice } from "@/api/xwDevice";
 import { AddXwDeviceReq, XwDeviceRow } from "@/api/xwDevice/types";
 import { ElMessage, FormRules } from "element-plus";
 import { computed, reactive, ref } from "vue";
@@ -73,7 +73,11 @@ const personnelInfo = ref({});
 async function handleConfirm() {
   try {
     loading.value = true;
-    await addXwDevice(formData);
+    if (isEdit.value) {
+      await editXwDevice(formData);
+    } else {
+      await addXwDevice(formData);
+    }
     ElMessage.success("提交成功");
     visible.value = false;
     emits("success");
@@ -89,14 +93,17 @@ function cancelConfirm() {
   visible.value = false;
 }
 
+const isEdit = ref(false);
 function handleOpened() {
   if (props.row) {
+    isEdit.value = true;
     Object.assign(formData, props.row);
   }
 }
 
 function handleClosed() {
   formRef.value?.resetFields();
+  isEdit.value = false;
   personnelParams.value.page = 1;
   personnelParams.value.pageSize = 10;
   personnelParams.value.total = 0;

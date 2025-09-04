@@ -1,15 +1,15 @@
-<script lang='ts' setup>
-import { addXsDevice } from '@/api/xsDevice';
-import { AddXsDeviceReq, XsDeviceRow } from '@/api/xsDevice/types';
-import { ElMessage, FormRules } from 'element-plus';
-import { computed, reactive, ref } from 'vue';
+<script lang="ts" setup>
+import { addXsDevice, editXsDevice } from "@/api/xsDevice";
+import { AddXsDeviceReq, XsDeviceRow } from "@/api/xsDevice/types";
+import { ElMessage, FormRules } from "element-plus";
+import { computed, reactive, ref } from "vue";
 import VDialog from "@/components/VDialog/VDialog.vue";
-import { personnelList } from '@/api/personnelData/personnelProfile';
+import { personnelList } from "@/api/personnelData/personnelProfile";
 
 interface Props {
   type: "add" | "edit";
   modelValue: boolean;
-  row: XsDeviceRow
+  row: XsDeviceRow;
 }
 const props = defineProps<Props>();
 const loading = ref(false);
@@ -51,20 +51,23 @@ const rules: FormRules = {
 const formData = reactive<AddXsDeviceReq>({
   name: "",
   area: "",
-  deviceSn: ''
+  deviceSn: ""
 });
 
 const personnelParams = ref({
   total: 0,
   pageSize: 10,
   page: 1
-})
-
+});
 
 async function handleConfirm() {
   try {
     loading.value = true;
-    await addXsDevice(formData);
+    if (isEdit.value) {
+      await editXsDevice(formData);
+    } else {
+      await addXsDevice(formData);
+    }
     ElMessage.success("提交成功");
     visible.value = false;
     emits("success");
@@ -79,47 +82,68 @@ async function handleConfirm() {
 function cancelConfirm() {
   visible.value = false;
 }
-
+const isEdit = ref(false);
 
 function handleOpened() {
   if (props.row) {
+    isEdit.value = true;
     Object.assign(formData, props.row);
   }
 }
 
 function handleClosed() {
+  isEdit.value = false;
   formRef.value?.resetFields();
   personnelParams.value.page = 1;
   personnelParams.value.pageSize = 10;
   personnelParams.value.total = 0;
 }
-
-
-
 </script>
 
 <template>
-  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :title="type == 'add' ? '添加消杀设备' : '更新消杀设备'"
-    v-model="visible" :loading="loading" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
-    @closed="handleClosed">
+  <v-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    :title="type == 'add' ? '添加消杀设备' : '更新消杀设备'"
+    v-model="visible"
+    :loading="loading"
+    @confirm="handleConfirm"
+    @cancel="cancelConfirm"
+    @opened="handleOpened"
+    @closed="handleClosed"
+  >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
           <el-form-item label="设备SN号：" prop="deviceSn">
-            <el-input v-model="formData.deviceSn" filterable placeholder="请输入设备编号" style="width: 300px" />
+            <el-input
+              v-model="formData.deviceSn"
+              filterable
+              placeholder="请输入设备编号"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="设备名称：" prop="name">
-            <el-input v-model="formData.name" placeholder="请输入设备名称" style="width: 300px" />
+            <el-input
+              v-model="formData.name"
+              placeholder="请输入设备名称"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>
-     
+
       <el-row>
         <el-col :span="12">
           <el-form-item label="所属区域：" prop="area">
-            <el-input v-model="formData.area" placeholder="请输入所属区域"  style="width: 300px" />
+            <el-input
+              v-model="formData.area"
+              placeholder="请输入所属区域"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>

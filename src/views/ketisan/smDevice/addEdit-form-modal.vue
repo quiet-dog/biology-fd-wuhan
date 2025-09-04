@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { addSmDevice } from "@/api/smDevice";
+import { addSmDevice, editSmDevice } from "@/api/smDevice";
 import { AddSmDeviceReq, SmDeviceRow } from "@/api/smDevice/types";
 import { ElMessage, FormRules } from "element-plus";
 import { computed, reactive, ref } from "vue";
@@ -73,7 +73,11 @@ const personnelInfo = ref({});
 async function handleConfirm() {
   try {
     loading.value = true;
-    await addSmDevice(formData);
+    if (isEdit.value) {
+      await editSmDevice(formData);
+    } else {
+      await addSmDevice(formData);
+    }
     ElMessage.success("提交成功");
     visible.value = false;
     emits("success");
@@ -112,8 +116,11 @@ function getPersonnelList() {
   });
 }
 
+const isEdit = ref(false);
+
 function handleOpened() {
   if (props.row) {
+    isEdit.value = true;
     Object.assign(formData, props.row);
   }
   getPersonnelList();
@@ -121,6 +128,7 @@ function handleOpened() {
 
 function handleClosed() {
   formRef.value?.resetFields();
+  isEdit.value = false;
   personnelParams.value.page = 1;
   personnelParams.value.pageSize = 10;
   personnelParams.value.total = 0;

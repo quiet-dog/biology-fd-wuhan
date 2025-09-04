@@ -10,7 +10,13 @@ export function xsDeviceList(params: XsDeviceListReq) {
 export function addXsDevice(data: AddXsDeviceReq) {
   return http.request("post", "/manage/xsDevice", {
     data
-  })
+  });
+}
+
+export function editXsDevice(data: AddXsDeviceReq) {
+  return http.request("put", "/manage/xsDevice/" + data.xsDeviceId, {
+    data
+  });
 }
 
 export function exportXsDevice(params: XsDeviceListReq) {
@@ -23,4 +29,3 @@ export function exportXsDevice(params: XsDeviceListReq) {
     }
   );
 }
-

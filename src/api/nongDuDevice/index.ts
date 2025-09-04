@@ -1,5 +1,9 @@
 import { http } from "@/utils/http";
-import { AddNongDuDeviceReq, NongDuDeviceListReq } from "./types";
+import {
+  AddNongDuDeviceReq,
+  NongDuDeviceListReq,
+  UpdateNongDuDeviceReq
+} from "./types";
 
 export function nongDuDeviceList(params: NongDuDeviceListReq) {
   return http.request("get", `/manage/nongDuDevice`, {
@@ -10,9 +14,14 @@ export function nongDuDeviceList(params: NongDuDeviceListReq) {
 export function addNongDuDevice(data: AddNongDuDeviceReq) {
   return http.request("post", "/manage/nongDuDevice", {
     data
-  })
+  });
 }
 
+export function editNongDuDevice(data: UpdateNongDuDeviceReq) {
+  return http.request("put", "/manage/nongDuDevice/" + data.nongDuDeviceId, {
+    data
+  });
+}
 
 export function exportNongDuDevice(params: NongDuDeviceListReq) {
   return http.request(
@@ -24,4 +33,3 @@ export function exportNongDuDevice(params: NongDuDeviceListReq) {
     }
   );
 }
-

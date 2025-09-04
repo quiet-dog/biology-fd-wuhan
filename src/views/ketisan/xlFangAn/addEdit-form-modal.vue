@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { addXlFangAn, getXiLiGroup } from "@/api/xlFangAn";
+import { addXlFangAn, editXlFangAn, getXiLiGroup } from "@/api/xlFangAn";
 import { AddXlFangAnReq, XlFangAnRow } from "@/api/xlFangAn/types";
 import { ElMessage, FormRules } from "element-plus";
 import { computed, reactive, ref } from "vue";
@@ -66,9 +66,11 @@ async function handleConfirm() {
       // })
     }
 
-    await addXlFangAn({
-      ...formData
-    });
+    if (isEdit.value) {
+      await editXlFangAn(formData);
+    } else {
+      await addXlFangAn(formData);
+    }
     ElMessage.success("提交成功");
     visible.value = false;
     emits("success");
@@ -100,8 +102,10 @@ function markLeafNodes(tree: any[]) {
   });
 }
 
+const isEdit = ref(false);
 function handleOpened() {
   if (props.row) {
+    isEdit.value = true;
     Object.assign(formData, props.row);
   }
 }
@@ -157,6 +161,7 @@ const lazyLoad = (node, resolve) => {
 
 function handleClosed() {
   formRef.value?.resetFields();
+  isEdit.value = false;
 }
 </script>
 

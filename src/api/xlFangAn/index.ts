@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import { AddXlFangAnReq, XlFangAnListReq } from "./types";
+import { AddXlFangAnReq, UpdateXlFangAnReq, XlFangAnListReq } from "./types";
 
 export function xlFangAnList(params: XlFangAnListReq) {
   return http.request("get", `/manage/xlFangAn`, {
@@ -9,6 +9,12 @@ export function xlFangAnList(params: XlFangAnListReq) {
 
 export function addXlFangAn(data: AddXlFangAnReq) {
   return http.request("post", "/manage/xlFangAn", {
+    data
+  });
+}
+
+export function editXlFangAn(data: UpdateXlFangAnReq) {
+  return http.request("put", "/manage/xlFangAn/" + data.xlFangAnId, {
     data
   });
 }
