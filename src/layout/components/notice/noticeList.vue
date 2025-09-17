@@ -2,9 +2,9 @@
 import { PropType } from "vue";
 import { ListItem } from "./data";
 import NoticeItem from "./noticeItem.vue";
-const emit = defineEmits(["getInfo", "read"])
+const emit = defineEmits(["getInfo", "read"]);
 function senInfo(item) {
-    emit("getInfo", item)
+  // emit("getInfo", item)
 }
 const props = defineProps({
   list: {
@@ -15,7 +15,12 @@ const props = defineProps({
 </script>
 
 <template>
-  <div @click="senInfo(item)" v-for="item in list" :key="item.key" class="notice-item">
+  <div
+    @click="senInfo(item)"
+    v-for="item in list"
+    :key="item.key"
+    class="notice-item"
+  >
     <div class="notice-content">
       <div class="notice-title">{{ item.title }}</div>
       <div class="notice-desc">{{ item.description }}</div>
@@ -34,7 +39,6 @@ const props = defineProps({
       <span v-else class="read-status">已读</span>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>

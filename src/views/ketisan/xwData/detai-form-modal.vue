@@ -57,6 +57,13 @@ function handleOpened() {
   }
 }
 
+const getPicUrl = item => {
+  if (item != null && item != "") {
+    return `/renTiServer` + item.replace("/home/hust/storage", "");
+  }
+  return "";
+};
+
 function handleClosed() {}
 
 function changePersonnel(item) {}
@@ -113,6 +120,16 @@ function changePersonnel(item) {}
               style="width: 300px"
               v-model="formData.createTime"
               disabled
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="报警图片：" prop="picPath">
+            <el-image
+              :src="getPicUrl(formData.picPath)"
+              :preview-src-list="[getPicUrl(formData.picPathOrg)]"
             />
           </el-form-item>
         </el-col>

@@ -85,7 +85,7 @@ const downloadFile = item => {
   // }
 
   axios
-    .get(`${defaultConfig.baseURL}/file/preview`+item.path, {
+    .get(`${defaultConfig.baseURL}/file/preview` + item.path, {
       // params: {
       //   fileName: item.path
       // },
@@ -126,7 +126,7 @@ const getPreviewUrl = item => {
   //  if (item.path[0] === "/") {
   //   item.path = item.path.substring(1);
   // }
-  previewVisibleUrl.value =  item.path;
+  previewVisibleUrl.value = item.path;
   previewVisible.value = true;
 };
 
@@ -153,7 +153,7 @@ defineExpose({
           <el-form-item label="手册编号：">
             <el-input
               v-model="formData.manualId"
-              placeholder="请输入手册编号"
+              placeholder=""
               autocomplete="off"
               readonly
               style="width: 300px"
@@ -161,9 +161,9 @@ defineExpose({
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="设备名称：" prop="equipmentCode">
-            <el-select
-              placeholder="请选择设备名称"
+          <el-form-item label="设备名称：" prop="equipmentName">
+            <!-- <el-select
+              placeholder=""
               clearable
               v-model="formData.equipmentId"
               disabled
@@ -175,7 +175,9 @@ defineExpose({
                 :label="`${item.equipmentName}-${item.equipmentCode}`"
                 :value="item.equipmentId"
               />
-            </el-select>
+            </el-select> -->
+          <el-input v-model="formData.equipmentName" placeholder="" autocomplete="off" readonly
+              style="width: 300px" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -184,7 +186,7 @@ defineExpose({
           <el-form-item label="设备型号：" prop="equipmentType">
             <el-input
               v-model="formData.equipmentType"
-              placeholder="请输入设备型号"
+              placeholder=""
               autocomplete="off"
               readonly
               style="width: 300px"
@@ -195,7 +197,7 @@ defineExpose({
           <el-form-item label="手册版本：" prop="manualVersion">
             <el-input
               v-model="formData.manualVersion"
-              placeholder="请输入手册版本"
+              placeholder=""
               autocomplete="off"
               readonly
               style="width: 300px"
@@ -206,7 +208,7 @@ defineExpose({
       <el-form-item label="创建时间：">
         <el-input
           v-model="formData.createTime"
-          placeholder="请输入设备型号"
+          placeholder=""
           autocomplete="off"
           readonly
           style="width: 300px"

@@ -1,20 +1,27 @@
-<script lang='ts' setup>
-import { deleteMoniApi, getMoniApi, MoniDTO, SearchMoniCommand, startMoniApi, stopMoniApi,sendDataMoniApi } from '@/api/moni';
-import { CommonUtils } from '@/utils/common';
-import { PaginationProps } from '@pureadmin/table';
+<script lang="ts" setup>
+import {
+  deleteMoniApi,
+  getMoniApi,
+  MoniDTO,
+  SearchMoniCommand,
+  startMoniApi,
+  stopMoniApi,
+  sendDataMoniApi
+} from "@/api/moni";
+import { CommonUtils } from "@/utils/common";
+import { PaginationProps } from "@pureadmin/table";
 import { PureTableBar } from "@/components/RePureTableBar";
-import dayjs from 'dayjs';
-import { Sort } from 'element-plus';
-import { onMounted, reactive, ref, toRaw } from 'vue';
-import { useRenderIcon } from '@/components/ReIcon/src/hooks';
+import dayjs from "dayjs";
+import { Sort } from "element-plus";
+import { onMounted, reactive, ref, toRaw } from "vue";
+import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import MoniFormModal from "./moni-form-modal.vue";
-
 
 const searchFormParams = reactive<SearchMoniCommand>({
   orderColumn: "createTime",
   orderDirection: "descending",
-  pushType: "2",
+  pushType: "2"
 });
 
 const columns: TableColumnList = [
@@ -60,7 +67,7 @@ const pageLoading = ref(true);
 const modalVisible = ref(false);
 const defaultSort: Sort = {
   prop: "createTime",
-  order: "ascending"
+  order: "descending"
 };
 const sortState = ref<Sort>(defaultSort);
 const archiveListFun = async () => {
@@ -69,11 +76,9 @@ const archiveListFun = async () => {
   CommonUtils.fillSortParams(searchFormParams, sortState.value);
   CommonUtils.fillPaginationParams(searchFormParams, pagination);
 
-  const { data } = await getMoniApi(toRaw(searchFormParams)).finally(
-    () => {
-      pageLoading.value = false;
-    }
-  );
+  const { data } = await getMoniApi(toRaw(searchFormParams)).finally(() => {
+    pageLoading.value = false;
+  });
   dataList.value = data.rows;
   pagination.total = data.total;
 };
@@ -115,77 +120,137 @@ function cancelSend() {
   sendData.value = 0;
 }
 function confirmSend(row) {
-  sendDataMoniApi(row.moniId,sendData.value).then(() => {
-    visible.value = false;
-    sendData.value = 0;
-  }).catch(() => {
-    visible.value = false;
-    sendData.value = 0;
-  });
+  sendDataMoniApi(row.moniId, sendData.value)
+    .then(() => {
+      visible.value = false;
+      sendData.value = 0;
+    })
+    .catch(() => {
+      visible.value = false;
+      sendData.value = 0;
+    });
 }
 
 onMounted(() => {
   archiveListFun();
-})
-
-
-
+});
 </script>
 
 <template>
   <div>
-    <PureTableBar title="环境档案模拟列表" :columns="columns" :tableRef="tableRef?.getTableRef()">
+    <PureTableBar
+      title="环境档案模拟列表"
+      :columns="columns"
+      :tableRef="tableRef?.getTableRef()"
+    >
       <template #buttons>
-        <el-button type="primary" :icon="useRenderIcon(AddFill)" @click="openDialog('add')">
+        <el-button
+          type="primary"
+          :icon="useRenderIcon(AddFill)"
+          @click="openDialog('add')"
+        >
           新增模拟
         </el-button>
       </template>
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
-          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table
+          ref="tableRef"
+          adaptive
+          :adaptiveConfig="{ offsetBottom: 32 }"
+          align-whole="center"
+          row-key="policiesId"
+          showOverflowTooltip
+          table-layout="auto"
+          :size="size"
+          :columns="dynamicColumns"
+          :data="dataList"
+          :pagination="pagination"
+          :paginationSmall="size === 'small' ? true : false"
+          @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun"
+          :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
-          }" style="height: auto">
+          }"
+          style="height: auto"
+        >
           <template #createTime="{ row }">
             <span>{{
               dayjs(row.createTime).format("YYYY-MM-DD HH:mm:ss")
-              }}</span>
+            }}</span>
           </template>
           <template #pushFrequency="{ row }">
-            <span v-if="row.pushFrequency >= 3600">{{ row.pushFrequency / 3600 }}/时</span>
-            <span v-if="row.pushFrequency >= 60 && row.pushFrequency < 3600">{{ row.pushFrequency / 60 }}/分</span>
-            <span v-if="row.pushFrequency >= 0 && row.pushFrequency < 60">{{ row.pushFrequency }}/秒</span>
+            <span v-if="row.pushFrequency >= 3600"
+              >{{ row.pushFrequency / 3600 }}/时</span
+            >
+            <span v-if="row.pushFrequency >= 60 && row.pushFrequency < 3600"
+              >{{ row.pushFrequency / 60 }}/分</span
+            >
+            <span v-if="row.pushFrequency >= 0 && row.pushFrequency < 60"
+              >{{ row.pushFrequency }}/秒</span
+            >
           </template>
           <template #operation="{ row }">
             <el-popover placement="top" :width="180">
-                <el-input-number v-model="sendData"  />
-                <el-button text @click="cancelSend">取消</el-button>
-                <el-button  type="primary" @click="confirmSend(row)">确定</el-button>
+              <el-input-number v-model="sendData" />
+              <el-button text @click="cancelSend">取消</el-button>
+              <el-button type="primary" @click="confirmSend(row)"
+                >确定</el-button
+              >
               <template #reference>
                 <el-button @click="visible = true">发送</el-button>
               </template>
             </el-popover>
-            <el-button class="reset-margin" link type="primary" :size="size" @click="startMoniApiFunc(row.moniId)"
-              v-if="!row.isPush">
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="startMoniApiFunc(row.moniId)"
+              v-if="!row.isPush"
+            >
               开始推送
             </el-button>
-            <el-button class="reset-margin" link type="danger" :size="size" @click="stopMoniApiFunc(row.moniId)" v-else>
+            <el-button
+              class="reset-margin"
+              link
+              type="danger"
+              :size="size"
+              @click="stopMoniApiFunc(row.moniId)"
+              v-else
+            >
               停止推送
             </el-button>
-            <el-button class="reset-margin" link type="primary" :size="size" @click="openDialog('update', row)">
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="openDialog('update', row)"
+            >
               编辑
             </el-button>
-            <el-button class="reset-margin" link type="primary" :size="size" @click="deleteMoni(row.moniId)">
-              删除
-            </el-button>
+            <el-popconfirm
+              @confirm="deleteMoni(row.moniId)"
+              title="是否确认删除"
+            >
+              <template #reference>
+                <el-button class="reset-margin" link type="danger" :size="size">
+                  删除
+                </el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </pure-table>
       </template>
     </PureTableBar>
 
-    <MoniFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)" />
+    <MoniFormModal
+      v-model="modalVisible"
+      :type="opType"
+      :row="opRow"
+      @success="onSearch(tableRef)"
+    />
   </div>
 </template>
 

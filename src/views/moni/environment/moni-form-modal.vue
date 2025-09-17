@@ -1,13 +1,16 @@
-<script lang='ts' setup>
+<script lang="ts" setup>
 import { thresholdList } from "@/api/alarmPlatform/thresholdSetting";
 import { equipmentList } from "@/api/deviceData/equipmentProfile";
-import { AddMoniCommand, createMoniApi, updateMoniApi, UpdateMoniCommand } from "@/api/moni";
+import {
+  AddMoniCommand,
+  createMoniApi,
+  updateMoniApi,
+  UpdateMoniCommand
+} from "@/api/moni";
 import VDialog from "@/components/VDialog/VDialog.vue";
 import { CascaderProps, ElMessage, FormRules } from "element-plus";
 import { computed, onMounted, reactive, ref } from "vue";
-import {
-  environmentalFilesList,
-} from "@/api/environmentalData/environmentalArchives";
+import { environmentalFilesList } from "@/api/environmentalData/environmentalArchives";
 
 interface Props {
   type: "add" | "update";
@@ -26,7 +29,7 @@ const loading = ref(false);
 const selectValue = ref([]);
 const selectOption = ref([]);
 const selectPinValue = ref("3");
-const pinInput = ref(0)
+const pinInput = ref(0);
 
 const visible = computed({
   get: () => props.modelValue,
@@ -34,13 +37,13 @@ const visible = computed({
     emits("update:modelValue", v);
   }
 });
-const formRef = ref()
+const formRef = ref();
 
-let id = 0
+const id = 0;
 const selcteProps: CascaderProps = {
   lazy: true,
   lazyLoad(node, resolve) {
-    const { level } = node
+    const { level } = node;
     if (level == 0) {
       // equipmentList({
       //   pageNum: 1,
@@ -56,33 +59,36 @@ const selcteProps: CascaderProps = {
       // })
       environmentalFilesList({
         pageNum: 1,
-        pageSize: 999,
+        pageSize: 999
         // orderColumn: "purchaseDate",
         // orderDirection: "descending",
       }).then(res => {
-        resolve(res.data.rows.map(item => ({
-          value: item.environmentId,
-          label: item.description,
-          leaf: true,
-        })))
-      })
+        resolve(
+          res.data.rows.map(item => ({
+            value: item.environmentId,
+            label: item.description,
+            leaf: true
+          }))
+        );
+      });
     } else {
       thresholdList({
         pageNum: 1,
         pageSize: 999,
-        equipmentId: node.value,
+        equipmentId: node.value
       }).then(res => {
-        resolve(res.data.rows.map(item => ({
-          value: item.thresholdId,
-          label: item.sensorName,
-          leaf: true,
-        })))
-      })
+        resolve(
+          res.data.rows.map(item => ({
+            value: item.thresholdId,
+            label: item.sensorName,
+            leaf: true
+          }))
+        );
+      });
     }
   },
-  multiple: true,
-}
-
+  multiple: true
+};
 
 const formData = reactive<AddMoniCommand | UpdateMoniCommand>({
   description: "",
@@ -90,7 +96,7 @@ const formData = reactive<AddMoniCommand | UpdateMoniCommand>({
   min: 0,
   max: 0,
   pushType: "",
-  pushFrequency: 0,
+  pushFrequency: 0
 });
 
 const rules: FormRules = {
@@ -117,7 +123,6 @@ const rules: FormRules = {
         } else {
           callback();
         }
-
       }
     }
   ],
@@ -137,12 +142,19 @@ const rules: FormRules = {
   ]
 };
 
-
 async function handleConfirm() {
   formRef.value.validate(async callback => {
     if (callback) {
       try {
         loading.value = true;
+
+        if (selectPinValue.value === "1") {
+          formData.pushFrequency = Number(pinInput.value) * 3600;
+        } else if (selectPinValue.value === "2") {
+          formData.pushFrequency = Number(pinInput.value) * 60;
+        } else {
+          formData.pushFrequency = Number(pinInput.value);
+        }
         if (props.type === "add") {
           formData.pushType = "2";
           await createMoniApi(formData);
@@ -151,6 +163,7 @@ async function handleConfirm() {
           console.log("formData", formData);
           await updateMoniApi(formData as UpdateMoniCommand);
         }
+
         ElMessage.success("提交成功");
         visible.value = false;
         formRef.value?.resetFields();
@@ -200,71 +213,94 @@ function handleClosed() {
 
 function handleSelectChange(value, selectedData) {
   if (value) {
-    formData.environmentIds = value
+    formData.environmentIds = value;
   }
 }
 
 function handleInputPin(val) {
-  if (val) {
-    if (selectPinValue.value == "2") {
-      formData.pushFrequency = val * 60;
-    } else if (selectPinValue.value == "3") {
-      formData.pushFrequency = val * 60 * 60;
-    } else {
-      formData.pushFrequency = val;
-    }
-  } else {
-    formData.pushFrequency = 0;
-  }
+  // if (val) {
+  //   if (selectPinValue.value == "2") {
+  //     formData.pushFrequency = val * 60;
+  //   } else if (selectPinValue.value == "3") {
+  //     formData.pushFrequency = val * 60 * 60;
+  //   } else {
+  //     formData.pushFrequency = val;
+  //   }
+  // } else {
+  //   formData.pushFrequency = 0;
+  // }
 }
 
 function changePinValue(val) {
-  if (val) {
-    if (Number(val) == 2) {
-      formData.pushFrequency = Number(pinInput.value) * 60;
-    } else if (Number(val) == 3) {
-      formData.pushFrequency = Number(pinInput.value);
-    } else {
-      formData.pushFrequency = Number(pinInput.value) * 60 * 60;
-    }
-  } else {
-    formData.pushFrequency = 0;
-  }
+  // if (val) {
+  //   if (Number(val) == 2) {
+  //     formData.pushFrequency = Number(pinInput.value) * 60;
+  //   } else if (Number(val) == 3) {
+  //     formData.pushFrequency = Number(pinInput.value);
+  //   } else {
+  //     formData.pushFrequency = Number(pinInput.value) * 60 * 60;
+  //   }
+  // } else {
+  //   formData.pushFrequency = 0;
+  // }
 }
 
 onMounted(() => {
   environmentalFilesList({
     pageNum: 1,
-    pageSize: 999,
+    pageSize: 999
     // orderColumn: "purchaseDate",
     // orderDirection: "descending",
   }).then(res => {
     selectOption.value = res.data.rows.map(item => ({
       value: item.environmentId,
       label: item.description,
-      leaf: true,
-    }))
-  })
-})
-
+      leaf: true
+    }));
+  });
+});
 </script>
 
 <template>
-  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling
-    :title="type === 'add' ? '新增模拟环境规则' : '更新模拟环境规则'" v-model="visible" :loading="loading" @confirm="handleConfirm"
-    @cancel="cancelConfirm" @opened="handleOpened" @closed="handleClosed">
+  <v-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    :title="type === 'add' ? '新增模拟环境规则' : '更新模拟环境规则'"
+    v-model="visible"
+    :loading="loading"
+    @confirm="handleConfirm"
+    @cancel="cancelConfirm"
+    @opened="handleOpened"
+    @closed="handleClosed"
+  >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-form-item label="推送描述">
-        <el-input v-model="formData.description" autocomplete="off" placeholder="请输入推送描述" />
+        <el-input
+          v-model="formData.description"
+          autocomplete="off"
+          placeholder="请输入推送描述"
+        />
       </el-form-item>
       <el-form-item label="传感器">
         <!-- :options="selectOption"  -->
         <!-- <el-cascader :multiple="true" v-model="selectValue" @change="handleSelectChange" :props="selcteProps"
           collapse-tags collapse-tags-tooltip clearable>
         </el-cascader> -->
-        <el-select v-model="selectValue" multiple collapse-tags collapse-tags-tooltip clearable
-          @change="handleSelectChange">
-          <el-option v-for="item in selectOption" :key="item.value" :label="item.label" :value="item.value" />
+        <el-select
+          v-model="selectValue"
+          multiple
+          collapse-tags
+          collapse-tags-tooltip
+          clearable
+          @change="handleSelectChange"
+        >
+          <el-option
+            v-for="item in selectOption"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
 
@@ -281,9 +317,13 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item> -->
       <el-form-item label="推送频率">
-        <el-input v-model="pinInput" type="number" @input="handleInputPin">
+        <el-input v-model="pinInput" type="number">
           <template #append>
-            <el-select v-model="selectPinValue" @change="changePinValue" style="width: 115px">
+            <el-select
+              v-model="selectPinValue"
+              @change="changePinValue"
+              style="width: 115px"
+            >
               <el-option label="时" value="1" />
               <el-option label="分" value="2" />
               <el-option label="秒" value="3" />
@@ -292,9 +332,7 @@ onMounted(() => {
         </el-input>
       </el-form-item>
     </el-form>
-
   </v-dialog>
-
 </template>
 
 <style scoped></style>

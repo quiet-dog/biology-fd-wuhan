@@ -226,6 +226,8 @@ function handleClosed() {
               <el-option label="温度" value="温度" />
               <el-option label="湿度" value="湿度" />
               <el-option label="压差" value="压差" />
+              <el-option label="水" value="水" />
+              <el-option label="电" value="电" />
             </el-select>
           </el-form-item>
         </el-col>

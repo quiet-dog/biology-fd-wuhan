@@ -44,7 +44,7 @@ const handleOpened = async (id: number) => {
   });
   data.inspectionImagePath?.forEach(item => {
     axios
-      .get(`${defaultConfig.baseURL}/file/preview`+item, {
+      .get(`${defaultConfig.baseURL}/file/preview` + item, {
         // params: {
         //   fileName: item
         // },
@@ -83,7 +83,7 @@ function getShortFileName(fileName: string): string {
 //下载文件
 const downloadFile = item => {
   axios
-    .get(`${defaultConfig.baseURL}/file/preview`+item.path, {
+    .get(`${defaultConfig.baseURL}/file/preview` + item.path, {
       // params: {
       //   fileName: item.path
       // },
@@ -125,7 +125,7 @@ const getPreviewUrl = item => {
   //  if (item.path[0] === "/") {
   //   item.path = item.path.substring(1);
   // }
-  previewVisibleUrl.value =  item.path;
+  previewVisibleUrl.value = item.path;
   previewVisible.value = true;
 };
 
@@ -135,133 +135,66 @@ defineExpose({
 </script>
 
 <template>
-  <v-detail-dialog
-    show-full-screen
-    :fixed-body-height="false"
-    use-body-scrolling
-    title="查看检修记录"
-    v-model="visible"
-    :loading="loading"
-    :disableFooter="true"
-    @cancel="cancelConfirm"
-    @opened="handleOpened"
-  >
+  <v-detail-dialog show-full-screen :fixed-body-height="false" use-body-scrolling title="查看检修记录" v-model="visible"
+    :loading="loading" :disableFooter="true" @cancel="cancelConfirm" @opened="handleOpened">
     <el-form :model="formData" label-width="100px" ref="formRef">
       <el-row>
         <el-col :span="12">
           <el-form-item label="检修编号：">
-            <el-input
-              v-model="formData.recordId"
-              placeholder="请输入检修编号"
-              autocomplete="off"
-              readonly
-              style="width: 300px"
-            />
+            <el-input v-model="formData.recordId" placeholder="" autocomplete="off" readonly
+              style="width: 300px" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="设备编号：">
-            <el-input
-              v-model="formData.equipmentCode"
-              placeholder="请输入设备编号"
-              autocomplete="off"
-              readonly
-              style="width: 300px"
-            />
+          <el-form-item label="设备名称：">
+            <el-input v-model="formData.equipmentName" placeholder="" autocomplete="off" readonly
+              style="width: 300px" />
           </el-form-item>
         </el-col>
       </el-row>
+      <el-form-item label="设备编号：">
+            <el-input v-model="formData.equipmentCode" placeholder="" autocomplete="off" readonly
+              style="width: 300px" />
+          </el-form-item>
       <el-form-item label="检修日期：" prop="inspectionDate">
-        <el-date-picker
-          v-model="formData.inspectionDate"
-          value-format="YYYY-MM-DD hh:mm:ss"
-          type="date"
-          readonly
-          style="width: 300px"
-          placeholder="请选择检修日期"
-        />
+        <el-date-picker v-model="formData.inspectionDate" value-format="YYYY-MM-DD hh:mm:ss" type="date" readonly
+          style="width: 300px" placeholder="" />
       </el-form-item>
       <el-form-item label="检修内容：">
-        <el-input
-          :rows="2"
-          type="textarea"
-          v-model="formData.inspectionContent"
-          placeholder="请输入检修内容"
-          autocomplete="off"
-          readonly
-          style="width: 760px"
-        />
+        <el-input :rows="2" type="textarea" v-model="formData.inspectionContent" placeholder=""
+          autocomplete="off" readonly style="width: 760px" />
       </el-form-item>
       <el-row>
         <el-col :span="12">
           <el-form-item label="检修人员" prop="inspector">
-            <el-input
-              v-model="formData.inspector"
-              placeholder="请输入检修人员"
-              autocomplete="off"
-              readonly
-              style="width: 300px"
-            />
+            <el-input v-model="formData.inspector" placeholder="" autocomplete="off" readonly
+              style="width: 300px" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="检修图片：">
-        <el-image
-          v-for="item in inspectionImagePaths"
-          :key="item"
-          style="width: 100px; height: 100px; margin-left: 10px"
-          :src="item"
-        />
+        <el-image v-for="item in inspectionImagePaths" :key="item"
+          style="width: 100px; height: 100px; margin-left: 10px" :src="item" />
       </el-form-item>
       <el-form-item label="检修报告：">
         <div class="file_list">
-          <div
-            v-for="(item, index) in inspectionReportPaths"
-            :key="index"
-            class="file-item"
-            style="width: 100%"
-          >
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              :content="item.name"
-              placement="top"
-            >
+          <div v-for="(item, index) in inspectionReportPaths" :key="index" class="file-item" style="width: 100%">
+            <el-tooltip class="box-item" effect="dark" :content="item.name" placement="top">
               <span class="file-name text-ellipsis" style="width: 100%">{{
                 item.name
-              }}</span>
+                }}</span>
             </el-tooltip>
             <div class="file-actions">
-              <el-button
-                type="primary"
-                link
-                :icon="Download"
-                @click.stop="downloadFile(item)"
-                >下载</el-button
-              >
-              <el-button
-                type="primary"
-                link
-                :icon="View"
-                @click.stop="getPreviewUrl(item)"
-                >预览</el-button
-              >
+              <el-button type="primary" link :icon="Download" @click.stop="downloadFile(item)">下载</el-button>
+              <el-button type="primary" link :icon="View" @click.stop="getPreviewUrl(item)">预览</el-button>
             </div>
           </div>
         </div>
       </el-form-item>
     </el-form>
   </v-detail-dialog>
-  <v-detail-dialog
-    style="z-index: 999999"
-    :fixed-body-height="true"
-    use-body-scrolling
-    title="查看附件"
-    v-model="previewVisible"
-    :loading="loading"
-    :disable-footer="true"
-    @cancel="() => (previewVisible = false)"
-  >
+  <v-detail-dialog style="z-index: 999999" :fixed-body-height="true" use-body-scrolling title="查看附件"
+    v-model="previewVisible" :loading="loading" :disable-footer="true" @cancel="() => (previewVisible = false)">
     <OfficePreview :file-url="previewVisibleUrl" />
   </v-detail-dialog>
 </template>
@@ -269,12 +202,12 @@ defineExpose({
 <style lang="scss" scoped>
 .file_list {
   width: 100%;
+
   .file-item {
     // 改用 file-item class
     width: 300px;
     height: 35px;
-    box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color))
-      inset;
+    box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color)) inset;
     margin-bottom: 10px;
     display: flex;
     align-items: center;

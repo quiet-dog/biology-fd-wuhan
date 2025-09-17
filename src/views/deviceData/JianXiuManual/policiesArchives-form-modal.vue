@@ -33,7 +33,7 @@ const rules: FormRules = {
   manualFilePath: [
     {
       required: true,
-      message: "请上传检修手册"
+      message: "请上传巡检手册"
     }
   ]
 };
@@ -132,7 +132,7 @@ function handleClosed() {
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="新增检修手册"
+    title="新增巡检手册"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"
@@ -187,7 +187,7 @@ function handleClosed() {
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="检修手册：" prop="manualFilePath">
+      <el-form-item label="巡检手册：" prop="manualFilePath">
         <CUplopad
           :type="type"
           ref="CUplopadRef"

@@ -105,8 +105,14 @@ export function useVideoHook() {
         setTimeout(async () => {
           await getStreamUrlApi(channelId.value).then(async (res) => {
             // await jessibuca.destroy()
-            console.log("播放新的", res.data.wsflv)
-            await jessibuca.play(res.data.wsflv)
+            // console.log("播放新的", res.data.wsflv)
+            // await jessibuca.play(res.data.wsflv)
+
+            const path = new URL(res.data.wsflv).pathname;
+            const scheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+            const u = scheme + location.host + path
+
+            await jessibuca.play(u)
           }).catch(err => {
 
           }).finally(() => {
@@ -170,7 +176,10 @@ export function useVideoHook() {
       return;
     }
     if (url !== null && url !== "") {
-      jessibuca.play(url);
+      const path = new URL(url).pathname;
+      const scheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+      const u = scheme + location.host + path
+      jessibuca.play(u);
     }
   }
   const paused = () => {

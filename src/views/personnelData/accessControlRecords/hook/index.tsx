@@ -2,7 +2,7 @@ import { DoorEventQuery, getDoorEventList } from "@/api/door/door";
 import { CommonUtils } from "@/utils/common";
 import { PaginationProps } from "@pureadmin/table";
 import dayjs from "dayjs";
-import { ElTag } from "element-plus";
+import { ElTag, Sort } from "element-plus";
 import { onMounted, reactive, ref, toRaw } from "vue";
 
 export function useDoorHook() {
@@ -76,8 +76,16 @@ export function useDoorHook() {
     })
   }
 
+
+  const defaultSort: Sort = {
+    prop: "createTime",
+    order: "descending"
+  };
+  const sortState = ref<Sort>(defaultSort);
   const getDoorList = () => {
     pageLoading.value = true;
+    // CommonUtils.fillPaginationParams(form, pagination);
+    CommonUtils.fillSortParams(form, sortState.value);
     CommonUtils.fillPaginationParams(form, pagination);
     getDoorEventList(form).then(res => {
       table.value = res.data.rows

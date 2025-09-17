@@ -144,7 +144,7 @@ const getPreviewUrl = item => {
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="查看检修手册"
+    title="查看巡检手册"
     v-model="visible"
     :loading="loading"
     :disableFooter="true"
@@ -167,8 +167,8 @@ const getPreviewUrl = item => {
         </el-col>
         <el-col :span="12">
           <el-form-item label="设备名称：">
-            <el-select
-              placeholder="请选择设备名称"
+            <!-- <el-select
+              placeholder=""
               clearable
               v-model="formData.equipmentId"
               disabled
@@ -180,8 +180,9 @@ const getPreviewUrl = item => {
                 :label="`${item.equipmentName}-${item.equipmentCode}`"
                 :value="item.equipmentId"
               />
-            </el-select>
-          </el-form-item>
+            </el-select> -->
+            <el-input v-model="formData.equipmentName" style="width: 300px" disabled />
+           </el-form-item>
         </el-col>
       </el-row>
       <el-row>

@@ -38,7 +38,7 @@ const handleOpened = async (id: number) => {
   const { data } = await equipmentRepairInfo(id);
   data.repairImagePath?.forEach(item => {
     axios
-      .get(`${defaultConfig.baseURL}/file/preview`+item, {
+      .get(`${defaultConfig.baseURL}/file/preview` + item, {
         // params: {
         //   fileName: item
         // },
@@ -85,13 +85,26 @@ defineExpose({
           <el-form-item label="维修编号：">
             <el-input
               v-model="formData.recordId"
-              placeholder="请输入维修编号"
+              placeholder=""
               autocomplete="off"
               readonly
               style="width: 300px"
             />
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="设备名称：">
+            <el-input
+              v-model="formData.equipmentName"
+              placeholder=""
+              autocomplete="off"
+              readonly
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="12">
           <el-form-item label="设备编号：">
             <el-input
@@ -109,7 +122,7 @@ defineExpose({
           :rows="2"
           type="textarea"
           v-model="formData.faultReason"
-          placeholder="请输入故障原因"
+          placeholder=""
           autocomplete="off"
           readonly
           style="width: 760px"
@@ -120,7 +133,7 @@ defineExpose({
           :rows="2"
           type="textarea"
           v-model="formData.repairContent"
-          placeholder="请输入维修内容"
+          placeholder=""
           autocomplete="off"
           readonly
           style="width: 760px"
@@ -131,7 +144,7 @@ defineExpose({
           <el-form-item label="维修人员：">
             <el-input
               v-model="formData.repairPersonnel"
-              placeholder="请输入维修人员"
+              placeholder=""
               autocomplete="off"
               readonly
               style="width: 300px"
@@ -142,7 +155,7 @@ defineExpose({
           <el-form-item label="维修结果：">
             <el-input
               v-model="formData.repairResult"
-              placeholder="请输入维修结果"
+              placeholder=""
               autocomplete="off"
               readonly
               style="width: 300px"
@@ -155,7 +168,7 @@ defineExpose({
           <el-form-item label="维修费用：">
             <el-input
               v-model="formData.repairCost"
-              placeholder="请输入维修费用"
+              placeholder=""
               autocomplete="off"
               readonly
               style="width: 300px"
@@ -165,10 +178,11 @@ defineExpose({
       </el-row>
       <el-form-item label="维修图片：">
         <el-image
-          v-for="item in repairImagePaths"
+          v-for="(item, index) in repairImagePaths"
           style="width: 100px; height: 100px; margin-left: 10px"
           :preview-src-list="item"
           :src="item"
+          :key="index"
         />
       </el-form-item>
     </el-form>

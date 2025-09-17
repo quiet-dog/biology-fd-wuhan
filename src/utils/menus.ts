@@ -30,7 +30,7 @@ export const menusList = [
   { "menu_name": "维修记录", "path": "/deviceData/WeiXiuRecords/index" },
   { "menu_name": "检修记录", "path": "/deviceData/JianXiuRecords/index" },
   { "menu_name": "维修手册", "path": "/deviceData/WeiXiuManual/index" },
-  { "menu_name": "检修手册", "path": "/deviceData/JianXiuManual/index" },
+  { "menu_name": "巡检手册", "path": "/deviceData/JianXiuManual/index" },
   { "menu_name": "日常巡检记录", "path": "/deviceData/dailyInspectionRecords/index" },
   { "menu_name": "设备数据", "path": "/deviceData/deviceDatas/index" },
   { "menu_name": "物料档案", "path": "/materialData/materialFiles/index" },

@@ -30,7 +30,7 @@
       </el-form-item>
     </el-form>
     <PureTableBar
-      title="检修手册"
+      title="巡检手册"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"

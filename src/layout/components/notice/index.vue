@@ -14,7 +14,10 @@ const noticesNum = ref(0);
 import { ElMessage, Sort } from "element-plus";
 import { useUserStore } from "@/store/modules/user";
 import { alarmEventsInfo } from "@/api/alarmPlatform/alarmEvents";
-import { dailyInspectionInfo, renewDailyInspection } from "@/api/deviceData/dailyInspectionRecords";
+import {
+  dailyInspectionInfo,
+  renewDailyInspection
+} from "@/api/deviceData/dailyInspectionRecords";
 import { getToken } from "@/utils/auth";
 import { throttle, debounce } from "ts-debounce-throttle";
 import { storageSession } from "@pureadmin/utils";
@@ -35,7 +38,8 @@ interface NoticeGroup {
   list: NoticeItem[];
 }
 
-const userInfo = storageSession().getItem<TokenDTO>("user-info")?.currentUser.userInfo
+const userInfo =
+  storageSession().getItem<TokenDTO>("user-info")?.currentUser.userInfo;
 
 // 修改notices的类型定义
 const notices = ref<NoticeGroup[]>([
@@ -84,7 +88,7 @@ const sysReq = ref({
   isPersonal: false, // 系统通知
   userId: getToken().currentUser.userInfo.userId,
   isNotRead: true
-})
+});
 const perReq = ref({
   notificationTitle: "",
   notificationType: "",
@@ -95,7 +99,7 @@ const perReq = ref({
   isPersonal: true, // 个人通知
   userId: getToken().currentUser.userInfo.userId,
   isNotRead: true
-})
+});
 const getNotices = async () => {
   try {
     // 获取系统通知
@@ -114,7 +118,7 @@ const getNotices = async () => {
     // unreadPersonalNoticesNum.value = personalData.rows.filter(
     //   v => v.readStatus === 0
     // ).length;
-    unreadSysNoticesNum.value = sysData.total
+    unreadSysNoticesNum.value = sysData.total;
     unreadPersonalNoticesNum.value = personalData.total;
 
     // 总未读消息数量
@@ -173,7 +177,7 @@ const getSysNoticesTh = async () => {
     // unreadPersonalNoticesNum.value = personalData.rows.filter(
     //   v => v.readStatus === 0
     // ).length;
-    unreadSysNoticesNum.value = sysData.total
+    unreadSysNoticesNum.value = sysData.total;
     // unreadPersonalNoticesNum.value = personalData.total;
 
     // 总未读消息数量
@@ -182,17 +186,23 @@ const getSysNoticesTh = async () => {
 
     // 更新通知数量
     useUserStore().SET_NOTICES_NUM(noticesNum.value);
-    if (notices.value[0] && notices.value[0].list && notices.value[0].list.length > 0) {
-      notices.value[0].list.push(...sysData.rows.map(v => ({
-        key: v.notificationId,
-        title: v.notificationTitle,
-        description: v.notificationContent,
-        type: v.notificationType,
-        datetime: v.sendTime,
-        readStatus: v.readStatus,
-        eventId: v.eventId,
-        inspectionRecordId: v.inspectionRecordId
-      })));
+    if (
+      notices.value[0] &&
+      notices.value[0].list &&
+      notices.value[0].list.length > 0
+    ) {
+      notices.value[0].list.push(
+        ...sysData.rows.map(v => ({
+          key: v.notificationId,
+          title: v.notificationTitle,
+          description: v.notificationContent,
+          type: v.notificationType,
+          datetime: v.sendTime,
+          readStatus: v.readStatus,
+          eventId: v.eventId,
+          inspectionRecordId: v.inspectionRecordId
+        }))
+      );
     } else {
       // 转换系统通知数据
       notices.value[0].list = sysData.rows.map(v => ({
@@ -206,8 +216,6 @@ const getSysNoticesTh = async () => {
         inspectionRecordId: v.inspectionRecordId
       }));
     }
-
-
 
     // 转换个人通知数据
     // if (notices.value[1] && notices.value[1].list && notices.value[1].list.length > 0) {
@@ -239,7 +247,7 @@ const getSysNoticesTh = async () => {
   } catch (error) {
     console.error("获取通知列表失败:", error);
   }
-}
+};
 
 const getPerNoticesTh = async () => {
   try {
@@ -260,17 +268,23 @@ const getPerNoticesTh = async () => {
 
     // 更新通知数量
     useUserStore().SET_NOTICES_NUM(noticesNum.value);
-    if (notices.value[1] && notices.value[1].list && notices.value[1].list.length > 0) {
-      notices.value[1].list.push(...personalData.rows.map(v => ({
-        key: v.notificationId,
-        title: v.notificationTitle,
-        description: v.notificationContent,
-        type: v.notificationType,
-        datetime: v.sendTime,
-        readStatus: v.readStatus,
-        eventId: v.eventId,
-        inspectionRecordId: v.inspectionRecordId
-      })));
+    if (
+      notices.value[1] &&
+      notices.value[1].list &&
+      notices.value[1].list.length > 0
+    ) {
+      notices.value[1].list.push(
+        ...personalData.rows.map(v => ({
+          key: v.notificationId,
+          title: v.notificationTitle,
+          description: v.notificationContent,
+          type: v.notificationType,
+          datetime: v.sendTime,
+          readStatus: v.readStatus,
+          eventId: v.eventId,
+          inspectionRecordId: v.inspectionRecordId
+        }))
+      );
     } else {
       // 转换个人通知数据
       notices.value[1].list = personalData.rows.map(v => ({
@@ -285,7 +299,7 @@ const getPerNoticesTh = async () => {
       }));
     }
 
-    console.log("notices",notices.value)
+    console.log("notices", notices.value);
     // 更新分页总数
     pagination.total = personalData.total;
   } catch (error) {
@@ -293,41 +307,40 @@ const getPerNoticesTh = async () => {
   }
 };
 
-const eventInfo = ref({})
-const inspectionInfo = ref({})
-const isIn = ref(false)
-const inspectionResult = ref("")
-const getEventInfo = (item) => {
+const eventInfo = ref({});
+const inspectionInfo = ref({});
+const isIn = ref(false);
+const inspectionResult = ref("");
+const getEventInfo = item => {
   // alarmEventsInfo()
   if (item.eventId != null && item.eventId > 0) {
-    alarmEventsInfo(item.eventId).then(res => {
-      eventInfo.value = res.data
-    }).catch(err => {
-
-    })
+    alarmEventsInfo(item.eventId)
+      .then(res => {
+        eventInfo.value = res.data;
+      })
+      .catch(err => {});
   }
   if (item.inspectionRecordId != null && item.inspectionRecordId > 0) {
     dailyInspectionInfo(item.inspectionRecordId).then(res => {
-      inspectionInfo.value = res.data
-      eventInfo.value.type = "日常巡检"
-      inspectionResult.value = res.data.inspectionResult
-
-    })
+      inspectionInfo.value = res.data;
+      eventInfo.value.type = "日常巡检";
+      inspectionResult.value = res.data.inspectionResult;
+    });
   }
-
-}
+};
 
 function submitResult(val) {
   renewDailyInspection({
     ...inspectionInfo.value,
     inspectionResult: val
-  }).then(res => {
-    ElMessage.success("提交成功")
-  }).catch(err => {
-    ElMessage.error("提交失败")
   })
+    .then(res => {
+      ElMessage.success("提交成功");
+    })
+    .catch(err => {
+      ElMessage.error("提交失败");
+    });
 }
-
 
 onMounted(async () => {
   // await getNotices();
@@ -341,9 +354,7 @@ const handleRead = async (key: number) => {
   await notificationInfo(key);
   await getNotices();
 };
-const noticeListContainerRef = ref()
-
-
+const noticeListContainerRef = ref();
 
 function scrollChange(data) {
   // console.error("data", data, activeKey.value, 75.5 * notices.value[0].list.length)
@@ -359,7 +370,6 @@ function scrollChange(data) {
   //       getSysNoticesTh()
   //     }
   //   } else {
-
   //     const noticeListContainerHeight = (noticeListContainerRef.value[1]?.offsetHeight || 0)- 330;
   //     const averageHeight = noticeListContainerHeight / notices.value[1].list.length;
   //     if (data.scrollTop >= (averageHeight * notices.value[1].list.length)-2 && data.scrollTop < noticeListContainerHeight&& perReq.value.pageNum < Math.ceil(unreadPersonalNoticesNum.value / perReq.value.pageSize)) {
@@ -373,43 +383,44 @@ function scrollChange(data) {
   //     }
   //   }
   // }, 500)()
-
-
 }
 const load = () => {
   if (activeKey.value === "1") {
     if (unreadSysNoticesNum.value <= 10) {
-      return
+      return;
     }
     sysReq.value.pageNum += 1;
-    getSysNoticesTh()
-    
+    getSysNoticesTh();
   } else {
     if (unreadPersonalNoticesNum.value <= 10) {
-      return
+      return;
     }
     perReq.value.pageNum += 1;
     getPerNoticesTh();
   }
-}
+};
 
-const tabChange = (val) => {
+const tabChange = val => {
   if (activeKey.value == "1") {
-    getSysNoticesTh()
+    getSysNoticesTh();
   } else {
     getPerNoticesTh();
   }
-}
+};
 
 defineExpose({
   getNotices
-})
+});
 </script>
 
 <template>
-  <el-dropdown  v-if="userInfo.roleId != 7"  trigger="click" placement="bottom-end">
+  <el-dropdown
+    v-if="userInfo.roleId != 7"
+    trigger="click"
+    placement="bottom-end"
+  >
     <span class="dropdown-badge navbar-bg-hover select-none">
-      <el-badge  :value="noticesNum" :max="99">
+      <el-badge :value="noticesNum" :max="99">
         <span class="header-notice-icon">
           <IconifyIconOffline :icon="Bell" />
         </span>
@@ -417,65 +428,142 @@ defineExpose({
     </span>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-tabs :stretch="true" v-model="activeKey" class="dropdown-tabs"
-          :style="{ width: notices.length === 0 ? '200px' : '330px' }">
-          <el-empty v-if="notices?.length === 0" description="暂无消息" :image-size="60" />
+        <el-tabs
+          :stretch="true"
+          v-model="activeKey"
+          class="dropdown-tabs"
+          :style="{ width: notices.length === 0 ? '200px' : '330px' }"
+        >
+          <el-empty
+            v-if="notices?.length === 0"
+            description="暂无消息"
+            :image-size="60"
+          />
           <span v-else>
             <template v-for="item in notices" :key="item.key">
-              <el-popover placement="left-start" trigger="click" :width="300">
+              <!-- <el-popover placement="left-start" trigger="click" :width="300">
                 <el-descriptions title="信息" :column="1">
-                  <template v-if="eventInfo.type == '设备报警' || eventInfo.type == '工艺节点报警'">
-                    <el-descriptions-item label="报警编号">{{ eventInfo?.eventId }}</el-descriptions-item>
-                    <el-descriptions-item label="级别">{{ eventInfo?.level }}</el-descriptions-item>
-                    <el-descriptions-item label="类型">{{ eventInfo?.type }}</el-descriptions-item>
-                    <el-descriptions-item label="报警描述">{{ eventInfo?.description }}</el-descriptions-item>
-                    <el-descriptions-item label="设备">{{ eventInfo?.equipment?.equipmentName }}</el-descriptions-item>
-                    <el-descriptions-item label="报警数值">{{ eventInfo?.equipmentValue }}</el-descriptions-item>
+                  <template
+                    v-if="
+                      eventInfo.type == '设备报警' ||
+                      eventInfo.type == '工艺节点报警'
+                    "
+                  >
+                    <el-descriptions-item label="报警编号">{{
+                      eventInfo?.eventId
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="级别">{{
+                      eventInfo?.level
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="类型">{{
+                      eventInfo?.type
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="报警描述">{{
+                      eventInfo?.description
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="设备">{{
+                      eventInfo?.equipment?.equipmentName
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="报警数值">{{
+                      eventInfo?.equipmentValue
+                    }}</el-descriptions-item>
                   </template>
                   <template v-if="eventInfo.type == '物料报警'">
-                    <el-descriptions-item label="报警编号">{{ eventInfo?.eventId }}</el-descriptions-item>
-                    <el-descriptions-item label="级别">{{ eventInfo?.level }}</el-descriptions-item>
-                    <el-descriptions-item label="类型">{{ eventInfo?.type }}</el-descriptions-item>
-                    <el-descriptions-item label="报警描述">{{ eventInfo?.description }}</el-descriptions-item>
-                    <el-descriptions-item label="物料编号">{{ eventInfo?.materials?.code }}</el-descriptions-item>
-                    <el-descriptions-item label="物料名称">{{ eventInfo?.materials?.name }}</el-descriptions-item>
+                    <el-descriptions-item label="报警编号">{{
+                      eventInfo?.eventId
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="级别">{{
+                      eventInfo?.level
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="类型">{{
+                      eventInfo?.type
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="报警描述">{{
+                      eventInfo?.description
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="物料编号">{{
+                      eventInfo?.materials?.code
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="物料名称">{{
+                      eventInfo?.materials?.name
+                    }}</el-descriptions-item>
                   </template>
                   <template v-if="eventInfo.type == '环境报警'">
-                    <el-descriptions-item label="报警编号">{{ eventInfo?.eventId }}</el-descriptions-item>
-                    <el-descriptions-item label="级别">{{ eventInfo?.level }}</el-descriptions-item>
-                    <el-descriptions-item label="类型">{{ eventInfo?.type }}</el-descriptions-item>
-                    <el-descriptions-item label="报警描述">{{ eventInfo?.description }}</el-descriptions-item>
-                    <el-descriptions-item label="环境描述">{{ eventInfo?.environment?.description + "-" +
-                      eventInfo?.environment?.unitName }}</el-descriptions-item>
-                    <el-descriptions-item label="环境区域">{{ eventInfo?.environment?.earea }}</el-descriptions-item>
+                    <el-descriptions-item label="报警编号">{{
+                      eventInfo?.eventId
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="级别">{{
+                      eventInfo?.level
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="类型">{{
+                      eventInfo?.type
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="报警描述">{{
+                      eventInfo?.description
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="环境描述">{{
+                      eventInfo?.environment?.description +
+                      "-" +
+                      eventInfo?.environment?.unitName
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="环境区域">{{
+                      eventInfo?.environment?.earea
+                    }}</el-descriptions-item>
                   </template>
-                  <template v-if="eventInfo.type = '日常巡检'">
-                    <el-descriptions-item label="巡检编号">{{ inspectionInfo?.recordId }}</el-descriptions-item>
-                    <el-descriptions-item label="巡检人">{{ inspectionInfo?.inspector }}</el-descriptions-item>
-                    <el-descriptions-item label="巡检时间">{{ inspectionInfo?.inspectionDate }}</el-descriptions-item>
-                    <el-descriptions-item label="任务描述">{{ inspectionInfo?.taskDescription }}</el-descriptions-item>
-                    <el-descriptions-item label="异常说明">{{ inspectionInfo?.anomalyDescription }}</el-descriptions-item>
-                    <el-descriptions-item label="异常数">{{ inspectionInfo?.anomalyCount }}</el-descriptions-item>
+                  <template v-if="(eventInfo.type = '日常巡检')">
+                    <el-descriptions-item label="巡检编号">{{
+                      inspectionInfo?.recordId
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="巡检人">{{
+                      inspectionInfo?.inspector
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="巡检时间">{{
+                      inspectionInfo?.inspectionDate
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="任务描述">{{
+                      inspectionInfo?.taskDescription
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="异常说明">{{
+                      inspectionInfo?.anomalyDescription
+                    }}</el-descriptions-item>
+                    <el-descriptions-item label="异常数">{{
+                      inspectionInfo?.anomalyCount
+                    }}</el-descriptions-item>
                     <el-descriptions-item label="巡检结果">
-                      <ElInput @change="submitResult" v-model="inspectionResult" placeholder="输入回车进行提交" />
+                      <ElInput
+                        @change="submitResult"
+                        v-model="inspectionResult"
+                        placeholder="输入回车进行提交"
+                      />
                     </el-descriptions-item>
                   </template>
                 </el-descriptions>
-                <template #reference>
-                  <el-tab-pane :label="`${item.name}(${item.key === '1'
+                <template #reference> -->
+              <el-tab-pane
+                :label="`${item.name}(${
+                  item.key === '1'
                     ? unreadSysNoticesNum
                     : unreadPersonalNoticesNum
-                    })`" :name="`${item.key}`" @tab-change="tabChange">
-                    <el-scrollbar   max-height="330px">
-                      <div v-infinite-scroll="load" class="noticeList-container" ref="noticeListContainerRef">
-                        <NoticeList @getInfo="getEventInfo" :list="item.list" @read="handleRead" />
-                      </div>
-                    </el-scrollbar>
-                  </el-tab-pane>
-                </template>
-              </el-popover>
-
-
+                })`"
+                :name="`${item.key}`"
+                @tab-change="tabChange"
+              >
+                <el-scrollbar max-height="330px">
+                  <div
+                    v-infinite-scroll="load"
+                    class="noticeList-container"
+                    ref="noticeListContainerRef"
+                  >
+                    <NoticeList
+                      @getInfo="getEventInfo"
+                      :list="item.list"
+                      @read="handleRead"
+                    />
+                  </div>
+                </el-scrollbar>
+              </el-tab-pane>
+              <!-- </template>
+              </el-popover> -->
             </template>
           </span>
         </el-tabs>

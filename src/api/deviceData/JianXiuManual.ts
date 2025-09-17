@@ -1,11 +1,11 @@
 import { http } from "@/utils/http";
 
-//获取检修手册信息
+//获取巡检手册信息
 export function inspectionManualInfo(manualId: number) {
   return http.request("get", `/manage/equipment-inspection-manual/${manualId}`);
 }
 
-//更新检修手册
+//更新巡检手册
 export interface renewInspectionManualRes {
   equipmentId: string;
   manualVersion: string;
@@ -26,7 +26,7 @@ export function renewInspectionManual(data: renewInspectionManualRes) {
   );
 }
 
-//获取检修手册列表
+//获取巡检手册列表
 export interface inspectionManualRes extends BasePageQuery {
   equipmentName: string;
   equipmentType: string;
@@ -37,7 +37,7 @@ export function inspectionManualList(params: inspectionManualRes) {
   });
 }
 
-//添加检修手册
+//添加巡检手册
 export interface addInspectionManualRes {
   equipmentId: string;
   manualVersion: string;
@@ -50,7 +50,7 @@ export function addInspectionManual(data: addInspectionManualRes) {
   return http.request("post", "/manage/equipment-inspection-manual", { data });
 }
 
-//删除检修手册
+//删除巡检手册
 export function deleteInspectionManual(manualIds: string[]) {
   return http.request("delete", "/manage/equipment-inspection-manual", {
     params: {

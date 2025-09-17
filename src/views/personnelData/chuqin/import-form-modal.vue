@@ -2,7 +2,10 @@
 import VImportDialog from "@/components/VImportDialog/VImportDialog.vue";
 import { ref, reactive } from "vue";
 import { UploadFilled } from "@element-plus/icons-vue";
-import { downloadTemplate,exportPersonnelTemplate } from "@/api/personnelData/personnelProfile";
+import {
+  downloadTemplate,
+  exportPersonnelTemplate
+} from "@/api/personnelData/personnelProfile";
 import { getToken } from "@/utils/auth";
 import { ExportDownload } from "@/utils/exportdownload";
 import { defaultConfig } from "@/utils/http/index";
@@ -36,7 +39,7 @@ const downloadTemplateClick = () => {
 };
 
 /** 文件上传成功处理 */
-const handleFileSuccess = (res) => {
+const handleFileSuccess = res => {
   if (res.code !== 0) {
     ElMessage.error(res.msg);
     return;
