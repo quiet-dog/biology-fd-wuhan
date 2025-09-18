@@ -141,6 +141,10 @@ const columns: TableColumnList = [
     prop: "unit"
   },
   {
+    label: "当前值",
+    prop: "value"
+  },
+  {
     label: "级别层级",
     prop: "values.length"
   },

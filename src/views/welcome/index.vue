@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as echarts from "echarts";
-import { ref, onMounted, nextTick, computed, h } from 'vue';
+import { ref, onMounted, nextTick, computed, h } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import renyuan from "@/assets/images/renyuan.png";
 import shebei from "@/assets/images/shebei.png";
@@ -23,7 +23,11 @@ import {
 import { getThresholdOnline } from "@/api/alarmPlatform/thresholdSetting";
 
 import { useUserStore } from "@/store/modules/user";
-import { getDayStatus, getDoorEventList, getMaterialsEasy } from "@/api/door/door";
+import {
+  getDayStatus,
+  getDoorEventList,
+  getMaterialsEasy
+} from "@/api/door/door";
 import dayjs from "dayjs";
 import { equipmentList } from "@/api/deviceData/equipmentProfile";
 
@@ -312,29 +316,27 @@ const startNoticeScroll = () => {
     //   }, 50);
     // }
     if (noticeList && !isScrollingByWheel) {
-  const scrollHeight = noticeList.scrollHeight;
-  let currentHeight = noticeList.scrollTop;
+      const scrollHeight = noticeList.scrollHeight;
+      let currentHeight = noticeList.scrollTop;
 
-  scrollInterval = setInterval(() => {
-    // 获取容器可视高度
-    const containerHeight = noticeList.clientHeight;
+      scrollInterval = setInterval(() => {
+        // 获取容器可视高度
+        const containerHeight = noticeList.clientHeight;
 
-    // 每次向下滚动一点
-    currentHeight += 1;
-    noticeList.scrollTop = currentHeight;
+        // 每次向下滚动一点
+        currentHeight += 1;
+        noticeList.scrollTop = currentHeight;
 
-    // 判断是否到底部
-    if (noticeList.scrollTop + containerHeight >= scrollHeight) {
-      // notificationListFun();
-      // console.log('已经滚动到底部！触发事件');
-      // 👉 执行你想要的事件（只触发一次可以加标志）
-
-
-      // 可选：停止滚动
-      // clearInterval(scrollInterval);
+        // 判断是否到底部
+        if (noticeList.scrollTop + containerHeight >= scrollHeight) {
+          // notificationListFun();
+          // console.log('已经滚动到底部！触发事件');
+          // 👉 执行你想要的事件（只触发一次可以加标志）
+          // 可选：停止滚动
+          // clearInterval(scrollInterval);
+        }
+      }, 50);
     }
-  }, 50);
-}
   });
 };
 
@@ -355,52 +357,60 @@ const handleScroll = () => {
 const shangwu = computed(() => {
   const now = new Date();
   const hours = now.getHours();
-  console.log('1231')
+  console.log("1231");
   if (hours < 12) {
-    return "上午"
+    return "上午";
   } else {
-    return "下午"
+    return "下午";
   }
-})
+});
 
 const materailsNormal = ref();
 
-const eventData = ref([])
+const eventData = ref([]);
 const getEventDataList = () => {
   getDoorEventList({
     pageNum: 1,
     pageSize: 200,
-    beginTime: dayjs().startOf('day').format('YYYY-MM-DD'),
-    endTime: dayjs().endOf('day').format('YYYY-MM-DD')
-  }).then(res => {
-    eventData.value = res.data.rows;
-  }).catch(err => {
-    console.log('err', err)
+    beginTime: dayjs().startOf("day").format("YYYY-MM-DD"),
+    endTime: dayjs().endOf("day").format("YYYY-MM-DD")
   })
-}
+    .then(res => {
+      eventData.value = res.data.rows;
+    })
+    .catch(err => {
+      console.log("err", err);
+    });
+};
 
-const onlineEquipment = ref([])
-const notOnlineEquipment = ref([])
+const onlineEquipment = ref([]);
+const notOnlineEquipment = ref([]);
 const getEquipmentStatus = () => {
   equipmentList({
     pageSize: 300,
-    pageNum: 1,
-  }).then(res => {
-    onlineEquipment.value = res.data.rows.filter(item => item.isOnline)
-    notOnlineEquipment.value = res.data.rows.filter(item => !item.isOnline)
-  }).catch(err => {
-    console.log('err', err)
+    pageNum: 1
   })
-}
+    .then(res => {
+      onlineEquipment.value = res.data.rows.filter(item => item.isOnline);
+      notOnlineEquipment.value = res.data.rows.filter(item => !item.isOnline);
+    })
+    .catch(err => {
+      console.log("err", err);
+    });
+};
 
-const normalMaterialsList = ref([])
-const notNormalMaterialsList = ref([])
+const normalMaterialsList = ref([]);
+const notNormalMaterialsList = ref([]);
 const getMaterialsEasyList = () => {
   getMaterialsEasy().then(res => {
-    normalMaterialsList.value = res.data.filter(item => item.description == null)
-    notNormalMaterialsList.value = res.data.filter(item => item.description != null && item.description != "")
-  })
-}
+    normalMaterialsList.value = res.data.filter(
+      item => item.description == null
+    );
+    notNormalMaterialsList.value = res.data.filter(
+      item => item.description != null && item.description != ""
+    );
+  });
+};
 
 onMounted(async () => {
   if (environmentRef.value) {
@@ -452,8 +462,7 @@ onMounted(async () => {
   getNormalMaterails().then(res => {
     materailsNormal.value = res.data;
     console.log("materailsNormal.value", materailsNormal.value);
-  })
-
+  });
 });
 
 // getThresholdOnline
@@ -468,7 +477,7 @@ const getThresholdOnlineFun = async () => {
     {
       color: "#3FD599",
       name: "在线设备",
-      num: data.onlineCount.toString(),
+      num: data.onlineCount,
       baifen: `${Math.round((data.onlineCount / total) * 100)}%`
     },
     {
@@ -535,26 +544,23 @@ const getDayStatusFun = async () => {
 
 const activeName = ref("一层");
 
-
 const kuaisuSearch = ref("");
 const kuaisuShow = ref(false);
-const kuaisuList = ref([])
-const kuaisuSearchChange = (val) => {
+const kuaisuList = ref([]);
+const kuaisuSearchChange = val => {
   if (val == "") {
     kuaisuList.value = [];
-    return
+    return;
   }
   kuaisuList.value = menusList.filter(item => {
     return item.menu_name.includes(kuaisuSearch.value);
   });
 };
-const toPath = (item) => {
+const toPath = item => {
   router.push(item);
-}
+};
 
-const loadNotice = () => {
-
-}
+const loadNotice = () => {};
 
 function clickToLuanSheng() {
   window.open("/carshopweb", "_blank");
@@ -565,21 +571,27 @@ function clickToLuanSheng() {
   <div class="home">
     <div class="home_t">
       <div class="home_t_l">
-        <el-card class="home_t_lt" :body-style="{
-          width: '100%',
-          display: 'flex',
-          'justify-content': 'space-between',
-          'align-items': 'center',
-          padding: 0
-        }">
+        <el-card
+          class="home_t_lt"
+          :body-style="{
+            width: '100%',
+            display: 'flex',
+            'justify-content': 'space-between',
+            'align-items': 'center',
+            padding: 0
+          }"
+        >
           <div class="home_t_lt_l">
             <div class="home_t_lt_l_title">{{ shangwu }}好！系统管理员</div>
             <div class="home_t_lt_l_bottom">
-              <div class="home_t_lt_l_bottom_nei" @click="
-                router.push({
-                  path: '/personnelData/accessControlRecords/index'
-                })
-                ">
+              <div
+                class="home_t_lt_l_bottom_nei"
+                @click="
+                  router.push({
+                    path: '/personnelData/accessControlRecords/index'
+                  })
+                "
+              >
                 <img src="/src/assets/images/renyuan1.png" alt="" />
                 <div class="home_t_lt_l_bottom_nei_right">
                   <div>
@@ -589,7 +601,11 @@ function clickToLuanSheng() {
                     <ElPopover @before-enter="getEventDataList" width="300">
                       <template #reference>
                         <div>
-                          {{ Math.floor(parseFloat((attendanceRate * 100).toFixed(2))) }}%
+                          {{
+                            Math.floor(
+                              parseFloat((attendanceRate * 100).toFixed(2))
+                            )
+                          }}%
                         </div>
                       </template>
                       <ElTable height="500" :data="eventData">
@@ -597,12 +613,11 @@ function clickToLuanSheng() {
                         <ElTableColumn prop="personnel.name" label="员工姓名" />
                         <ElTableColumn prop="doorDate" label="出勤时间">
                           <template #default="{ row }">
-                            {{ dayjs(row.doorDate).format('HH:mm:ss') }}
+                            {{ dayjs(row.doorDate).format("HH:mm:ss") }}
                           </template>
                         </ElTableColumn>
                       </ElTable>
                     </ElPopover>
-
                   </div>
                 </div>
               </div>
@@ -615,7 +630,9 @@ function clickToLuanSheng() {
                     </div>
                     <ElPopover @before-enter="getEquipmentStatus" width="300">
                       <template #reference>
-                        <div>{{ list2[0].num }}</div>
+                        <div>
+                          {{ Number(list2[0].num) + Number(list2[2].num) }}
+                        </div>
                       </template>
                       <ElTable height="500" :data="onlineEquipment">
                         <ElTableColumn prop="equipmentName" label="设备名称" />
@@ -678,64 +695,101 @@ function clickToLuanSheng() {
           <div class="home_t_lt_r" />
         </el-card>
         <div class="home_t_lb">
-          <el-card :body-style="{
-            width: '100%',
-            padding: '21px 24px'
-          }">
-              <div @click="kuaisuShow = true">快速导航
-              &nbsp;&nbsp;
+          <el-card
+            :body-style="{
+              width: '100%',
+              padding: '21px 24px'
+            }"
+          >
+            <div @click="kuaisuShow = true">
+              快速导航 &nbsp;&nbsp;
               <el-icon style="vertical-align: middle">
                 <Search />
-              </el-icon></div>
+              </el-icon>
+            </div>
             <div class="home_bl">
-              <div v-for="item in routerList" :key="item.name" @click="routerClick(item)">
+              <div
+                v-for="item in routerList"
+                :key="item.name"
+                @click="routerClick(item)"
+              >
                 <img :src="item.back" alt="" />
                 <span>{{ item.name }}</span>
               </div>
             </div>
           </el-card>
-          <el-card :body-style="{
-            width: '100%',
-            height: '100%',
-            padding: '20px 20px',
-            display: 'flex',
-            'justify-content': 'space-between',
-            'align-items': 'center',
-            'flex-direction': 'column'
-          }">
+          <el-card
+            :body-style="{
+              width: '100%',
+              height: '100%',
+              padding: '20px 20px',
+              display: 'flex',
+              'justify-content': 'space-between',
+              'align-items': 'center',
+              'flex-direction': 'column'
+            }"
+          >
             <div class="home_rt">
               <span>通知提醒</span>
               <div style="display: flex; align-items: center">
-                <el-input v-model="searchValue" style="width: 130px; margin-right: 20px" placeholder="请输入信息"
-                  size="small" @change="searchChange" :prefix-icon="Search" />
-                <el-select size="small" style="width: 130px; margin-right: 20px" v-model="notificationType"
-                  @change="searchChange" clearable placeholder="请选择类型">
+                <el-input
+                  v-model="searchValue"
+                  style="width: 130px; margin-right: 20px"
+                  placeholder="请输入信息"
+                  size="small"
+                  @change="searchChange"
+                  :prefix-icon="Search"
+                />
+                <el-select
+                  size="small"
+                  style="width: 130px; margin-right: 20px"
+                  v-model="notificationType"
+                  @change="searchChange"
+                  clearable
+                  placeholder="请选择类型"
+                >
                   <el-option label="通知" value="通知" />
                   <el-option label="提醒" value="提醒" />
                 </el-select>
-                <el-button type="text" @click="viewMoreClick">查看更多</el-button>
+                <el-button type="text" @click="viewMoreClick"
+                  >查看更多</el-button
+                >
               </div>
             </div>
-            <div class="home_rb" ref="noticeListRef" @mouseenter="pauseScroll" @mouseleave="resumeScroll"
-              @wheel="handleScroll">
+            <div
+              class="home_rb"
+              ref="noticeListRef"
+              @mouseenter="pauseScroll"
+              @mouseleave="resumeScroll"
+              @wheel="handleScroll"
+            >
               <div class="home_rb_nei" v-for="item in nlist" :key="item.title">
                 <div style="display: flex; align-items: center">
-                  <div style="
+                  <div
+                    style="
                       width: 8px;
                       height: 8px;
                       border-radius: 50%;
                       background-color: #ffa914;
                       margin-right: 5px;
-                    " />
+                    "
+                  />
                   <el-tag v-if="item.type" type="primary" size="small">{{
                     item.type
-                    }}</el-tag>
-                  <el-tooltip class="box-item" effect="dark" :content="item.content" placement="top">
-                    <span style="
+                  }}</el-tag>
+                  <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    :content="item.content"
+                    placement="top"
+                  >
+                    <span
+                      style="
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
-                      ">
+                      "
+                    >
                       {{ item.content }}
                     </span>
                   </el-tooltip>
@@ -745,17 +799,22 @@ function clickToLuanSheng() {
           </el-card>
         </div>
       </div>
-      <el-card :body-style="{
-        width: '100%',
-        height: '100%',
-        padding: 0
-      }" class="home_t_r">
+      <el-card
+        :body-style="{
+          width: '100%',
+          height: '100%',
+          padding: 0
+        }"
+        class="home_t_r"
+      >
         <div class="equipmentStatus" ref="equipmentStatusRef" />
         <div class="home_t_rb">
           <div class="home_t_rb_nei" v-for="item in list2" :key="item.name">
-            <div :style="{
-              background: item.color
-            }" />
+            <div
+              :style="{
+                background: item.color
+              }"
+            />
             <div>{{ item.name }}</div>
             <div>{{ item.baifen }}</div>
             <div>{{ item.num }}</div>
@@ -764,14 +823,18 @@ function clickToLuanSheng() {
       </el-card>
     </div>
     <div class="home_b">
-      <el-card :body-style="{
-        width: '100%',
-        padding: 0
-      }">
+      <el-card
+        :body-style="{
+          width: '100%',
+          padding: 0
+        }"
+      >
         <div class="home_bt">
           <span>车间平面图</span>
           &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
-          <el-button type="primary" text @click="clickToLuanSheng">进入车间</el-button>
+          <el-button type="primary" text @click="clickToLuanSheng"
+            >进入车间</el-button
+          >
         </div>
         <div class="home_bb">
           <!-- <ElTabs v-model="activeName" style="margin: 0 30px">
@@ -789,34 +852,70 @@ function clickToLuanSheng() {
             </ElTabPane>
           </ElTabs> -->
           <!-- http://10.10.12.5:8011 -->
-        <iframe src="/carshopweb/" frameborder="0" style="width: 100%;height: 100%;"></iframe>
+          <iframe
+            src="/carshopweb/"
+            frameborder="0"
+            style="width: 100%; height: 100%"
+          />
         </div>
       </el-card>
-      <el-card :body-style="{
-        width: '100%',
-        height: '100%',
-        padding: 0,
-        position: 'relative'
-      }">
-        <el-select class="environment-area-select" style="width: 127px; height: 31.98px; z-index: 999999" v-model="area"
-          placeholder="请选择区域" clearable @change="handleSelectionChange">
-          <el-option v-for="item in allGroupList.area" :key="item.value" :label="item.label" :value="item.value" />
+      <el-card
+        :body-style="{
+          width: '100%',
+          height: '100%',
+          padding: 0,
+          position: 'relative'
+        }"
+      >
+        <el-select
+          class="environment-area-select"
+          style="width: 127px; height: 31.98px; z-index: 999999"
+          v-model="area"
+          placeholder="请选择区域"
+          clearable
+          @change="handleSelectionChange"
+        >
+          <el-option
+            v-for="item in allGroupList.area"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
-        <el-select class="environment-metric-select" style="width: 127px; height: 31.98px; z-index: 999999"
-          v-model="unitName" placeholder="请选择指标" clearable @change="handleSelectionChange">
-          <el-option v-for="item in allGroupList.unitName" :key="item.value" :label="item.label" :value="item.value" />
+        <el-select
+          class="environment-metric-select"
+          style="width: 127px; height: 31.98px; z-index: 999999"
+          v-model="unitName"
+          placeholder="请选择指标"
+          clearable
+          @change="handleSelectionChange"
+        >
+          <el-option
+            v-for="item in allGroupList.unitName"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
         <div class="chart" ref="environmentRef" />
       </el-card>
     </div>
-    <el-dialog :z-index="99999999" title="快速导航" v-model="kuaisuShow" width="400px">
+    <el-dialog
+      :z-index="99999999"
+      title="快速导航"
+      v-model="kuaisuShow"
+      width="400px"
+    >
       <el-input v-model="kuaisuSearch" @input="kuaisuSearchChange" />
-      <el-card @click="toPath(item.path)" v-for="item in kuaisuList" :key="item.path">
+      <el-card
+        @click="toPath(item.path)"
+        v-for="item in kuaisuList"
+        :key="item.path"
+      >
         <h3>{{ item.menu_name }}</h3>
       </el-card>
     </el-dialog>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
