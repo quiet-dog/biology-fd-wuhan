@@ -6,7 +6,7 @@
       :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
     >
-      <el-form-item label="设备名称：">
+      <!-- <el-form-item label="设备名称：">
         <el-input
           class="!w-[200px]"
           v-model="searchFormParams.equipmentName"
@@ -19,6 +19,31 @@
           class="!w-[200px]"
           v-model="searchFormParams.equipmentType"
           placeholder="请输入设备型号"
+          clearable
+        />
+      </el-form-item> -->
+
+      <el-form-item label="手册名称：">
+        <el-input
+          class="!w-[200px]"
+          v-model="searchFormParams.manualName"
+          placeholder="请输入手册名称"
+          clearable
+        />
+      </el-form-item>
+      <el-form-item label="手册版本：">
+        <el-input
+          class="!w-[200px]"
+          v-model="searchFormParams.manualVersion"
+          placeholder="请输入手册版本"
+          clearable
+        />
+      </el-form-item>
+      <el-form-item label="手册编号：">
+        <el-input
+          class="!w-[200px]"
+          v-model="searchFormParams.manualCode"
+          placeholder="请输入手册编号"
           clearable
         />
       </el-form-item>
@@ -90,7 +115,7 @@
       v-model="modalVisible"
       @success="onSearch(tableRef)"
     />
-    <detailFromModal ref="detailRef"></detailFromModal>
+    <detailFromModal ref="detailRef" />
   </div>
 </template>
 
@@ -117,18 +142,30 @@ const columns: TableColumnList = [
     label: "编号",
     prop: "manualId"
   },
+  // {
+  //   label: "设备名称",
+  //   prop: "equipment.equipmentName"
+  // },
+  // {
+  //   label: "设备型号",
+  //   prop: "equipment.equipmentType"
+  // },
   {
-    label: "设备名称",
-    prop: "equipment.equipmentName"
+    label: "手册名称",
+    prop: "manualName"
   },
   {
-    label: "设备型号",
-    prop: "equipment.equipmentType"
+    label: "手册版本",
+    prop: "manualVersion"
   },
-  {
-    label: "适用范围",
-    prop: "suitableScope"
-  },
+  // {
+  //   label: "手册编号",
+  //   prop: "manualCode"
+  // },
+  // {
+  //   label: "适用范围",
+  //   prop: "suitableScope"
+  // },
   {
     label: "创建日期",
     prop: "createTime",
@@ -158,7 +195,10 @@ const dataList = ref([]);
 const searchFormRef = ref();
 const searchFormParams = reactive<inspectionManualRes>({
   equipmentName: "",
-  equipmentType: ""
+  equipmentType: "",
+  manualName: "",
+  manualVersion: "",
+  manualCode: ""
 });
 
 const pagination: PaginationProps = {

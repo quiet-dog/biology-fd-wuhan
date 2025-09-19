@@ -16,7 +16,7 @@ export interface renewInspectionManualRes {
   manualId: number;
 }
 export function renewInspectionManual(data: renewInspectionManualRes) {
-  let { manualId, ...other } = data;
+  const { manualId, ...other } = data;
   return http.request(
     "put",
     `/manage/equipment-inspection-manual/${manualId}`,
@@ -30,6 +30,9 @@ export function renewInspectionManual(data: renewInspectionManualRes) {
 export interface inspectionManualRes extends BasePageQuery {
   equipmentName: string;
   equipmentType: string;
+  manualName: string;
+  manualVersion: string;
+  manualCode: string;
 }
 export function inspectionManualList(params: inspectionManualRes) {
   return http.request("get", "/manage/equipment-inspection-manual", {
@@ -45,6 +48,7 @@ export interface addInspectionManualRes {
   suitableScope: string;
   isEnabled: boolean;
   manualFilePath: string[];
+  manualName: string;
 }
 export function addInspectionManual(data: addInspectionManualRes) {
   return http.request("post", "/manage/equipment-inspection-manual", { data });

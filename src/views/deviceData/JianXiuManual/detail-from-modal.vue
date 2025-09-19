@@ -23,7 +23,8 @@ const formData = ref({
   manualFilePath: [],
   createTime: "",
   manualId: 0,
-  suitableScope: ""
+  suitableScope: "",
+  manualName: ""
 });
 const visible = ref(false);
 
@@ -58,7 +59,8 @@ const handleOpened = async (id: number) => {
       path: item
     });
   });
-  formData.value = { ...data, equipmentType: data.equipment.equipmentType };
+  formData.value = { ...data, equipmentType: data.equipment?.equipmentType };
+  console.log("formData.value", formData.value);
 };
 
 function getShortFileName(fileName: string): string {
@@ -86,7 +88,7 @@ const downloadFile = item => {
   // }
 
   axios
-    .get(`${defaultConfig.baseURL}/file/preview`+item.path, {
+    .get(`${defaultConfig.baseURL}/file/preview` + item.path, {
       // params: {
       //   fileName: item.path
       // },
@@ -153,7 +155,7 @@ const getPreviewUrl = item => {
     @closed="handleClosed"
   >
     <el-form :model="formData" label-width="100px" ref="formRef">
-      <el-row>
+      <!-- <el-row>
         <el-col :span="12">
           <el-form-item label="手册编号：">
             <el-input
@@ -167,22 +169,12 @@ const getPreviewUrl = item => {
         </el-col>
         <el-col :span="12">
           <el-form-item label="设备名称：">
-            <!-- <el-select
-              placeholder=""
-              clearable
-              v-model="formData.equipmentId"
-              disabled
+            <el-input
+              v-model="formData.equipmentName"
               style="width: 300px"
-            >
-              <el-option
-                v-for="item in dataList"
-                :key="item.equipmentId"
-                :label="`${item.equipmentName}-${item.equipmentCode}`"
-                :value="item.equipmentId"
-              />
-            </el-select> -->
-            <el-input v-model="formData.equipmentName" style="width: 300px" disabled />
-           </el-form-item>
+              disabled
+            />
+          </el-form-item>
         </el-col>
       </el-row>
       <el-row>
@@ -217,8 +209,46 @@ const getPreviewUrl = item => {
           readonly
           style="width: 300px"
         />
-      </el-form-item>
-      <el-form-item label="维修手册：">
+      </el-form-item> -->
+
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="手册名称：">
+            <el-input
+              v-model="formData.manualName"
+              placeholder=""
+              autocomplete="off"
+              readonly
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="手册版本：">
+            <el-input
+              v-model="formData.manualVersion"
+              placeholder=""
+              autocomplete="off"
+              readonly
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <!-- <el-row>
+        <el-col :span="12">
+          <el-form-item label="手册编号：">
+            <el-input
+              v-model="formData.manualCode"
+              placeholder="请输入手册编号"
+              autocomplete="off"
+              readonly
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row> -->
+      <el-form-item label="巡检手册：">
         <div class="file_list">
           <div
             v-for="(item, index) in manualFilePaths"

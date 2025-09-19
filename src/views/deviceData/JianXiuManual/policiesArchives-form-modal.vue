@@ -18,13 +18,32 @@ interface Props {
 }
 
 const rules: FormRules = {
-  equipmentId: [
+  // equipmentId: [
+  //   {
+  //     required: true,
+  //     message: "设备编号不能为空"
+  //   }
+  // ],
+
+  // manualCode: [
+  //   {
+  //     required: true,
+  //     message: "手册编号不能为空"
+  //   }
+  // ],
+  // suitableScope: [
+  //   {
+  //     required: true,
+  //     message: "手册范围不能为空"
+  //   }
+  // ],
+  manualName: [
     {
       required: true,
-      message: "设备编号不能为空"
+      message: "手册名称不能为空"
     }
   ],
-  suitableScope: [
+  manualVersion: [
     {
       required: true,
       message: "手册版本不能为空"
@@ -55,7 +74,8 @@ const formData = reactive<addInspectionManualRes>({
   manualCode: "",
   isEnabled: false,
   suitableScope: "",
-  manualFilePath: []
+  manualFilePath: [],
+  manualName: ""
 });
 const equipmentType = ref<string>("");
 
@@ -102,7 +122,7 @@ const loadArchiveListFun = () => {
 };
 const archiveListFun = async () => {
   const { data } = await equipmentList(archiveinfo.value);
-  if(data.rows.length > 0) {
+  if (data.rows.length > 0) {
     dataList.value = [...dataList.value, ...data.rows];
   }
 };
@@ -141,7 +161,7 @@ function handleClosed() {
     @closed="handleClosed"
   >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
-      <el-row>
+      <!-- <el-row>
         <el-col :span="12">
           <el-form-item label="设备名称：" prop="equipmentId">
             <el-select
@@ -151,15 +171,14 @@ function handleClosed() {
               @change="equipmentChange"
               style="width: 300px"
             >
-            <div v-infinite-scroll="loadArchiveListFun">
-              <el-option
-                v-for="item in dataList"
-                :key="item.equipmentId"
-                :label="`${item.equipmentName}-${item.equipmentCode}`"
-                :value="item.equipmentId"
-              />
-            </div>
-             
+              <div v-infinite-scroll="loadArchiveListFun">
+                <el-option
+                  v-for="item in dataList"
+                  :key="item.equipmentId"
+                  :label="`${item.equipmentName}-${item.equipmentCode}`"
+                  :value="item.equipmentId"
+                />
+              </div>
             </el-select>
           </el-form-item>
         </el-col>
@@ -186,7 +205,39 @@ function handleClosed() {
             />
           </el-form-item>
         </el-col>
+      </el-row> -->
+
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="手册名称：" prop="manualName">
+            <el-input
+              v-model="formData.manualName"
+              placeholder="请输入手册名称"
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="手册版本：" prop="manualVersion">
+            <el-input
+              v-model="formData.manualVersion"
+              placeholder="请输入手册版本"
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
       </el-row>
+      <!-- <el-row>
+        <el-col :span="12">
+          <el-form-item label="手册编号：" prop="manualCode">
+            <el-input
+              v-model="formData.manualCode"
+              placeholder="请输入手册编号"
+              style="width: 300px"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row> -->
       <el-form-item label="巡检手册：" prop="manualFilePath">
         <CUplopad
           :type="type"
