@@ -119,9 +119,9 @@ const form = ref<equipmentListRes>({
   pageNum: 1
 });
 const loadArchiveListFun = () => {
-  form.value.pageNum +=1;
+  form.value.pageNum += 1;
   archiveListFun();
-}
+};
 const archiveListFun = async () => {
   const { data } = await equipmentList(form.value);
   if (data.rows.length > 0) {
@@ -161,15 +161,15 @@ function handleOpened() {
     Object.assign(formData, props.row);
     if (props.row.values != null && props.row.values.length > 0) {
       formData.values = props.row.values.map(item => {
-      return {
-        ...item,
-      };
-    });
+        return {
+          ...item
+        };
+      });
     } else {
       formData.values = [];
     }
-    
-    console.log("formData",formData)
+
+    console.log("formData", formData);
     num.value = formData.values.length;
   }
   archiveListFun();
@@ -320,15 +320,14 @@ function handleClosed() {
           placeholder="请选择所属设备"
           style="width: 300px"
         >
-        <div v-infinite-scroll="loadArchiveListFun">
-          <el-option
-            v-for="item in dataList"
-            :key="item.equipmentId"
-            :label="`${item.equipmentName}-${item.installationLocation}-${item.equipmentCode}`"
-            :value="item.equipmentId"
-          />
-        </div>
-        
+          <div v-infinite-scroll="loadArchiveListFun">
+            <el-option
+              v-for="item in dataList"
+              :key="item.equipmentId"
+              :label="`${item.equipmentName}-${item.installationLocation}-${item.equipmentCode}`"
+              :value="item.equipmentId"
+            />
+          </div>
         </el-select>
       </el-form-item>
       <!-- <el-form-item label="应急预案：" prop="emergencyIds">

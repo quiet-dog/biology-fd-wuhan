@@ -1,10 +1,10 @@
-<script lang='ts' setup>
-import { getAnimationApi } from '@/api/animation';
-import { CommonUtils } from '@/utils/common';
-import { PaginationProps } from '@pureadmin/table';
-import { ElMessage, Sort } from 'element-plus';
-import { onMounted, reactive, ref, toRaw } from 'vue';
-import { sendAnimationApi } from '../../../api/animation/index';
+<script lang="ts" setup>
+import { getAnimationApi } from "@/api/animation";
+import { CommonUtils } from "@/utils/common";
+import { PaginationProps } from "@pureadmin/table";
+import { ElMessage, Sort } from "element-plus";
+import { onMounted, reactive, ref, toRaw } from "vue";
+import { sendAnimationApi } from "../../../api/animation/index";
 import { PureTableBar } from "@/components/RePureTableBar";
 
 const columns: TableColumnList = [
@@ -22,7 +22,7 @@ const columns: TableColumnList = [
   },
   {
     label: "键",
-    prop: "key",
+    prop: "key"
   },
   {
     label: "绑定工艺",
@@ -47,12 +47,12 @@ const pageLoading = ref(true);
 const modalVisible = ref(false);
 const defaultSort: Sort = {
   prop: "createTime",
-  order: "ascending"
+  order: "descending"
 };
 const sortState = ref<Sort>(defaultSort);
 const searchFormParams = reactive({
   orderColumn: "createTime",
-  orderDirection: "descending",
+  orderDirection: "descending"
 });
 
 const archiveListFun = async () => {
@@ -69,10 +69,10 @@ const archiveListFun = async () => {
   dataList.value = data.rows;
   pagination.total = data.total;
 };
-const sendAnimation = async (row) => {
+const sendAnimation = async row => {
   await sendAnimationApi({
     animationIds: [row.animationId],
-    type: row.type,
+    type: row.type
   }).finally(() => {
     ElMessage.success("发送成功");
   });
@@ -85,24 +85,42 @@ onMounted(() => {
 
 <template>
   <div>
-    <PureTableBar title="动画模拟列表" :columns="columns" :tableRef="tableRef?.getTableRef()">
+    <PureTableBar
+      title="动画填报列表"
+      :columns="columns"
+      :tableRef="tableRef?.getTableRef()"
+    >
       <template v-slot="{ size, dynamicColumns }">
-        <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
-          row-key="policiesId" showOverflowTooltip table-layout="auto" :size="size" :columns="dynamicColumns"
-          :data="dataList" :pagination="pagination" :paginationSmall="size === 'small' ? true : false"
-          @page-size-change="archiveListFun" @page-current-change="archiveListFun" :header-cell-style="{
+        <pure-table
+          ref="tableRef"
+          adaptive
+          :adaptiveConfig="{ offsetBottom: 32 }"
+          align-whole="center"
+          row-key="policiesId"
+          showOverflowTooltip
+          table-layout="auto"
+          :size="size"
+          :columns="dynamicColumns"
+          :data="dataList"
+          :pagination="pagination"
+          :paginationSmall="size === 'small' ? true : false"
+          @page-size-change="archiveListFun"
+          @page-current-change="archiveListFun"
+          :header-cell-style="{
             background: 'var(--el-table-row-hover-bg-color)',
             color: 'var(--el-text-color-primary)'
-          }" style="height: auto">
+          }"
+          style="height: auto"
+        >
           <template #operation="{ row }">
-            <el-button type="primary" size="small" @click="sendAnimation(row)">动画控制</el-button>
+            <el-button type="primary" size="small" @click="sendAnimation(row)"
+              >动画控制</el-button
+            >
           </template>
-          </pure-table>
+        </pure-table>
       </template>
     </PureTableBar>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

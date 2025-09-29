@@ -38,7 +38,7 @@ const columns: TableColumnList = [
     prop: "max"
   },
   {
-    label: "推送频率",
+    label: "填报频率",
     prop: "pushFrequency",
     slot: "pushFrequency"
   },
@@ -139,7 +139,7 @@ onMounted(() => {
 <template>
   <div>
     <PureTableBar
-      title="环境档案模拟列表"
+      title="环境档案填报列表"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
     >
@@ -149,7 +149,7 @@ onMounted(() => {
           :icon="useRenderIcon(AddFill)"
           @click="openDialog('add')"
         >
-          新增模拟
+          新增填报
         </el-button>
       </template>
       <template v-slot="{ size, dynamicColumns }">
@@ -209,7 +209,7 @@ onMounted(() => {
               @click="startMoniApiFunc(row.moniId)"
               v-if="!row.isPush"
             >
-              开始推送
+              开始填报
             </el-button>
             <el-button
               class="reset-margin"
@@ -219,7 +219,7 @@ onMounted(() => {
               @click="stopMoniApiFunc(row.moniId)"
               v-else
             >
-              停止推送
+              停止填报
             </el-button>
             <el-button
               class="reset-margin"

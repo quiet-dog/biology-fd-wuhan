@@ -299,7 +299,11 @@ function handleClosed() {
         </el-col>
       </el-row>
       <el-form-item label="区域：" prop="earea">
-        <el-input v-model="formData.earea" placeholder="请输入所在区域"  style="width: 300px" />
+        <el-input
+          v-model="formData.earea"
+          placeholder="请输入所在区域"
+          style="width: 300px"
+        />
         <!-- <el-select
           v-model="formData.earea"
           filterable

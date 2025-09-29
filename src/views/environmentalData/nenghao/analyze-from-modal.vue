@@ -1,15 +1,31 @@
 <template>
-  <v-detail-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :is-show-confirm="false"
-    title="环境数据分析" v-model="visible" :disableFooter="true" @cancel="cancelConfirm">
+  <v-detail-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    :is-show-confirm="false"
+    title="能耗数据分析"
+    v-model="visible"
+    :disableFooter="true"
+    @cancel="cancelConfirm"
+  >
     <el-form :model="formData" class="form-container">
       <div class="form-row">
         <el-form-item label="描述：" class="form-item">
-          <el-select v-model="formData.environmentId" placeholder="请选择描述" @change="selectChange" style="width: 240px">
+          <el-select
+            v-model="formData.environmentId"
+            placeholder="请选择描述"
+            @change="selectChange"
+            style="width: 240px"
+          >
             <div v-infinite-scroll="loadArchiveListFun">
-              <el-option v-for="item in dataList" :key="item.environmentId"
-                :label="`${item.description} - ${item.unitName}`" :value="item.environmentId" />
+              <el-option
+                v-for="item in dataList"
+                :key="item.environmentId"
+                :label="`${item.description} - ${item.unitName}`"
+                :value="item.environmentId"
+              />
             </div>
-
           </el-select>
         </el-form-item>
 
@@ -29,9 +45,15 @@ import { ref, onMounted, onUnmounted, reactive, toRaw } from "vue";
 import { FormInstance, Sort } from "element-plus";
 import VDetailDialog from "@/components/VDetailDialog/VDetailDialog.vue";
 import * as echarts from "echarts";
-import { detectionList, getTongJiNenghaoApi } from "@/api/environmentalData/alarmLevelSetting";
+import {
+  detectionList,
+  getTongJiNenghaoApi
+} from "@/api/environmentalData/alarmLevelSetting";
 import dayjs from "dayjs";
-import { environmentalFilesList, environmentalFilesListRes } from "@/api/environmentalData/environmentalArchives";
+import {
+  environmentalFilesList,
+  environmentalFilesListRes
+} from "@/api/environmentalData/environmentalArchives";
 import { PaginationProps } from "@pureadmin/table";
 import { CommonUtils } from "@/utils/common";
 
@@ -50,7 +72,7 @@ const option = {
   },
   tooltip: {},
   xAxis: {
-    type: 'category',
+    type: "category"
   },
   yAxis: {
     type: "value",
@@ -61,7 +83,7 @@ const option = {
       name: "数值",
       type: "line",
       data: [],
-      itemStyle: { color: "#409EFF" },
+      itemStyle: { color: "#409EFF" }
     }
   ]
 };
@@ -73,7 +95,7 @@ const formData = ref({
   // endTime: "",
   // timeRange: ""
   dayType: "week",
-  environmentId: 0,
+  environmentId: 0
 });
 
 const form = ref({
@@ -100,12 +122,15 @@ interface DetectionResponse {
 }
 
 const loadArchiveListFun = () => {
-  if(searchFormParams.pageNum * searchFormParams.pageSize >= pagination.total) {
+  if (
+    searchFormParams.pageNum * searchFormParams.pageSize >=
+    pagination.total
+  ) {
     return;
   }
   searchFormParams.pageNum++;
   archiveListFun();
-}
+};
 
 const searchFormParams = reactive<environmentalFilesListRes>({
   description: "",
@@ -114,7 +139,7 @@ const searchFormParams = reactive<environmentalFilesListRes>({
   exportType: "pdf",
   type: ["水", "电"],
   pageSize: 10,
-  pageNum: 1,
+  pageNum: 1
 });
 const defaultSort: Sort = {
   prop: "createTime",
@@ -134,8 +159,7 @@ const archiveListFun = async () => {
 
   const { data } = await environmentalFilesList(
     toRaw(searchFormParams)
-  ).finally(() => {
-  });
+  ).finally(() => {});
   if (data.rows.length > 0 && dataList.value.length === 0) {
     dataList.value = [...dataList.value, ...data.rows];
   } else {
@@ -145,11 +169,11 @@ const archiveListFun = async () => {
 };
 
 const detectionDataFun = async () => {
-  const data = await getTongJiNenghaoApi(formData.value)
+  const data = await getTongJiNenghaoApi(formData.value);
   console.log("获取的统计数据：", data);
 
   // 更新图表数据
-  option.series[0].data = data.data.data
+  option.series[0].data = data.data.data;
   // 设置x轴
   option.xAxis.data = data.data.time;
 
@@ -189,7 +213,6 @@ const selectChange = async val => {
     await detectionDataFun();
   }
 };
-
 
 // 添加窗口resize监听
 onMounted(() => {

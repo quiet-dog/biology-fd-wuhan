@@ -1,19 +1,41 @@
 <template>
-  <v-detail-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :is-show-confirm="false"
-    title="环境数据分析" v-model="visible" :disableFooter="true" @cancel="cancelConfirm">
+  <v-detail-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    :is-show-confirm="false"
+    title="环境数据分析"
+    v-model="visible"
+    :disableFooter="true"
+    @cancel="cancelConfirm"
+  >
     <el-form :model="formData" class="form-container">
       <div class="form-row">
         <el-form-item label="描述：" class="form-item">
-          <el-select v-model="formData.unitName" placeholder="请选择点位" @change="selectChange" style="width: 240px">
-              <el-option v-for="item in dataList" :key="item"
-                :label="item" :value="item" />
-
+          <el-select
+            v-model="formData.unitName"
+            placeholder="请选择点位"
+            @change="selectChange"
+            style="width: 240px"
+          >
+            <el-option
+              v-for="item in dataList"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
           </el-select>
         </el-form-item>
 
         <el-form-item label="日期：" class="form-item">
-          <el-date-picker v-model="formData.timeRange" type="date" placeholder="选择日期" value-format="YYYY-MM-DD"
-            @change="handleTimeChange" />
+          <el-date-picker
+            v-model="formData.timeRange"
+            type="date"
+            placeholder="选择日期"
+            value-format="YYYY-MM-DD"
+            @change="handleTimeChange"
+            :clearable="false"
+          />
         </el-form-item>
       </div>
     </el-form>
@@ -27,13 +49,18 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { FormInstance } from "element-plus";
 import VDetailDialog from "@/components/VDetailDialog/VDetailDialog.vue";
 import * as echarts from "echarts";
-import { allGroup, detectionList, getBuTongApi } from "@/api/environmentalData/alarmLevelSetting";
+import {
+  allGroup,
+  detectionList,
+  getBuTongApi
+} from "@/api/environmentalData/alarmLevelSetting";
 import dayjs from "dayjs";
+import { nextTick } from "process";
 
 const visible = ref(false);
 const formRef = ref<FormInstance>();
 
-const myChart = ref(null);
+let myChart = null;
 const chartRef = ref();
 const option = {
   grid: {
@@ -41,53 +68,48 @@ const option = {
     right: "5%",
     bottom: "5%",
     top: "10%",
-    containLabel: true,
+    containLabel: true
   },
-  legend:{
-    data:[],
+  legend: {
+    data: [],
     // 白色
     textStyle: {
-      color: "#ffffff",
-    },
+      // color: "#ffffff",
+    }
   },
   xAxis: {
     type: "category",
     data: [],
+    boundaryGap: false,
     axisLabel: {
-      color: "#ffffff",
-    },
+      // color: "#ffffff",
+    }
   },
   yAxis: {
     type: "value",
-    nameTextStyle: {
-      color: "#ffffff",
-      padding: [0, 30, 5, 0],
-    },
-    splitLine: {
-      lineStyle: {
-        type: "dashed",
-        color: "rgba(255,255,255,0.14)",
-      },
-    },
-    axisLabel: {
-      color: "#ffffff",
-    },
+    axisLine: { show: true }, // y轴线
+    axisTick: { show: true }, // y轴刻度
+    splitLine: { show: true }, // y轴网格线
+    axisLabel: { show: true } // y轴数值
   },
   series: [
     {
       data: [],
       type: "bar",
       itemStyle: {
-        color: "#68B1A6", // 线条颜色
-      },
-    },
+        color: "#68B1A6" // 线条颜色
+      }
+    }
   ],
   tooltip: {
-    trigger: 'axis', //坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用
-    axisPointer: {// 坐标轴指示器，坐标轴触发有效
-      type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+    trigger: "axis", // 多个系列共用一个 tooltip
+    axisPointer: {
+      type: "cross", // 设置为 cross（十字线）或 'line'（仅竖线）
+      label: {
+        backgroundColor: "#6a7985" // 可选：让标签更清晰
+      }
     }
-  },
+  }
 };
 
 const formData = ref({
@@ -96,12 +118,12 @@ const formData = ref({
   des: "",
   endTime: "",
   timeRange: "",
-  unitName:""
+  unitName: ""
 });
 
 const form = ref({
   pageSize: 10,
-  pageNum: 1,
+  pageNum: 1
 });
 
 const dataList = ref([]);
@@ -125,61 +147,78 @@ interface DetectionResponse {
 const loadArchiveListFun = () => {
   form.value.pageNum++;
   archiveListFun();
-}
+};
 
 const archiveListFun = async () => {
   // getBuTongApi().then(res => {
   //   dataList.value = res.data.rows;
   // })
-   allGroup().then(res => {
+  allGroup().then(res => {
     //  dataList.value = res.data.unitName
-     // 将 电 和 水 删除
-      dataList.value = res.data.unitName.filter(item => item !== "电" && item !== "水" && !item.includes("报警"));
+    // 将 电 和 水 删除
+    dataList.value = res.data.unitName.filter(
+      item => item !== "电" && item !== "水" && !item.includes("报警")
+    );
     console.log("dataList", dataList.value);
-  })
+  });
 };
 
 const detectionDataFun = async () => {
-  // const currentEnv = dataList.value.find(
-  //   item => item.detectionId === formData.value.detectionId
-  // )?.environment;
+  // getBuTongApi({
+  //   unitName: formData.value.unitName,
+  //   beginTime: formData.value.beginTime,
+  //   endTime: formData.value.endTime
+  // }).then(res => {
+  //   option.series = res.data.series;
+  //   option.xAxis.data = res.data.xdata;
+  //   option.legend.data = res.data.series.map(item => item.name);
+  //   console.log("option", option);
+  //   if (!myChart.value) {
+  //     myChart.value = echarts.init(chartRef.value);
+  //   }
+  //   myChart.value.setOption(option, true);
+  // });
+  powerByAreaTotalStaticFun();
+};
 
-  // const { data } = (await detectionList({
-  //   description: currentEnv.description,
-  //   pageSize: 10000,
-  //   pageNum: 1,
-  //   startCreateTime: dayjs(formData.value.beginTime).format("YYYY-MM-DD"),
-  //   tag: ""
-  // })) as DetectionResponse;
-
-  // // 过滤出当前环境的数据
-  // const filteredData = data.rows
-  //   .filter(item => item.environmentId === currentEnv.environmentId)
-  //   .map(item => [item.createTime, item.value])
-  //   .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
-
-  getBuTongApi({
+const powerByAreaTotalStaticFun = async () => {
+  const { data } = await getBuTongApi({
     unitName: formData.value.unitName,
     beginTime: formData.value.beginTime,
-    endTime: formData.value.endTime,
-  }).then(res => {
-    option.series = res.data.series
-    option.xAxis.data = res.data.xAxis;
-    option.legend.data = res.data.series.map(item => item.name);
-    console.log("option", option);
-    if (!myChart.value) {
-      myChart.value = echarts.init(chartRef.value);
-    }
-    myChart.value.setOption(option,true);
-  })
-  // 更新图表数据
-  // option.series[0].data = filteredData;
+    endTime: formData.value.endTime
+  });
+  option.legend.data = data.series.map(item => item.name);
+  option.xAxis.data = data.xdata;
+  option.series = data.series;
+  option.yAxis.min = 1;
+  if (Array.isArray(data.series) && data?.series.length > 0) {
+    const xData = [];
+    data?.series.forEach(item => {
+      if (Array.isArray(item.data) && item.data.length > 0) {
+        xData.append(...item.data);
+      }
+    });
+    option.yAxis.max = Math.max(...xData, 6);
+  } else {
+    option.yAxis.max = 6;
+  }
 
-  // 初始化或更新图表
-  // if (!myChart.value) {
-  //   myChart.value = echarts.init(chartRef.value);
-  // }
-  // myChart.value.setOption(option);
+  nextTick(() => {
+    if (myChart == null) {
+      myChart = echarts.init(chartRef.value);
+    }
+
+    // 加上单位
+    option.tooltip.formatter = function (params) {
+      // params有多个
+      return params
+        .map(p => {
+          return `${p.marker}${p.seriesName}: ${p.value} ${data?.unitName}`;
+        })
+        .join("<br/>");
+    };
+    myChart.setOption(option, true);
+  });
 };
 
 const handleOpened = async () => {
@@ -195,8 +234,11 @@ const handleOpened = async () => {
   // 设置默认时间为今天，使用 ISO 格式
   const today = dayjs().format("YYYY-MM-DD");
   formData.value.timeRange = today;
-  formData.value.beginTime = dayjs(today).startOf('day').format("YYYY-MM-DD");
-  formData.value.endTime = dayjs(today).add(1, 'day').startOf("day").format("YYYY-MM-DD");
+  formData.value.beginTime = dayjs(today).startOf("day").format("YYYY-MM-DD");
+  formData.value.endTime = dayjs(today)
+    .add(1, "day")
+    .startOf("day")
+    .format("YYYY-MM-DD");
 
   await detectionDataFun();
 };
@@ -215,8 +257,11 @@ const selectChange = async val => {
 
 const handleTimeChange = val => {
   // 转为YYYY-MM-DD格式
-  formData.value.beginTime = dayjs(val).startOf('day').format("YYYY-MM-DD");
-  formData.value.endTime = dayjs(val).add(1, 'day').startOf("day").format("YYYY-MM-DD");
+  formData.value.beginTime = dayjs(val).startOf("day").format("YYYY-MM-DD");
+  formData.value.endTime = dayjs(val)
+    .add(1, "day")
+    .startOf("day")
+    .format("YYYY-MM-DD");
   detectionDataFun();
 };
 

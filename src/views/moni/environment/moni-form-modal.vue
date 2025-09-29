@@ -266,7 +266,7 @@ onMounted(() => {
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    :title="type === 'add' ? '新增模拟环境规则' : '更新模拟环境规则'"
+    :title="type === 'add' ? '新增环境填报规则' : '更新环境填报规则'"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"
@@ -275,11 +275,11 @@ onMounted(() => {
     @closed="handleClosed"
   >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
-      <el-form-item label="推送描述">
+      <el-form-item label="填报描述">
         <el-input
           v-model="formData.description"
           autocomplete="off"
-          placeholder="请输入推送描述"
+          placeholder="请输入填报描述"
         />
       </el-form-item>
       <el-form-item label="传感器">
@@ -310,13 +310,13 @@ onMounted(() => {
       <el-form-item label="最大">
         <el-input-number v-model="formData.max" placeholder="请输入最大值" />
       </el-form-item>
-      <!-- <el-form-item label="推送类型">
+      <!-- <el-form-item label="填报类型">
         <el-radio-group v-model="formData.pushType" size="large">
-          <el-radio value="1" size="large">实时推送</el-radio>
-          <el-radio value="2" size="large">定时推送</el-radio>
+          <el-radio value="1" size="large">实时填报</el-radio>
+          <el-radio value="2" size="large">定时填报</el-radio>
         </el-radio-group>
       </el-form-item> -->
-      <el-form-item label="推送频率">
+      <el-form-item label="填报频率">
         <el-input v-model="pinInput" type="number">
           <template #append>
             <el-select

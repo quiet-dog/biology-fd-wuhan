@@ -88,7 +88,7 @@ const notificationListFun = async () => {
     orderColumn: "createTime",
     orderDirection: "descending",
     pageNum: 1,
-    pageSize: 10000
+    pageSize: 100
   });
 
   nlist.value = data.rows;
@@ -116,13 +116,13 @@ const list2 = ref([
     name: "离线设备",
     num: "0",
     baifen: "0%"
-  },
-  {
-    color: "#C7E2FE",
-    name: "异常设备",
-    num: "0",
-    baifen: "0%"
   }
+  //{
+  // color: "#C7E2FE",
+  //name: "异常设备",
+  //num: "0",
+  //baifen: "0%"
+  //}
 ]);
 
 let environmentChart: any = null;
@@ -413,14 +413,14 @@ const getMaterialsEasyList = () => {
 };
 
 onMounted(async () => {
-  if (environmentRef.value) {
+  if (environmentChart == null) {
     environmentChart = echarts.init(environmentRef.value);
-    environmentChart.setOption(environmentoption);
   }
-  if (equipmentStatusRef.value) {
+  environmentChart.setOption(environmentoption);
+  if (equipmentStatusChart == null) {
     equipmentStatusChart = echarts.init(equipmentStatusRef.value);
-    equipmentStatusChart.setOption(equipmentStatusoption);
   }
+  equipmentStatusChart.setOption(equipmentStatusoption);
   notificationListFun();
 
   const res = await allGroup();
@@ -477,21 +477,23 @@ const getThresholdOnlineFun = async () => {
     {
       color: "#3FD599",
       name: "在线设备",
-      num: data.onlineCount,
-      baifen: `${Math.round((data.onlineCount / total) * 100)}%`
+      num: data.onlineCount + data.exceptionCount,
+      baifen: `${Math.round(
+        ((data.onlineCount + data.exceptionCount) / total) * 100
+      )}%`
     },
     {
       color: "#3A77FF",
       name: "离线设备",
       num: data.offlineCount.toString(),
       baifen: `${Math.round((data.offlineCount / total) * 100)}%`
-    },
-    {
-      color: "#C7E2FE",
-      name: "异常设备",
-      num: data.exceptionCount.toString(),
-      baifen: `${Math.round((data.exceptionCount / total) * 100)}%`
     }
+    // {
+    //   color: "#C7E2FE",
+    //   name: "异常设备",
+    //   num: data.exceptionCount.toString(),
+    //   baifen: `${Math.round((data.exceptionCount / total) * 100)}%`
+    // }
   ];
 
   // 更新饼图数据
@@ -503,11 +505,11 @@ const getThresholdOnlineFun = async () => {
     {
       value: data.offlineCount,
       itemStyle: { color: "#3A77FF" }
-    },
-    {
-      value: data.exceptionCount,
-      itemStyle: { color: "#C7E2FE" }
     }
+    // {
+    //   value: data.exceptionCount,
+    //   itemStyle: { color: "#C7E2FE" }
+    // }
   ];
 
   // 更新设备总量显示
@@ -631,7 +633,7 @@ function clickToLuanSheng() {
                     <ElPopover @before-enter="getEquipmentStatus" width="300">
                       <template #reference>
                         <div>
-                          {{ Number(list2[0].num) + Number(list2[2].num) }}
+                          {{ Number(list2[0].num) }}
                         </div>
                       </template>
                       <ElTable height="500" :data="onlineEquipment">
@@ -789,8 +791,15 @@ function clickToLuanSheng() {
                         overflow: hidden;
                         text-overflow: ellipsis;
                       "
+                      class="notice-item-content"
                     >
-                      {{ item.content }}
+                      <span>
+                        {{ item.content }}
+                      </span>
+                      &nbsp; &nbsp; &nbsp;
+                      <span>
+                        {{ item.time }}
+                      </span>
                     </span>
                   </el-tooltip>
                 </div>
@@ -1242,6 +1251,31 @@ $design-height: 1080;
       font-size: 12px;
       white-space: nowrap;
     }
+  }
+}
+
+.notice-item-content {
+  display: flex;
+  // 横向
+  flex-wrap: wrap;
+
+  span:nth-child(1) {
+    // flex: 1;
+    // 超过行后省略号
+    max-width: 300px;
+    /* 关键：允许收缩 */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  span:last-child {
+    // 如果这一行放不下,换行
+    margin-left: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-wrap: wrap;
   }
 }
 </style>
