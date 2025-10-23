@@ -1,9 +1,9 @@
 import {
-  deleteKnowledgeApi,
-  getKnowledgeListApi,
-  getKnowledgeTypeApi,
-  KnowledgeListCommand
-} from "@/api/manage/knowledge";
+  deleteXunJianApi,
+  getXunJianListApi,
+  getXunJianTypeApi,
+  XunJianListCommand
+} from "@/api/manage/xunJian";
 import { CommonUtils } from "@/utils/common";
 import { message } from "@/utils/message";
 import { PaginationProps } from "@pureadmin/table";
@@ -16,9 +16,9 @@ export function useHook() {
     order: "descending"
   };
 
-  const searchFormParams = reactive<KnowledgeListCommand>({
+  const searchFormParams = reactive<XunJianListCommand>({
     title: "",
-    knowledgeType: null
+    xunJianType: null
   });
 
   const timeRange = computed<[string, string] | null>({
@@ -64,32 +64,7 @@ export function useHook() {
     },
     {
       label: "类型",
-      prop: "knowledgeType",
-      cellRenderer: (row) => {
-        if (row?.row?.knowledgeType == "技术文档") {
-          return h(ElTag, {
-            type: "warning",
-          }, row?.row?.knowledgeType)
-        }
-        if (row?.row?.knowledgeType == "流程制度") {
-          return h(ElTag, {
-            type: "primary",
-          }, row?.row?.knowledgeType)
-        }
-        if (row?.row?.knowledgeType == "案例分析") {
-          return h(ElTag, {
-            type: "success",
-          }, row?.row?.knowledgeType)
-        }
-        if (row?.row?.knowledgeType == "培训资料") {
-          return h(ElTag, {
-            type: "danger",
-          }, row?.row?.knowledgeType)
-        }
-        return h(ElTag, {
-          type: "info",
-        }, row?.row?.knowledgeType);
-      }
+      prop: "xunJianType",
     },
     // {
     //   label: "创建者",
@@ -113,15 +88,15 @@ export function useHook() {
     }
   ];
 
-  const knowledgeTypeList = ref([]);
+  const xunJianTypeList = ref([]);
 
-  async function getKnowledgeList() {
+  async function getXunJianList() {
     pageLoading.value = true;
 
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, pagination);
 
-    const { data } = await getKnowledgeListApi(toRaw(searchFormParams)).finally(
+    const { data } = await getXunJianListApi(toRaw(searchFormParams)).finally(
       () => {
         pageLoading.value = false;
       }
@@ -134,17 +109,17 @@ export function useHook() {
   }
 
   async function handleDelete(row) {
-    await deleteKnowledgeApi([row.knowledgeId]).then(() => {
-      message(`您删除了编号为${row.knowledgeId}的这条知识库数据`, {
+    await deleteXunJianApi([row.xunJianId]).then(() => {
+      message(`您删除了编号为${row.xunJianId}的这条知识库数据`, {
         type: "success"
       });
       // 刷新列表
-      getKnowledgeList();
+      getXunJianList();
     });
   }
 
   async function onSearch(tableRef) {
-    getKnowledgeList();
+    getXunJianList();
     // 点击搜索的时候，需要重置排序，重新排序的时候会重置分页并发起查询请求
     tableRef.getTableRef().sort("createTime", "descending");
   }
@@ -161,15 +136,15 @@ export function useHook() {
     onSearch(tableRef);
   }
 
-  async function getKnowledgeType() {
-    await getKnowledgeTypeApi().then(res => {
-      knowledgeTypeList.value = res.data;
-    });
-  }
+  // async function getXunJianType() {
+  //   await getXunJianTypeApi().then(res => {
+  //     xunJianTypeList.value = res.data;
+  //   });
+  // }
 
   onMounted(() => {
-    getKnowledgeType();
-    getKnowledgeList();
+    // getXunJianType();
+    getXunJianList();
   });
 
   return {
@@ -178,13 +153,13 @@ export function useHook() {
     pagination,
     sortState,
     dataList,
-    getKnowledgeList,
+    getXunJianList,
     columns,
     defaultSort,
     handleDelete,
     onSearch,
-    getKnowledgeType,
-    knowledgeTypeList,
+    // getXunJianType,
+    xunJianTypeList,
     timeRange,
     resetForm
   };

@@ -104,7 +104,7 @@
             <span>{{ row.isHighRisk ? "是" : "否" }}</span>
           </template>
           <template #purchaseDate="{ row }">
-            <span>{{ dayjs(row.purchaseDate).format("YYYY-MM-DD") }}</span>
+            <span>{{ row.purchaseDate  ?dayjs(row.purchaseDate).format("YYYY-MM-DD"):"--" }}</span>
           </template>
           <template #isOnline="{ row }">
             <el-tag :type="row.isOnline ? 'success' : 'danger'">

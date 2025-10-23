@@ -499,24 +499,20 @@ const getThresholdOnlineFun = async () => {
   // 更新饼图数据
   equipmentStatusoption.series[0].data = [
     {
-      value: data.onlineCount,
+      value: data.onlineCount + data.exceptionCount,
       itemStyle: { color: "#3FD599" }
     },
     {
       value: data.offlineCount,
       itemStyle: { color: "#3A77FF" }
     }
-    // {
-    //   value: data.exceptionCount,
-    //   itemStyle: { color: "#C7E2FE" }
-    // }
   ];
 
   // 更新设备总量显示
   equipmentStatusoption.graphic.style.text = `${total}\n设备总量`;
 
   // 重新渲染图表
-  equipmentStatusChart.setOption(equipmentStatusoption);
+  equipmentStatusChart.setOption(equipmentStatusoption, true);
 };
 
 const unitNameAndAreaFun = async () => {
@@ -615,7 +611,7 @@ function clickToLuanSheng() {
                         <ElTableColumn prop="personnel.name" label="员工姓名" />
                         <ElTableColumn prop="doorDate" label="出勤时间">
                           <template #default="{ row }">
-                            {{ dayjs(row.doorDate).format("HH:mm:ss") }}
+                            {{ row.doorDate ? dayjs(row.doorDate).format("HH:mm:ss"):"--" }}
                           </template>
                         </ElTableColumn>
                       </ElTable>
@@ -791,14 +787,15 @@ function clickToLuanSheng() {
                         overflow: hidden;
                         text-overflow: ellipsis;
                       "
-                      class="notice-item-content"
                     >
-                      <span>
-                        {{ item.content }}
-                      </span>
-                      &nbsp; &nbsp; &nbsp;
-                      <span>
-                        {{ item.time }}
+                      <span class="notice-item-content">
+                        <span>
+                          {{ item.content }}
+                        </span>
+                        &nbsp; &nbsp; &nbsp;
+                        <span>
+                          {{ item.time }}
+                        </span>
                       </span>
                     </span>
                   </el-tooltip>

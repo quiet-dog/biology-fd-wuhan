@@ -19,15 +19,14 @@
           @change="materialsCodeChange"
           style="width: 300px"
         >
-        <div v-infinite-scroll="loadArchiveListFun">
-          <el-option
-            v-for="item in dataList"
-            :key="item.materialsId"
-            :label="`${item.name}-${item.code}`"
-            :value="item.materialsId"
-          />
-        </div>
-         
+          <div v-infinite-scroll="loadArchiveListFun">
+            <el-option
+              v-for="item in dataList"
+              :key="item.materialsId"
+              :label="`${item.name}-${item.code}`"
+              :value="item.materialsId"
+            />
+          </div>
         </el-select>
       </el-form-item>
       <el-form-item label="时间范围：">
@@ -69,9 +68,12 @@ const emits = defineEmits(["success"]);
 
 let myChart: any = null;
 const chartRef = ref();
-const option = {
+const option = ref({
+  title: {
+    text: "暂无数据"
+  },
   tooltip: {
-    trigger: "item",
+    trigger: "item"
     // formatter: "{a} <br/>{b}: {c} {unit}"
   },
   legend: {
@@ -84,18 +86,15 @@ const option = {
       name: "物料使用情况",
       type: "pie",
       radius: "50%",
-      data: [],
-      // label: {
-      //   formatter: "{b}: {c} {unit}"
-      // }
+      data: []
     }
   ]
-};
+});
 
 const form = ref<materialFilesListRes>({
   name: "",
   materialsType: "",
-  pageSize: 10,
+  pageSize: 10000,
   pageNum: 1
 });
 
@@ -113,14 +112,13 @@ const archiveListFun = async () => {
   const { data } = await materialFilesList(form.value);
   if (data.rows && data.rows.length > 0) {
     dataList.value = [...dataList.value, ...data.rows];
-    if (formData.materialsId == null || formData.materialsId ==0) {
+    if (formData.materialsId == null || formData.materialsId == 0) {
       formData.materialsId = data.rows[0].materialsId;
     }
-    if(unit.value == null || unit.value == "") {
+    if (unit.value == null || unit.value == "") {
       unit.value = data.rows[0].unit;
     }
   }
-  
 };
 
 const materialsCodeChange = async val => {
@@ -136,24 +134,38 @@ const materialsCodeChange = async val => {
 
   if (response.data && response.data.length > 0) {
     const chartData = response.data.map(item => ({
-      name: item.materialsType == null ?"未知" : item.materialsType,
-      value: item.count,
+      name: item.materialsType == null ? "未知" : item.materialsType,
+      value: item.count
       // unit: selectedMaterial.unit
     }));
-
-    option.series[0].data = chartData;
-    console.log("option.series[0].data",option.series[0].data)
+    option.value.title = {};
+    option.value.series = [
+      {
+        name: "物料使用情况",
+        type: "pie",
+        radius: "50%",
+        data: []
+      }
+    ];
+    option.value.series[0].data = chartData;
+    console.log("option.series[0].data", option.value.series[0].data);
     // option.legend.data = chartData.map(item => item.name);
 
     // option.tooltip.formatter = `{a} <br/>{b}: {c} ${selectedMaterial.unit}`;
     // option.series[0].label.formatter = `{b}: {c} ${selectedMaterial.unit}`;
   } else {
-    option.series[0].data = [];
-    option.legend.data = [];
+    option.value.series = [];
+    option.value.legend.data = [];
+    option.value.title = {
+      text: "暂无数据",
+      left: "center",
+      top: "middle",
+      textStyle: { color: "#999", fontSize: 18 }
+    };
   }
 
   if (myChart) {
-    myChart.setOption(option);
+    myChart.setOption(option.value, true);
   }
 };
 
@@ -172,27 +184,42 @@ const handleOpened = async () => {
 
   const response = await materialsNameStockNameType({
     // materialsName: dataList.value[0]?.name || "",
-    materialsId:formData.materialsId,
+    materialsId: formData.materialsId,
     dateType: params.value.dateType
   });
 
   if (response.data && response.data.length > 0) {
     const chartData = response.data.map(item => ({
-      name: item.materialsType == null ?"未知" : item.materialsType,
+      name: item.materialsType == null ? "未知" : item.materialsType,
       value: item.count
     }));
+    option.value.series = [
+      {
+        name: "物料使用情况",
+        type: "pie",
+        radius: "50%",
+        data: []
+      }
+    ];
 
-    option.series[0].data = chartData;
+    option.value.series[0].data = chartData;
+    option.value.title = {};
     // option.legend.data = chartData.map(item => item.name);
   } else {
-    option.series[0].data = [];
-    option.legend.data = [];
+    option.value.series = [];
+    option.value.legend.data = [];
+    option.value.title = {
+      text: "暂无数据",
+      left: "center",
+      top: "middle",
+      textStyle: { color: "#999", fontSize: 18 }
+    };
   }
 
   if (!myChart && chartRef.value) {
     myChart = echarts.init(chartRef.value);
   }
-  myChart?.setOption(option);
+  myChart?.setOption(option.value, true);
 };
 
 function cancelConfirm() {

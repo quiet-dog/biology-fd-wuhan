@@ -275,7 +275,7 @@ onMounted(() => {
 
         <el-button type="primary" @click="analyzeFormModalClick"
           >能耗数据分析</el-button
-        >
+        >&nbsp;&nbsp;
 
          <el-dropdown>
           <el-button type="warning" :icon="Download" >导出</el-button>

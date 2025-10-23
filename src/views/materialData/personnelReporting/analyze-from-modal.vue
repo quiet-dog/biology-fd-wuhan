@@ -1,16 +1,31 @@
 <template>
-  <v-detail-dialog show-full-screen :fixed-body-height="false" use-body-scrolling title="丢失分析" v-model="visible"
-    :disableFooter="true" @cancel="cancelConfirm" @closed="handleClosed">
-
+  <v-detail-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    title="丢失分析"
+    v-model="visible"
+    :disableFooter="true"
+    @cancel="cancelConfirm"
+    @closed="handleClosed"
+  >
     <el-form class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]" inline>
       <el-form-item label="物料名称：">
-        <el-select v-model="formData.materialsId" filterable placeholder="请选择物料名称" @change="materialsCodeChange"
-          style="width: 300px">
+        <el-select
+          v-model="formData.materialsId"
+          filterable
+          placeholder="请选择物料名称"
+          @change="materialsCodeChange"
+          style="width: 300px"
+        >
           <div v-infinite-scroll="loadArchiveListFun">
-            <el-option v-for="item in dataList" :key="item.materialsId" :label="`${item.name}-${item.code}`"
-            :value="item.materialsId" />
+            <el-option
+              v-for="item in dataList"
+              :key="item.materialsId"
+              :label="`${item.name}-${item.code}`"
+              :value="item.materialsId"
+            />
           </div>
-        
         </el-select>
       </el-form-item>
       <el-form-item label="时间范围：">
@@ -28,7 +43,7 @@
       <el-radio-button label="year">年</el-radio-button>
     </el-radio-group> -->
 
-    <div class="chart_container" ref="chartRef"></div>
+    <div class="chart_container" ref="chartRef" />
   </v-detail-dialog>
 </template>
 
@@ -39,7 +54,10 @@ import VDetailDialog from "@/components/VDetailDialog/VDetailDialog.vue";
 import * as echarts from "echarts";
 import { getstatistics } from "@/api/materialData/personnelReporting";
 import { materialsNameStockNameType } from "@/api/materialData/receiptRecord";
-import { materialFilesList, materialFilesListRes } from "@/api/materialData/materialFiles";
+import {
+  materialFilesList,
+  materialFilesListRes
+} from "@/api/materialData/materialFiles";
 
 const visible = ref(false);
 const formRef = ref<FormInstance>();
@@ -71,11 +89,17 @@ const option = {
       data: [],
       type: "bar"
     }
-  ]
+  ],
+  tooltip: {
+    show: true
+  }
 };
 
 const getstatisticsList = async () => {
-  const { data } = await getstatistics({ dayType: radio1.value, materialsId: formData.materialsId });
+  const { data } = await getstatistics({
+    dayType: radio1.value,
+    materialsId: formData.materialsId
+  });
   option.series.forEach(item => {
     item.data = data.seriesData;
   });
@@ -104,7 +128,6 @@ const handleOpened = () => {
       myChart.setOption(option);
     }
   });
-
 };
 
 function cancelConfirm() {
@@ -143,10 +166,10 @@ const archiveListFun = async () => {
   const { data } = await materialFilesList(form.value);
   if (data.rows && data.rows.length > 0) {
     dataList.value = [...dataList.value, ...data.rows];
-    if (formData.materialsId == null || formData.materialsId ==0) {
+    if (formData.materialsId == null || formData.materialsId == 0) {
       formData.materialsId = data.rows[0].materialsId;
     }
-    if(unit.value == null || unit.value == "") {
+    if (unit.value == null || unit.value == "") {
       unit.value = data.rows[0].unit;
     }
   }
@@ -158,8 +181,6 @@ const archiveListFun = async () => {
 defineExpose({
   handleOpened
 });
-
-
 </script>
 
 <style lang="scss" scoped>
