@@ -1,7 +1,9 @@
 import {
   deleteXunJianApi,
+  getXunJianHistoryListApi,
   getXunJianListApi,
   getXunJianTypeApi,
+  XunJianHistoryListCommand,
   XunJianListCommand
 } from "@/api/manage/xunJian";
 import { CommonUtils } from "@/utils/common";
@@ -16,9 +18,7 @@ export function useHook() {
     order: "descending"
   };
 
-  const searchFormParams = reactive<XunJianListCommand>({
-    title: "",
-    xunJianType: null
+  const searchFormParams = reactive<XunJianHistoryListCommand>({
   });
 
   const timeRange = computed<[string, string] | null>({
@@ -55,40 +55,39 @@ export function useHook() {
 
   const columns: TableColumnList = [
     {
-      label: "巡检编号",
-      prop: "xunJianId"
+      label: "报告编号",
+      prop: "xunJianHistoryId"
     },
     {
-      label: "巡检类型",
-      prop: "xunJianLeiXing"
+      label: "巡检日期",
+      prop: "xunJianRiQi",
+      slot: "xunJianRiQi"
     },
     {
-      label: "巡检频率",
-      prop: "xunJianPinLu",
+      label: "巡检时间",
+      prop: "timeRange",
+      slot: "timeRange"
     },
     {
       label: "覆盖范围",
       prop: "fanWei",
     },
     {
-      label: "开始时间",
-      prop: "timeRange",
-      slot: "timeRange"
+      label: "巡检类型",
+      prop: "xunJianLeiXing",
     },
     {
-      label: "结束时间",
-      prop: "timeRange",
-      slot: "timeRangeEnd"
+      label: "异常统计",
+      prop: "total",
     },
     {
-      label: "创建时间",
+      label: "巡检状态",
+      prop: "status",
+      slot: "status"
+    },
+    {
+      label: "开始日期",
       prop: "createTime",
-      slot: "createTime"
-    },
-    {
-      label: "启用/禁用",
-      prop: "enable",
-      slot: "enable"
     },
     {
       label: "操作",
@@ -106,7 +105,7 @@ export function useHook() {
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, pagination);
 
-    const { data } = await getXunJianListApi(toRaw(searchFormParams)).finally(
+    const { data } = await getXunJianHistoryListApi(toRaw(searchFormParams)).finally(
       () => {
         pageLoading.value = false;
       }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { updateXunJianApi, XunJianPageResponse } from "@/api/manage/xunJian.ts";
+import { XunJianPageResponse } from "@/api/manage/xunJian.ts";
 import { useHook } from "./utils/hook.tsx";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { PureTableBar } from "@/components/RePureTableBar";
@@ -42,42 +42,55 @@ function openDialog(type: "add" | "update", row?: XunJianPageResponse) {
   modalVisible.value = true;
 }
 
-function getTimeStart(value: number[]) {
-  if (Array.isArray(value) && value.length > 0) {
-    return dayjs().startOf('day').add(value[0], 'second').format('HH:mm')
+function changeXunJianShiJian(val: number[], type: string) {
+  if (Array.isArray(val) && val.length > 0) {
+    if (type == "持续巡检") {
+      if (val.length == 2) {
+        return `${dayjs().startOf('day').add(val[0], 'second').format('HH:mm')}-${dayjs().startOf('day').add(val[1], 'second').format('HH:mm')}`
+      }
+    } else {
+      return dayjs().startOf('day').add(val[0], 'second').format('HH:mm')
+    }
   }
   return "--"
 }
 
-function getTimeEnd(value: number[]) {
-  if (Array.isArray(value) && value.length > 1) {
-    return dayjs().startOf('day').add(value[1], 'second').format('HH:mm')
+const weekMap = ["周一","周二","周三","周四","周五","周六","周日"]
+
+function changeRiQi(row) {
+  if (row.xunJianPinLu == "每日") {
+    return dayjs(row.createTime).format("YYYY-MM-DD")
+  }
+
+  if (row.xunJianPinLu == "每周") {
+    return row.dayRange.map(i=> weekMap[i%7]).join(", ")
+  }
+
+  if (row.xunJianPinLu == "每月") {
+    return row.dayRange.map(i=> `${i+1}号`).join(", ")
   }
   return "--"
-}
-
-function changeEnable(val,row) {
-  row.enable = val;
-  updateXunJianApi(row).then(res => {
-    getXunJianList();
-  })
 }
 
 // const detailFromModalRef = ref();
 // const openDetailDialog = row => {
 //   detailFromModalRef.value.handleOpened(row.xunJianId);
 // };
+const xunJianEventRef =ref<InstanceType<typeof XunJianFormModal>>()
+const openEventListDialog = row => {
+  xunJianEventRef.value.handleOpenDialog(row.xunJianHistoryId)
+}
 </script>
 
 <template>
   <div class="main">
     <el-form ref="searchFormRef" :inline="true" :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]">
-      <el-form-item label="巡检类型" prop="title">
+      <el-form-item label="文档标题" prop="title">
         <el-input v-model="searchFormParams.title" placeholder="请输入文档标题" clearable class="!w-[200px]" />
       </el-form-item>
 
-      <el-form-item label="巡检频率：" prop="xunJianType">
+      <el-form-item label="类型：" prop="xunJianType">
         <el-select v-model="searchFormParams.xunJianType" placeholder="请选择类型" clearable class="!w-[180px]">
           <el-option label="流程制度" value="流程制度" />
           <el-option label="技术文档" value="技术文档" />
@@ -85,7 +98,7 @@ function changeEnable(val,row) {
           <el-option label="培训资料" value="培训资料" />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建日期：">
+      <el-form-item label="创建时间">
         <el-date-picker class="!w-[240px]" v-model="timeRange" value-format="YYYY-MM-DD" type="daterange"
           range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
       </el-form-item>
@@ -100,9 +113,6 @@ function changeEnable(val,row) {
     </el-form>
 
     <PureTableBar title="知识库" :columns="columns" :tableRef="tableRef?.getTableRef()" @refresh="onSearch">
-      <template #buttons>
-        <el-button type="primary" :icon="Plus" @click="openDialog('add')">新增</el-button>
-      </template>
 
       <template v-slot="{ size, dynamicColumns }">
         <pure-table ref="tableRef" adaptive :adaptiveConfig="{ offsetBottom: 32 }" align-whole="center"
@@ -114,34 +124,35 @@ function changeEnable(val,row) {
             color: 'var(--el-text-color-primary)'
           }" style="height: auto">
           <template #timeRange="{ row }">
-            <span>{{ getTimeStart(row.timeRange) }}</span>
+            <span>{{ changeXunJianShiJian(row.timeRange, row.xunJianLeiXing) }}</span>
           </template>
-          <template #timeRangeEnd="{row}">
-            <span>{{ getTimeEnd(row.timeRange) }}</span>
+          <template #xunJianRiQi="{ row }">
+            <span>{{ changeRiQi(row) }}</span>
           </template>
-          <template #enable="{row}">
-            <span>
-              <el-switch v-model="row.enable" @change="changeEnable($event,row)" />
-            </span>
+          <template #status="{row}">
+            <el-tag v-if="row.status == '巡检中'" type="danger">巡检中</el-tag>
+            <el-tag v-if="row.status == '已完成'" type="success">已完成</el-tag>
           </template>
+
 
           <template #createTime="{ row }">
             <span>{{ dayjs(row.createTime).format("YYYY-MM-DD") }}</span>
           </template>
+          <template #updateTime="{ row }">
+            <span>{{
+              row.updateTime ? dayjs(row.updateTime).format("YYYY-MM-DD") : "-"
+              }}</span>
+          </template>
           <template #operation="{ row }">
-            <!-- <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row)">
+            <el-button class="reset-margin" link type="primary" :size="size" @click="openEventListDialog(row)">
               查看
-            </el-button> -->
-            <el-button class="reset-margin" link type="primary" :size="size" @click="openDialog('update', row)">
-              修改
             </el-button>
           </template>
         </pure-table>
       </template>
     </PureTableBar>
 
-    <XunJianFormModal v-model="modalVisible" :type="opType" :row="opRow" @success="onSearch(tableRef)" />
-    <!-- <detailFromModal ref="detailFromModalRef" /> -->
+    <XunJianFormModal ref="xunJianEventRef"  />
   </div>
 </template>
 

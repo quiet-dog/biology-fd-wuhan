@@ -9,7 +9,7 @@ import {
 } from "@/api/manage/xunJian.ts";
 import VDialog from "@/components/VDialog/VDialog.vue";
 import { ElMessage, FormInstance, FormRules } from "element-plus";
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import CUplopad from "@/components/CUpload/index.vue";
 import { json } from "stream/consumers";
 import dayjs from "dayjs";
@@ -47,10 +47,9 @@ const formData = reactive<AddXunJianCommand | UpdateXunJianCommand>({
   fanWei: "",
   xunJianPinLu: "每日",
   xunJianLeiXing: "定点巡检",
-  startTime: 0,
-  endTime: 0,
   enable: false,
-  timeRange: []
+  timeRange: [],
+  dayRange: [],
 });
 
 const visible = computed({
@@ -66,6 +65,7 @@ async function handleConfirm() {
     if (callback) {
       try {
         loading.value = true;
+        console.log("formData", formData)
         if (props.type === "add") {
           await addXunJianApi(formData);
         } else if (props.type === "update") {
@@ -87,6 +87,15 @@ async function handleConfirm() {
 function handleOpened() {
   if (props.row) {
     Object.assign(formData, props.row);
+    if (Array.isArray(formData.timeRange) && formData.timeRange.length > 0) {
+      startTime.value = dayjs().startOf('day').add(formData.timeRange[0], 'second').format('HH:mm')
+      if (formData.timeRange.length > 1) {
+        endTime.value = dayjs().startOf('day').add(formData.timeRange[1], 'second').format('HH:mm')
+      }
+    }
+    if (Array.isArray(formData.dayRange) && formData.dayRange.length > 0) {
+      endDay.value = JSON.parse(JSON.stringify(formData.dayRange))
+    }
     Paths.value = [];
   }
 }
@@ -100,26 +109,77 @@ function handleClosed() {
   Paths.value = [];
 }
 
+const weekSelect = [{
+  label: "周一",
+  value: 0,
+}, {
+  label: "周二",
+  value: 1,
+}, {
+  label: "周三",
+  value: 2
+}, {
+  label: "周四",
+  value: 3
+}, {
+  label: "周五",
+  value: 4
+}, {
+  label: "周六",
+  value: 5
+}, {
+  label: "周日",
+  value: 6
+}]
+const daySelect = ref([])
+
 const startTime = ref('')
 const endTime = ref('')
+const startDay = ref(0)
+const endDay = ref([])
 function changeStartTime(val) {
-  if (val) {
-    const seconds = dayjs.duration({
-      hours: parseInt(val.split(":")[0]),
-      minutes: parseInt(val.split(":")[1])
-    }).asSeconds();
-    formData.timeRange[0] = seconds
+  if (val != "") {
+    const [h, m] = val.split(":").map(Number);
+    const seconds = h * 3600 + m * 60;
+    formData.timeRange[0] = seconds;
   }
 }
 function changeEndTime(val) {
   if (val) {
-    const seconds = dayjs.duration({
-      hours: parseInt(val.split(":")[0]),
-      minutes: parseInt(val.split(":")[1])
-    }).asSeconds();
-    formData.timeRange[1] = seconds
+    const [h, m] = val.split(":").map(Number);
+    const seconds = h * 3600 + m * 60;
+    formData.timeRange[1] = seconds;
   }
 }
+function changeStartDay(val) {
+  if (val) {
+    formData.timeRange[0] = val
+  }
+}
+function changeEndDay(val) {
+  if (val) {
+    // formData.timeRange[1] = val
+    formData.dayRange = val
+  }
+}
+
+function changePinLu(val) {
+  if (val) {
+    formData.timeRange = [0, 0]
+  }
+}
+
+
+onMounted(() => {
+  if (daySelect.value.length == 0) {
+    for (let i = 0; i < 31; i++) {
+      daySelect.value.push({
+        label: String(i + 1),
+        value: i
+      })
+    }
+  }
+})
 </script>
 
 <template>
@@ -135,7 +195,7 @@ function changeEndTime(val) {
         </el-col>
         <el-col :span="12">
           <el-form-item label="巡检频率:" prop="xunJianPinLu">
-            <el-select v-model="formData.xunJianPinLu">
+            <el-select v-model="formData.xunJianPinLu" @change="changePinLu">
               <el-option label="每日" value="每日" />
               <el-option label="每周" value="每周" />
               <el-option label="每月" value="每月" />
@@ -156,16 +216,24 @@ function changeEndTime(val) {
 
         <el-col :span="12">
           <el-form-item label="开始时间:">
-            <el-time-select v-if="formData.xunJianPinLu == '每日'" @change="changeStartTime" v-model="startTime"
-              start="00:00" end="23:45" step="00:15" />
+            <el-time-select @change="changeStartTime" editable v-model="startTime" start="00:00" end="23:45" step="00:15" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="12">
+        <el-col v-if="formData.xunJianLeiXing != '定点巡检'" :span="12">
           <el-form-item label="结束时间:">
-            <el-time-select v-if="formData.xunJianLeiXing == '持续巡检'" @change="changeEndTime" v-model="endTime"
-              start="00:00" end="23:45" step="00:15" />
+            <el-time-select @change="changeEndTime" editable v-model="endTime" start="00:00" end="23:45" step="00:15" />
+          </el-form-item>
+        </el-col>
+        <el-col v-if="formData.xunJianPinLu != '每日'" :span="12">
+          <el-form-item label="选择:">
+            <el-select v-model="endDay" multiple @change="changeEndDay">
+              <el-option v-if="formData.xunJianPinLu == '每周'" v-for="(item, index) in weekSelect" :key="index"
+                :value="item.value" :label="item.label" />
+              <el-option v-if="formData.xunJianPinLu == '每月'" v-for="(item, index) in daySelect" :key="index"
+                :value="item.value" :label="item.label" />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>

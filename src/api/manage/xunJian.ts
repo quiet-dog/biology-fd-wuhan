@@ -6,6 +6,10 @@ export interface XunJianListCommand extends BasePageQuery {
   // xunJianType?: string;
 }
 
+export interface XunJianHistoryListCommand extends BasePageQuery {
+
+}
+
 export interface XunJianPageResponse {
   xunJianId: number;
   fanWei: string;
@@ -23,10 +27,9 @@ export interface AddXunJianCommand {
   fanWei: string;
   xunJianPinLu: string;
   xunJianLeiXing: string;
-  startTime: number;
-  endTime: number;
   enable: boolean;
   timeRange?: number[];
+  dayRange?: number[];
 }
 
 export interface UpdateXunJianCommand extends AddXunJianCommand {
@@ -77,9 +80,22 @@ export const deleteXunJianApi = (data: Array<number>) => {
   });
 };
 
+
+
 export const getXunJianTypeApi = () => {
   return http.request<ResponseData<Array<XunJianTypeEntity>>>(
     "get",
     "/manage/xunJian/type"
+  );
+};
+
+
+export const getXunJianHistoryListApi = (params: XunJianListCommand) => {
+  return http.request<ResponseData<PageDTO<XunJianPageResponse>>>(
+    "get",
+    "/manage/xunJian/history",
+    {
+      params
+    }
   );
 };
