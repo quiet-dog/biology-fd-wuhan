@@ -144,7 +144,7 @@ function handleOpened() {
           if (fileName.includes("_")) {
             // @ts-ignore
             // props.row.paths[index] = fileName;
-            formData.paths.push(fileName);
+            formData.paths.push(item["path"]);
             Paths.value.push({
               name: fileName,
               url: "",

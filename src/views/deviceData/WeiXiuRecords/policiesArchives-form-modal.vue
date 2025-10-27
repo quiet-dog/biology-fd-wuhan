@@ -33,7 +33,7 @@ const rules: FormRules = {
   faultReason: [
     {
       required: true,
-      message: "故障原因不能为空"
+      message: "故障原因分析不能为空"
     }
   ],
   repairContent: [
@@ -191,7 +191,7 @@ function handleClosed() {
                 :value="item.equipmentId"
               />
             </div>
-            
+
             </el-select>
           </el-form-item>
         </el-col>
@@ -230,12 +230,12 @@ function handleClosed() {
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="故障原因：" prop="faultReason">
+      <el-form-item label="故障原因分析：" prop="faultReason">
         <el-input
           :rows="2"
           type="textarea"
           v-model="formData.faultReason"
-          placeholder="请输入故障原因"
+          placeholder="请输入故障原因分析"
           autocomplete="off"
           style="width: 760px"
         />

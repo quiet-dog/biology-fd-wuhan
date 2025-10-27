@@ -117,7 +117,7 @@ defineExpose({
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="故障原因：">
+      <el-form-item label="故障原因分析：">
         <el-input
           :rows="2"
           type="textarea"
