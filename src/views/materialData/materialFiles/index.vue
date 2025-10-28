@@ -71,7 +71,7 @@
         </pure-table>
       </template>
     </PureTableBar>
-    <policiesArchivesFormModal v-model="modalVisible" :row="opRow" />
+    <policiesArchivesFormModal @success="archiveListFun" v-model="modalVisible" :row="opRow" />
     <detailFromModal ref="detailFromModalRef" />
     <importFormModal ref="importRef" @refresh="archiveListFun" />
     <analyzeFormModal ref="analyzeFormModalRef" @refresh="archiveListFun" />
