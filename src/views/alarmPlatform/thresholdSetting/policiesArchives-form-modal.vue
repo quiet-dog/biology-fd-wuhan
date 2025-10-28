@@ -115,18 +115,12 @@ const form = ref<equipmentListRes>({
   endPurchaseDate: undefined,
   usageStatus: "",
   equipmentType: "",
-  pageSize: 10,
+  pageSize: 10000,
   pageNum: 1
 });
-const loadArchiveListFun = () => {
-  form.value.pageNum += 1;
-  archiveListFun();
-};
 const archiveListFun = async () => {
   const { data } = await equipmentList(form.value);
-  if (data.rows.length > 0) {
-    dataList.value = [...dataList.value, ...data.rows];
-  }
+  dataList.value = data.rows;
 };
 
 //应急预案列表
@@ -161,20 +155,20 @@ function handleOpened() {
     Object.assign(formData, props.row);
     if (props.row.values != null && props.row.values.length > 0) {
       formData.values = props.row.values.map(item => {
-        return {
-          ...item
-        };
-      });
+      return {
+        ...item,
+      };
+    });
     } else {
       formData.values = [];
     }
 
-    console.log("formData", formData);
+    console.log("formData",formData)
     num.value = formData.values.length;
   }
   archiveListFun();
-  // emergencyListFun();
-  // sopListFun();
+  emergencyListFun();
+  sopListFun();
 }
 
 function handleConfirm() {
@@ -320,17 +314,15 @@ function handleClosed() {
           placeholder="请选择所属设备"
           style="width: 300px"
         >
-          <div v-infinite-scroll="loadArchiveListFun">
-            <el-option
-              v-for="item in dataList"
-              :key="item.equipmentId"
-              :label="`${item.equipmentName}-${item.installationLocation}-${item.equipmentCode}`"
-              :value="item.equipmentId"
-            />
-          </div>
+          <el-option
+            v-for="item in dataList"
+            :key="item.equipmentId"
+            :label="`${item.equipmentName}-${item.installationLocation}-${item.equipmentCode}`"
+            :value="item.equipmentId"
+          />
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="应急预案：" prop="emergencyIds">
+      <el-form-item label="应急预案：" prop="emergencyIds">
         <el-select
           v-model="formData.emergencyIds"
           filterable
@@ -361,7 +353,7 @@ function handleClosed() {
             :value="item.sopId"
           />
         </el-select>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item label="级别层级：">
         <el-input-number
           v-model="num"
