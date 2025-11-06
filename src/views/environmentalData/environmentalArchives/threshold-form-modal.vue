@@ -154,7 +154,7 @@ function handleOpened() {
             ]
           : alarmlevels
     });
-    console.log(formData);
+    num.value = Array.isArray(alarmlevels) ? alarmlevels.length : 1
   }
 }
 
