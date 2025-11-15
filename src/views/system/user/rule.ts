@@ -37,7 +37,8 @@ export const formRules = reactive(<FormRules>{
   password: [
     { required: true, message: "请输入密码", trigger: "blur" },
     {
-      pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z\W]{8,18}$/,
+      // pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z\W]{8,18}$/,
+      pattern: /^(?=.*[0-9])(?=.*[a-zA-Z])|(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])|(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/,
       message: "密码必须为8-18位数字、字母、符号的任意两种组合",
       trigger: "blur"
     }
