@@ -322,7 +322,7 @@ function handleClosed() {
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="应急预案：" prop="emergencyIds">
+      <!-- <el-form-item label="应急预案：" prop="emergencyIds">
         <el-select
           v-model="formData.emergencyIds"
           filterable
@@ -353,7 +353,7 @@ function handleClosed() {
             :value="item.sopId"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="级别层级：">
         <el-input-number
           v-model="num"

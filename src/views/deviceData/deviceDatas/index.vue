@@ -37,12 +37,9 @@
       <el-form-item label="时间：">
         <el-date-picker
           class="!w-[240px]"
-          type="daterange"
+          type="date"
           value-format="YYYY-MM-DD"
-          v-model="timeRange"
-          range-separator="~"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          v-model="searchFormParams.beginTime"
         />
       </el-form-item>
       <el-form-item>
