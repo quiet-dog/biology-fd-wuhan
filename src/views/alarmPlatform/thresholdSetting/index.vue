@@ -6,6 +6,14 @@
       :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
     >
+      <el-form-item label="所属设备：">
+        <el-input
+          class="!w-[200px]"
+          v-model="searchFormParams.equipmentName"
+          placeholder="请输入设备名称"
+          clearable
+        />
+      </el-form-item>
       <el-form-item label="传感器名称：">
         <el-input
           class="!w-[200px]"
@@ -168,7 +176,8 @@ const searchFormRef = ref();
 const searchFormParams = reactive<thresholdListRes>({
   sensorName: "",
   sensorModel: "",
-  equipmentIndex: ""
+  equipmentIndex: "",
+  equipmentName: ""
 });
 
 const pagination: PaginationProps = {
@@ -195,6 +204,7 @@ function resetForm() {
   searchFormParams.sensorName = "";
   searchFormParams.sensorModel = "";
   searchFormParams.equipmentIndex = "";
+  searchFormParams.equipmentName = "";
 
   pagination.total = 0;
   pagination.pageSize = 10;

@@ -259,15 +259,15 @@ const handleTimeChange = val => {
 // 添加窗口resize监听
 onMounted(() => {
   window.addEventListener("resize", () => {
-    myChart.value?.resize();
+    myChart?.resize();
   });
 });
 
 onUnmounted(() => {
   window.removeEventListener("resize", () => {
-    myChart.value?.resize();
+    myChart?.resize();
   });
-  myChart.value?.dispose();
+  myChart?.dispose();
 });
 
 defineExpose({

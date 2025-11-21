@@ -35,6 +35,7 @@ export interface thresholdListRes extends BasePageQuery {
   sensorModel?: string;
   equipmentIndex?: string;
   equipmentId?: number;
+  equipmentName?: string;
 }
 export function thresholdList(params: thresholdListRes) {
   return http.request("get", "/manage/threshold", { params });

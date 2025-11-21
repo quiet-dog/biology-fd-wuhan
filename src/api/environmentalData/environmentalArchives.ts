@@ -43,6 +43,11 @@ export function addenvironmental(data: addenvironmentalRes) {
   return http.request("post", "/manage/environment", { data });
 }
 
+
+export function getenvironmental(data: number) {
+  return http.request("get", "/manage/environment/" + data);
+}
+
 //编辑环境档案
 export interface editenvironmentalRes {
   description: string;
