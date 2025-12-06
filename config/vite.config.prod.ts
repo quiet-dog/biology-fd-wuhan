@@ -23,6 +23,7 @@ export default mergeConfig(
       target: 'es2015',
       sourcemap: false,
     },
+
   },
-  baseConfig
+  baseConfig,
 )

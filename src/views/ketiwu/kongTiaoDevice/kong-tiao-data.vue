@@ -94,6 +94,8 @@
         v-model:page-size="searchParams.pageSize"
         layout="total, prev, pager, next"
         :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       />
     </div>
   </v-dialog>
@@ -135,6 +137,16 @@ const handleOpened = () => {
 const handleClosed = () => {
   console.log("handleClosed");
 };
+
+function handleSizeChange(size: number) {
+  searchParams.value.pageSize = size;
+  archiveListFun();
+}
+
+function handleCurrentChange(page: number) {
+  searchParams.value.pageNum = page;
+  archiveListFun();
+}
 const searchParams = ref({
   deviceSn: "",
   pageNum: 1,
