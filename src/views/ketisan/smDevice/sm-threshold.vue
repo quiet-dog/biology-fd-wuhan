@@ -13,7 +13,14 @@ function open(id) {
   dialogVisible.value = true;
 }
 
-const dataMap = ref(new Map());
+const dataMap = ref({
+  心率: 0,
+  血氧: 0,
+  体温: 0,
+  co2: 0,
+  呼吸: 0,
+  心电: 0
+});
 
 function handleConfirm() {
   const result: SetSmThreshold = {
@@ -41,7 +48,11 @@ function handleOpened() {
   getSmThreshold(deviceId.value).then(res => {
     info.value = res.data;
     info.value.forEach(item => {
-      dataMap.value.set(item.type, item.data.length);
+      if (Array.isArray(item.data) && item.data.length > 0) {
+        dataMap.value[item.type] = item.data.length;
+      } else {
+        dataMap.value[item.type] = 0;
+      }
     });
   });
 }

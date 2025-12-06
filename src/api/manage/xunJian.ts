@@ -1,14 +1,9 @@
 import { http } from "@/utils/http";
 import { string } from "vue-types";
 
-export interface XunJianListCommand extends BasePageQuery {
-  // title?: string;
-  // xunJianType?: string;
-}
+export type XunJianListCommand = BasePageQuery;
 
-export interface XunJianHistoryListCommand extends BasePageQuery {
-
-}
+export type XunJianHistoryListCommand = BasePageQuery;
 
 export interface XunJianPageResponse {
   xunJianId: number;
@@ -20,8 +15,7 @@ export interface XunJianPageResponse {
   enable: boolean;
 }
 
-export interface XunJianInfo extends XunJianPageResponse {
-}
+export type XunJianInfo = XunJianPageResponse;
 
 export interface AddXunJianCommand {
   fanWei: string;
@@ -36,9 +30,7 @@ export interface UpdateXunJianCommand extends AddXunJianCommand {
   xunJianId: number;
 }
 
-export interface XunJianTypeEntity {
-
-}
+export interface XunJianTypeEntity { }
 
 export const getXunJianListApi = (params: XunJianListCommand) => {
   return http.request<ResponseData<PageDTO<XunJianPageResponse>>>(
@@ -61,7 +53,7 @@ export const addXunJianApi = (data: AddXunJianCommand) => {
 };
 
 export const updateXunJianApi = (data: UpdateXunJianCommand) => {
-  let { xunJianId, ...other } = data;
+  const { xunJianId, ...other } = data;
   return http.request<ResponseData<void>>(
     "put",
     `/manage/xunJian/${xunJianId}`,
@@ -80,15 +72,12 @@ export const deleteXunJianApi = (data: Array<number>) => {
   });
 };
 
-
-
 export const getXunJianTypeApi = () => {
   return http.request<ResponseData<Array<XunJianTypeEntity>>>(
     "get",
     "/manage/xunJian/type"
   );
 };
-
 
 export const getXunJianHistoryListApi = (params: XunJianListCommand) => {
   return http.request<ResponseData<PageDTO<XunJianPageResponse>>>(

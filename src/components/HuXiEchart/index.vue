@@ -35,7 +35,7 @@ const vChartRef = ref<InstanceType<typeof VEcharts>>();
 
 const option = ref({
   title: {
-    text: "呼吸图",
+    text: "",
     left: "center"
   },
   tooltip: {
@@ -53,7 +53,7 @@ const option = ref({
   },
   yAxis: {
     type: "value",
-    name: "幅度",
+    name: "呼吸值",
     axisLabel: {
       formatter: "{value}%"
     }
@@ -109,6 +109,7 @@ defineExpose({
     v-model="visible"
     @closed="handleClosed"
     @cancel="handleClosed"
+    :confirm-show="false"
   >
     <div class="auto-div">
       <v-echarts :option="option" ref="vChartRef" class="echart" />

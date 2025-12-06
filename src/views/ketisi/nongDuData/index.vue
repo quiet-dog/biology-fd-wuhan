@@ -58,7 +58,7 @@ const columns: TableColumnList = [
     prop: "alarmStatus"
   },
   {
-    label: "工作状态",
+    label: "设备工作状态",
     prop: "workingStatusStr"
   }
 ];

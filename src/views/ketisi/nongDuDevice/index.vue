@@ -53,6 +53,10 @@ const columns: TableColumnList = [
     prop: "area"
   },
   {
+    label: "累计工作时长",
+    prop: "totalWorkTime"
+  },
+  {
     label: "在线状态",
     prop: "isOnlineStr"
   },
@@ -163,7 +167,23 @@ onMounted(() => {
       :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
     >
-      <el-form-item label="设备状态：">
+      <el-form-item label="设备编号：">
+        <el-input
+          class="!w-[200px]"
+          placeholder="请输入设备编号"
+          clearable
+          v-model="searchFormParams.deviceSn"
+        />
+      </el-form-item>
+      <el-form-item label="所属区域：">
+        <el-input
+          class="!w-[200px]"
+          placeholder="请输入所属区域"
+          clearable
+          v-model="searchFormParams.area"
+        />
+      </el-form-item>
+      <el-form-item label="设备在线状态：">
         <el-select v-model="searchFormParams.online">
           <el-option label="在线" :value="'在线'" />
           <el-option label="离线" :value="'离线'" />

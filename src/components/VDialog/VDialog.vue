@@ -66,6 +66,7 @@
             :loading="props.loading"
             type="primary"
             @click="handleConfirm"
+            v-if="props.confirmShow"
             >{{ props.confirmText }}</el-button
           >
           <el-button :loading="props.loading" @click="handleCancel">{{
@@ -94,6 +95,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   fixedBodyHeight: true,
   draggable: true,
   loading: false,
+  confirmShow: true
 });
 const emits = defineEmits<DialogEmits>();
 
@@ -160,9 +162,12 @@ function handleCancel() {
 }
 
 function handleCloseClick() {
-  if (props.beforeClose != undefined && typeof props.beforeClose === 'function') {
+  if (
+    props.beforeClose != undefined &&
+    typeof props.beforeClose === "function"
+  ) {
     if (!props.beforeClose()) {
-      return
+      return;
     }
   }
   visible.value = false;

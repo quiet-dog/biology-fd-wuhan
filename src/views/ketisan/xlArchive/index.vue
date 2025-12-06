@@ -1,7 +1,13 @@
 <script lang="ts" setup>
 import { XlArchiveListReq } from "@/api/xlArchive/types";
 import { onMounted, reactive, ref, toRaw } from "vue";
-import { Plus, Refresh, Search, Download } from "@element-plus/icons-vue";
+import {
+  Plus,
+  Refresh,
+  Search,
+  Download,
+  Upload
+} from "@element-plus/icons-vue";
 import { dayjs, Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
 import { exportXlArchive, xlArchiveList } from "@/api/xlArchive";
@@ -195,7 +201,7 @@ onMounted(() => {
         <el-button type="primary" :icon="Plus" @click="openDialog('add')"
           >新增</el-button
         >
-        <el-button type="success" :icon="Download" @click="handleImport"
+        <el-button type="success" :icon="Upload" @click="handleImport"
           >导入</el-button
         >
         <el-button type="warning" :icon="Download" @click="exportClick"

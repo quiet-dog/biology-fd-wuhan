@@ -35,7 +35,7 @@ const vChartRef = ref<InstanceType<typeof VEcharts>>();
 
 const option = ref({
   title: {
-    text: "心电图",
+    text: "",
     left: "center"
   },
   tooltip: {
@@ -53,7 +53,7 @@ const option = ref({
   },
   yAxis: {
     type: "value",
-    name: "电压",
+    name: "心电值",
     // 加单位
     axisLabel: {
       formatter: "{value}mV"
@@ -107,6 +107,7 @@ defineExpose({
     v-model="visible"
     @closed="handleClosed"
     @cancel="handleClosed"
+    :confirm-show="false"
   >
     <div class="auto-div">
       <v-echarts :option="option" ref="vChartRef" class="echart" />

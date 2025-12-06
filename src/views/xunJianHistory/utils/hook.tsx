@@ -19,6 +19,10 @@ export function useHook() {
   };
 
   const searchFormParams = reactive<XunJianHistoryListCommand>({
+    // beginTime: "",
+    // endTime: "",
+    status: "",
+    area: ""
   });
 
   const timeRange = computed<[string, string] | null>({
@@ -70,15 +74,15 @@ export function useHook() {
     },
     {
       label: "覆盖范围",
-      prop: "fanWei",
+      prop: "fanWei"
     },
     {
       label: "巡检类型",
-      prop: "xunJianLeiXing",
+      prop: "xunJianLeiXing"
     },
     {
       label: "异常统计",
-      prop: "total",
+      prop: "total"
     },
     {
       label: "巡检状态",
@@ -87,7 +91,7 @@ export function useHook() {
     },
     {
       label: "开始日期",
-      prop: "createTime",
+      prop: "createTime"
     },
     {
       label: "操作",
@@ -105,11 +109,11 @@ export function useHook() {
     CommonUtils.fillSortParams(searchFormParams, sortState.value);
     CommonUtils.fillPaginationParams(searchFormParams, pagination);
 
-    const { data } = await getXunJianHistoryListApi(toRaw(searchFormParams)).finally(
-      () => {
-        pageLoading.value = false;
-      }
-    );
+    const { data } = await getXunJianHistoryListApi(
+      toRaw(searchFormParams)
+    ).finally(() => {
+      pageLoading.value = false;
+    });
     dataList.value = data.rows;
 
     console.log(dataList.value);

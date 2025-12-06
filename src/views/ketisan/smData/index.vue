@@ -149,7 +149,7 @@ const exportClick = () => {
     toRaw({ ...searchFormParams, smDataIds: multipleSelection.value })
   ).then(res => {
     console.log(res);
-    ExportDownload(res, "生命数据列表");
+    ExportDownload(res, "生命体征数据");
   });
 };
 const caiYangTime = ref([]);
@@ -183,11 +183,11 @@ onMounted(() => {
           v-model="searchFormParams.smDeviceSn"
         />
       </el-form-item>
-      <el-form-item label="采样时间">
+      <el-form-item label="时间：">
         <el-date-picker
           v-model="caiYangTime"
           type="daterange"
-          placeholder="请选择采样时间"
+          placeholder="请选择时间"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           @change="changeCaiYangTime"
@@ -202,7 +202,7 @@ onMounted(() => {
       </el-form-item>
     </el-form>
     <PureTableBar
-      title="设备数据列表"
+      title="生命数据列表"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"

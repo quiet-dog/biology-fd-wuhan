@@ -80,15 +80,15 @@ function changePersonnel(item) {}
     @cancel="cancelConfirm"
     @opened="handleOpened"
     @closed="handleClosed"
+    :confirm-show="false"
   >
     <el-form :model="formData" label-width="100px" ref="formRef">
       <el-row>
         <el-col :span="12">
           <el-form-item label="报警序号：" prop="xwAlarmId">
             <el-input
-              disabled
-              filterable
-              :placeholder="String(formData.xwAlarmId)"
+              readonly
+              v-model="formData.xwAlarmId"
               style="width: 300px"
             />
           </el-form-item>
@@ -96,8 +96,8 @@ function changePersonnel(item) {}
         <el-col :span="12">
           <el-form-item label="机位号：" prop="seatNumber">
             <el-input
-              disabled
-              :placeholder="formData.seatNumber"
+              readonly
+              v-model="formData.seatNumber"
               style="width: 300px"
             />
           </el-form-item>
@@ -107,8 +107,8 @@ function changePersonnel(item) {}
         <el-col :span="12">
           <el-form-item label="摄像头ID：" prop="cameraId">
             <el-input
-              :placeholder="formData.cameraId"
-              disabled
+              v-model="formData.cameraId"
+              readonly
               autocomplete="off"
               style="width: 300px"
             />
@@ -119,7 +119,7 @@ function changePersonnel(item) {}
             <el-input
               style="width: 300px"
               v-model="formData.createTime"
-              disabled
+              readonly
             />
           </el-form-item>
         </el-col>

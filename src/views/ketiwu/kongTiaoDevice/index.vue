@@ -1,25 +1,28 @@
 <script lang="ts" setup>
-import { XwDeviceListReq } from "@/api/xwDevice/types";
+import { KongTiaoDeviceListReq } from "@/api/kongTiaoDevice/types";
 import { onMounted, reactive, ref, toRaw } from "vue";
 import { Download, Plus, Refresh, Search } from "@element-plus/icons-vue";
 import { dayjs, Sort } from "element-plus";
 import { CommonUtils } from "@/utils/common";
-import { exportXwDevice, xwDeviceList } from "@/api/xwDevice";
+import { exportKongTiaoDevice, kongTiaoDeviceList } from "@/api/kongTiaoDevice";
 import { PaginationProps } from "@pureadmin/table";
 import { PureTableBar } from "@/components/RePureTableBar";
 import addEditFormModal from "./addEdit-form-modal.vue";
 import detailFormModal from "./detai-form-modal.vue";
 import { ExportDownload } from "@/utils/exportdownload";
-import history from "./history.vue";
+import kongTiaoDataDialog from "./kong-tiao-data.vue";
+import huiFengJiDataDialog from "./hui-feng-ji-data.vue";
 
-const historyRef = ref<InstanceType<typeof history>>();
 const tableRef = ref();
-const searchFormParams = reactive<XwDeviceListReq>({
+const kongTiaoDataDialogRef = ref();
+const huiFengJiDataDialogRef = ref();
+const searchFormParams = reactive<KongTiaoDeviceListReq>({
   pageNum: 1,
   pageSize: 10,
-  cameraId: "",
-  seatNumber: "",
+  deviceSn: "",
+  area: "",
   online: ""
+  // workStatus: ""
 });
 const defaultSort: Sort = {
   prop: "createTime",
@@ -42,29 +45,29 @@ const columns: TableColumnList = [
     align: "left"
   },
   {
-    label: "摄像头ID",
-    prop: "cameraId"
+    label: "设备编号",
+    prop: "deviceSn"
   },
   {
     label: "设备名称",
     prop: "name"
   },
   {
-    label: "机位号",
-    prop: "seatNumber"
-  },
-  {
-    label: "机位对应内容",
-    prop: "content"
+    label: "所属区域",
+    prop: "area"
   },
   {
     label: "设备状态",
-    prop: "isOnline"
+    prop: "isOnlineStr"
+  },
+  {
+    label: "末次通讯时间",
+    prop: "lastTimeStr"
   },
   {
     label: "操作",
     fixed: "right",
-    width: 200,
+    width: 300,
     slot: "operation"
   }
 ];
@@ -74,20 +77,24 @@ const archiveListFun = async () => {
 
   CommonUtils.fillSortParams(searchFormParams, sortState.value);
   CommonUtils.fillPaginationParams(searchFormParams, pagination);
-  const { data } = await xwDeviceList(toRaw(searchFormParams)).finally(() => {
-    pageLoading.value = false;
-  });
+  // @ts-expect-error
+  const { data } = await kongTiaoDeviceList(toRaw(searchFormParams)).finally(
+    () => {
+      pageLoading.value = false;
+    }
+  );
   dataList.value = data.rows;
   pagination.total = data.total;
 };
 
 //重置
 function resetForm() {
-  searchFormParams.cameraId = "";
+  searchFormParams.area = "";
+  searchFormParams.deviceSn = "";
   searchFormParams.beginTime = undefined;
   searchFormParams.endTime = undefined;
-  searchFormParams.seatNumber = "";
   searchFormParams.online = "";
+  searchFormParams.workStatus = "";
 
   // 重置 pagination 中的属性
   pagination.total = 0;
@@ -119,10 +126,6 @@ function openDetailDialog(row) {
   detailVisible.value = true;
 }
 
-function openHistoryDialog(row) {
-  historyRef.value.open(row.cameraId);
-}
-
 const multipleSelection = ref([]);
 const exportClick = () => {
   if (multipleSelection.value.length == 0) {
@@ -141,12 +144,20 @@ const exportClick = () => {
     });
   }
 
-  exportXwDevice(
-    toRaw({ ...searchFormParams, xwDeviceIds: multipleSelection.value })
+  exportKongTiaoDevice(
+    toRaw({ ...searchFormParams, kongTiaoDeviceIds: multipleSelection.value })
   ).then(res => {
-    ExportDownload(res, "行为设备列表");
+    ExportDownload(res, "空调设备列表");
   });
 };
+
+function openHuiFengJiDataDialog(row) {
+  if (row.deviceType == "回风机") {
+    huiFengJiDataDialogRef.value.open(row.deviceSn);
+  } else {
+    kongTiaoDataDialogRef.value.open(row.deviceSn);
+  }
+}
 onMounted(() => {
   archiveListFun();
 });
@@ -160,20 +171,20 @@ onMounted(() => {
       :model="searchFormParams"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
     >
-      <el-form-item label="摄像头ID：">
+      <el-form-item label="设备编号：">
         <el-input
           class="!w-[200px]"
-          placeholder="请输入摄像头ID"
+          placeholder="请输入设备编号"
           clearable
-          v-model="searchFormParams.cameraId"
+          v-model="searchFormParams.deviceSn"
         />
       </el-form-item>
-      <el-form-item label="机位号：">
+      <el-form-item label="所属区域：">
         <el-input
           class="!w-[200px]"
-          placeholder="请输入机位号"
+          placeholder="请输入所属区域"
           clearable
-          v-model="searchFormParams.seatNumber"
+          v-model="searchFormParams.area"
         />
       </el-form-item>
       <el-form-item label="设备状态：">
@@ -182,17 +193,12 @@ onMounted(() => {
           <el-option label="离线" :value="'离线'" />
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="设备名称：">
-        <el-input class="!w-[200px]" placeholder="请输入设备名称" clearable v-model="searchFormParams.name" />
+      <el-form-item label="工作状态：">
+        <el-select v-model="searchFormParams.workStatus">
+          <el-option label="空闲" :value="'0'" />
+          <el-option label="启动" :value="'1'" />
+        </el-select>
       </el-form-item>
-      <el-form-item label="所属区域：">
-        <el-input class="!w-[200px]" placeholder="请输入所属区域：" clearable v-model="searchFormParams.area" />
-      </el-form-item>
-      <el-form-item label="设备状态：">
-        <el-options>
-
-        </el-options>
-      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="archiveListFun"
           >搜索</el-button
@@ -201,7 +207,7 @@ onMounted(() => {
       </el-form-item>
     </el-form>
     <PureTableBar
-      title="行为监测设备列表"
+      title="消杀设备列表"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
@@ -218,13 +224,14 @@ onMounted(() => {
       <template v-slot="{ size, dynamicColumns }">
         <pure-table
           @selection-change="
-            rows => (multipleSelection = rows.map(item => item.xwDeviceId))
+            rows =>
+              (multipleSelection = rows.map(item => item.kongTiaoDeviceId))
           "
           ref="tableRef"
           adaptive
           :adaptiveConfig="{ offsetBottom: 32 }"
           align-whole="center"
-          row-key="xwDeviceId"
+          row-key="policiesId"
           showOverflowTooltip
           table-layout="auto"
           :size="size"
@@ -246,11 +253,10 @@ onMounted(() => {
               link
               type="primary"
               :size="size"
-              @click="openHistoryDialog(row)"
+              @click="openDetailDialog(row)"
             >
-              设备数据
+              查看
             </el-button>
-
             <el-button
               class="reset-margin"
               link
@@ -260,9 +266,15 @@ onMounted(() => {
             >
               修改
             </el-button>
-            <!-- <el-button class="reset-margin" link type="primary" :size="size" @click="openDetailDialog(row)">
-              查看
-            </el-button> -->
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              @click="openHuiFengJiDataDialog(row)"
+            >
+              数据查看
+            </el-button>
           </template>
         </pure-table>
       </template>
@@ -274,7 +286,8 @@ onMounted(() => {
       @success="onSearch(tableRef)"
     />
     <detailFormModal v-model="detailVisible" :row="detailRow" />
-    <history ref="historyRef" />
+    <kongTiaoDataDialog ref="kongTiaoDataDialogRef" />
+    <huiFengJiDataDialog ref="huiFengJiDataDialogRef" />
   </div>
 </template>
 

@@ -1,17 +1,20 @@
 <script lang="ts" setup>
-import { addJianCeDevice } from "@/api/jianCeDevice";
-import { AddJianCeDeviceReq, JianCeDeviceRow } from "@/api/jianCeDevice/types";
+import { addKongTiaoDevice } from "@/api/kongTiaoDevice";
+import {
+  AddKongTiaoDeviceReq,
+  KongTiaoDeviceRow
+} from "@/api/kongTiaoDevice/types";
 import { ElMessage, FormRules } from "element-plus";
 import { computed, reactive, ref } from "vue";
 import VDialog from "@/components/VDialog/VDialog.vue";
-import {
-  personnelInfo,
-  personnelList
-} from "@/api/personnelData/personnelProfile";
+// import {
+//   personnelInfo,
+//   personnelList
+// } from "@/api/personnelData/personnelProfile";
 
 interface Props {
   modelValue: boolean;
-  row: JianCeDeviceRow;
+  row: KongTiaoDeviceRow;
 }
 const props = defineProps<Props>();
 const loading = ref(false);
@@ -50,7 +53,7 @@ const rules: FormRules = {
   ]
 };
 
-const formData = reactive<AddJianCeDeviceReq>({
+const formData = reactive<AddKongTiaoDeviceReq>({
   name: "",
   area: "",
   deviceSn: ""
@@ -59,7 +62,7 @@ const formData = reactive<AddJianCeDeviceReq>({
 async function handleConfirm() {
   try {
     loading.value = true;
-    await addJianCeDevice(formData);
+    await addKongTiaoDevice(formData);
     ElMessage.success("提交成功");
     visible.value = false;
     emits("success");
@@ -113,7 +116,7 @@ function changePersonnel(item) {}
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="设备名称：" prop="name">
+          <el-form-item label="设备名称：">
             <el-input
               v-model="formData.name"
               disabled
@@ -133,6 +136,18 @@ function changePersonnel(item) {}
               placeholder="请输入所属区域"
               style="width: 300px"
             />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="设备类型：">
+            <el-select
+              v-model="formData.deviceType"
+              placeholder="请选择设备类型"
+              style="width: 300px"
+            >
+              <el-option label="空调" value="空调" />
+              <el-option label="回风机" value="回风机" />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>

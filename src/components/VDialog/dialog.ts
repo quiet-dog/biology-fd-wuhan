@@ -38,6 +38,8 @@ export interface DialogProps {
 
   hiddenFooter?: boolean;
 
+  confirmShow?: boolean;
+
   beforeClose: () => boolean;
 }
 

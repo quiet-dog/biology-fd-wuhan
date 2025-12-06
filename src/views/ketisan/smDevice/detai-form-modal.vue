@@ -166,6 +166,7 @@ async function getSmDataList() {
     @cancel="cancelConfirm"
     @opened="handleOpened"
     @closed="handleClosed"
+    :confirm-show="false"
   >
     <el-tabs>
       <el-tab-pane label="设备信息">
@@ -256,16 +257,17 @@ async function getSmDataList() {
           </el-row>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="设备历史信息">
+      <el-tab-pane label="历史数据">
         <el-table :data="smDataListData">
-          <el-table-column label="序号" prop="smDataId" />
-          <el-table-column label="设备SN号" prop="deviceSn" />
+          <!-- <el-table-column label="序号" prop="smDataId" />
+          <el-table-column label="设备SN号" prop="deviceSn" /> -->
           <el-table-column label="操作员" prop="personnelName" />
           <el-table-column label="心率" prop="xinlv" />
           <el-table-column label="血氧" prop="xueYang" />
           <el-table-column label="体温" prop="temp" />
           <el-table-column label="二氧化碳浓度" prop="co2" />
-          <el-table-column label="采样时间" prop="createTime" />
+          <el-table-column label="体态" prop="tiTai" />
+          <el-table-column label="时间" prop="createTime" />
         </el-table>
         <el-row>
           <el-col>

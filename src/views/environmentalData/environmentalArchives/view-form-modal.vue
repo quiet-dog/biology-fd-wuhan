@@ -8,6 +8,7 @@
     :is-show-confirm="false"
     @cancel="cancelView"
     @opened="handleOpened"
+    :confirm-show="false"
   >
     <el-form :model="formData" label-width="150px" ref="formRef">
       <el-row>
@@ -195,7 +196,7 @@ function handleOpened() {
       sopIds
     });
   }
-  
+
   emergencyListFun();
   sopListFun();
 }
