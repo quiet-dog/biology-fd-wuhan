@@ -193,12 +193,12 @@ onMounted(() => {
           <el-option label="离线" :value="'离线'" />
         </el-select>
       </el-form-item>
-      <el-form-item label="工作状态：">
+      <!-- <el-form-item label="工作状态：">
         <el-select v-model="searchFormParams.workStatus">
           <el-option label="空闲" :value="'0'" />
           <el-option label="启动" :value="'1'" />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="archiveListFun"
           >搜索</el-button
