@@ -94,7 +94,7 @@ function changePersonnel(item) {}
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="信息"
+    title="查看节能系统"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"

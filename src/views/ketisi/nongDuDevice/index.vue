@@ -54,7 +54,7 @@ const columns: TableColumnList = [
   },
   {
     label: "累计工作时长",
-    prop: "totalWorkTime"
+    prop: "workTimeStr"
   },
   {
     label: "设备在线状态",

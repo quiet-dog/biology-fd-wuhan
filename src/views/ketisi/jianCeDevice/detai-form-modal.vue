@@ -91,13 +91,14 @@ function changePersonnel(item) {}
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="信息"
+    title="查看监测设备"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"
     @cancel="cancelConfirm"
     @opened="handleOpened"
     @closed="handleClosed"
+    :confirm-show="false"
   >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>

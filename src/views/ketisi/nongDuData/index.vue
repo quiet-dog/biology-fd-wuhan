@@ -42,6 +42,10 @@ const columns: TableColumnList = [
     prop: "deviceSn"
   },
   {
+    label: "所属区域",
+    prop: "area"
+  },
+  {
     label: "生物浓度",
     prop: "biologicalConcentration"
   },
@@ -50,16 +54,16 @@ const columns: TableColumnList = [
     prop: "particleConcentration"
   },
   {
-    label: "采样时间",
-    prop: "createTime"
-  },
-  {
     label: "报警状态",
     prop: "alarmStatus"
   },
   {
     label: "设备工作状态",
     prop: "workingStatusStr"
+  },
+  {
+    label: "采样时间",
+    prop: "createTime"
   }
 ];
 
@@ -135,7 +139,7 @@ const exportClick = () => {
   exportNongDuData(
     toRaw({ ...searchFormParams, nongDuDataIds: multipleSelection.value })
   ).then(res => {
-    ExportDownload(res, "浓度数据列表");
+    ExportDownload(res, "监测设备数据列表");
   });
 };
 onMounted(() => {

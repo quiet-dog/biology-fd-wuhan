@@ -1,14 +1,17 @@
-<script lang='ts' setup>
-import { addXsDevice } from '@/api/xsDevice';
-import { AddXsDeviceReq, XsDeviceRow } from '@/api/xsDevice/types';
-import { ElMessage, FormRules } from 'element-plus';
-import { computed, reactive, ref } from 'vue';
+<script lang="ts" setup>
+import { addXsDevice } from "@/api/xsDevice";
+import { AddXsDeviceReq, XsDeviceRow } from "@/api/xsDevice/types";
+import { ElMessage, FormRules } from "element-plus";
+import { computed, reactive, ref } from "vue";
 import VDialog from "@/components/VDialog/VDialog.vue";
-import { personnelInfo, personnelList } from '@/api/personnelData/personnelProfile';
+import {
+  personnelInfo,
+  personnelList
+} from "@/api/personnelData/personnelProfile";
 
 interface Props {
   modelValue: boolean;
-  row: XsDeviceRow
+  row: XsDeviceRow;
 }
 const props = defineProps<Props>();
 const loading = ref(false);
@@ -50,11 +53,8 @@ const rules: FormRules = {
 const formData = reactive<AddXsDeviceReq>({
   name: "",
   area: "",
-  deviceSn: "",
+  deviceSn: ""
 });
-
-
-
 
 async function handleConfirm() {
   try {
@@ -75,47 +75,64 @@ function cancelConfirm() {
   visible.value = false;
 }
 
-
-
-
-
 function handleOpened() {
   if (props.row) {
     Object.assign(formData, props.row);
   }
 }
 
-function handleClosed() {
+function handleClosed() {}
 
-}
-
-function changePersonnel(item) {
-}
-
+function changePersonnel(item) {}
 </script>
 
 <template>
-  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling title="信息"
-    v-model="visible" :loading="loading" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
-    @closed="handleClosed">
+  <v-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    title="查看消杀设备"
+    v-model="visible"
+    :loading="loading"
+    @confirm="handleConfirm"
+    @cancel="cancelConfirm"
+    @opened="handleOpened"
+    @closed="handleClosed"
+  >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
           <el-form-item label="设备SN号：" prop="deviceSn">
-            <el-input v-model="formData.deviceSn" disabled filterable placeholder="请输入设备SN号" style="width: 300px" />
+            <el-input
+              v-model="formData.deviceSn"
+              disabled
+              filterable
+              placeholder="请输入设备SN号"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="设备名称：">
-            <el-input v-model="formData.name" disabled placeholder="请输入设备名称" style="width: 300px" />
+            <el-input
+              v-model="formData.name"
+              disabled
+              placeholder="请输入设备名称"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>
-     
+
       <el-row>
         <el-col :span="12">
           <el-form-item label="所属区域：" prop="area">
-            <el-input disabled v-model="formData.area" placeholder="请输入所属区域"  style="width: 300px" />
+            <el-input
+              disabled
+              v-model="formData.area"
+              placeholder="请输入所属区域"
+              style="width: 300px"
+            />
           </el-form-item>
         </el-col>
       </el-row>

@@ -115,7 +115,7 @@ function handleClosed() {
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    :title="type == 'add' ? '添加节能设备' : '更新节能设备'"
+    :title="type == 'add' ? '添加节能系统' : '编辑节能系统'"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"
