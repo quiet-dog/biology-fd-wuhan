@@ -195,7 +195,7 @@ onMounted(() => {
       </el-form-item>
     </el-form>
     <PureTableBar
-      title="监测设备列表"
+      title="检测设备列表"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"

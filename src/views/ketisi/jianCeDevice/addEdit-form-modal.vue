@@ -106,7 +106,7 @@ function handleClosed() {
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    :title="type == 'add' ? '添加监测设备' : '编辑监测设备'"
+    :title="type == 'add' ? '添加检测设备' : '编辑检测设备'"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"

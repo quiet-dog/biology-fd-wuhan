@@ -88,3 +88,7 @@ export const getXunJianHistoryListApi = (params: XunJianListCommand) => {
     }
   );
 };
+
+export const getAllAreas = () => {
+  return http.request("get", "/manage/xunJian/areas");
+};

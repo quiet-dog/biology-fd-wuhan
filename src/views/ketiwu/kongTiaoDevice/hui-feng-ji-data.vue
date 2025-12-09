@@ -3,7 +3,7 @@
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="空调数据"
+    title="回风机数据"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"
@@ -11,6 +11,7 @@
     @opened="handleOpened"
     @closed="handleClosed"
     :destroy-on-close="true"
+    :confirm-show="false"
   >
     <div>
       <el-row>
@@ -146,10 +147,12 @@ function changeTimeRange(val: any) {
 
 const handleConfirm = () => {
   console.log("handleConfirm");
+  visible.value = false;
 };
 
 const cancelConfirm = () => {
   console.log("handleCancel");
+  visible.value = false;
 };
 
 const handleOpened = () => {
@@ -158,6 +161,7 @@ const handleOpened = () => {
 
 const handleClosed = () => {
   console.log("handleClosed");
+  visible.value = false;
 };
 const searchParams = ref({
   deviceSn: "",

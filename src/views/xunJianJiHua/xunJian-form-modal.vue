@@ -5,7 +5,8 @@ import {
   XunJianPageResponse,
   XunJianTypeEntity,
   updateXunJianApi,
-  UpdateXunJianCommand
+  UpdateXunJianCommand,
+  getAllAreas
 } from "@/api/manage/xunJian.ts";
 import VDialog from "@/components/VDialog/VDialog.vue";
 import { ElMessage, FormInstance, FormRules } from "element-plus";
@@ -26,8 +27,7 @@ const rules: FormRules = {
       required: true,
       message: "标题不能为空"
     }
-  ],
-
+  ]
 };
 
 const props = defineProps<Props>();
@@ -49,8 +49,10 @@ const formData = reactive<AddXunJianCommand | UpdateXunJianCommand>({
   xunJianLeiXing: "定点巡检",
   enable: false,
   timeRange: [],
-  dayRange: [],
+  dayRange: []
 });
+
+const targetAreas = ref([]);
 
 const visible = computed({
   get: () => props.modelValue,
@@ -65,7 +67,7 @@ async function handleConfirm() {
     if (callback) {
       try {
         loading.value = true;
-        console.log("formData", formData)
+        console.log("formData", formData);
         if (props.type === "add") {
           await addXunJianApi(formData);
         } else if (props.type === "update") {
@@ -84,22 +86,44 @@ async function handleConfirm() {
     }
   });
 }
+
+const areas = ref([]);
 function handleOpened() {
   if (props.row) {
     Object.assign(formData, props.row);
     if (Array.isArray(formData.timeRange) && formData.timeRange.length > 0) {
-      startTime.value = dayjs().startOf('day').add(formData.timeRange[0], 'second').format('HH:mm')
+      startTime.value = dayjs()
+        .startOf("day")
+        .add(formData.timeRange[0], "second")
+        .format("HH:mm");
       if (formData.timeRange.length > 1) {
-        endTime.value = dayjs().startOf('day').add(formData.timeRange[1], 'second').format('HH:mm')
+        endTime.value = dayjs()
+          .startOf("day")
+          .add(formData.timeRange[1], "second")
+          .format("HH:mm");
       }
     }
     if (Array.isArray(formData.dayRange) && formData.dayRange.length > 0) {
-      endDay.value = JSON.parse(JSON.stringify(formData.dayRange))
+      endDay.value = JSON.parse(JSON.stringify(formData.dayRange));
     }
-    Paths.value = [];
-  }
-}
+    if (
+      formData.fanWei != undefined &&
+      formData.fanWei != null &&
+      formData.fanWei != ""
+    ) {
+      targetAreas.value = formData.fanWei.split(",");
+    }
 
+    Paths.value = [];
+  } else {
+    targetAreas.value = [];
+  }
+
+  getAllAreas().then(res => {
+    // console.log("res", res);
+    areas.value = res.data;
+  });
+}
 
 function cancelConfirm() {
   visible.value = false;
@@ -109,34 +133,42 @@ function handleClosed() {
   Paths.value = [];
 }
 
-const weekSelect = [{
-  label: "周一",
-  value: 0,
-}, {
-  label: "周二",
-  value: 1,
-}, {
-  label: "周三",
-  value: 2
-}, {
-  label: "周四",
-  value: 3
-}, {
-  label: "周五",
-  value: 4
-}, {
-  label: "周六",
-  value: 5
-}, {
-  label: "周日",
-  value: 6
-}]
-const daySelect = ref([])
+const weekSelect = [
+  {
+    label: "周一",
+    value: 0
+  },
+  {
+    label: "周二",
+    value: 1
+  },
+  {
+    label: "周三",
+    value: 2
+  },
+  {
+    label: "周四",
+    value: 3
+  },
+  {
+    label: "周五",
+    value: 4
+  },
+  {
+    label: "周六",
+    value: 5
+  },
+  {
+    label: "周日",
+    value: 6
+  }
+];
+const daySelect = ref([]);
 
-const startTime = ref('')
-const endTime = ref('')
-const startDay = ref(0)
-const endDay = ref([])
+const startTime = ref("");
+const endTime = ref("");
+const startDay = ref(0);
+const endDay = ref([]);
 function changeStartTime(val) {
   if (val != "") {
     const [h, m] = val.split(":").map(Number);
@@ -153,22 +185,25 @@ function changeEndTime(val) {
 }
 function changeStartDay(val) {
   if (val) {
-    formData.timeRange[0] = val
+    formData.timeRange[0] = val;
   }
 }
 function changeEndDay(val) {
   if (val) {
     // formData.timeRange[1] = val
-    formData.dayRange = val
+    formData.dayRange = val;
   }
 }
 
 function changePinLu(val) {
   if (val) {
-    formData.timeRange = [0, 0]
+    formData.timeRange = [0, 0];
   }
 }
 
+function changeTargetAreas(val) {
+  formData.fanWei = targetAreas.value.join(",");
+}
 
 onMounted(() => {
   if (daySelect.value.length == 0) {
@@ -176,21 +211,47 @@ onMounted(() => {
       daySelect.value.push({
         label: String(i + 1),
         value: i
-      })
+      });
     }
   }
-})
+});
 </script>
 
 <template>
-  <v-dialog show-full-screen :fixed-body-height="false" use-body-scrolling :title="type === 'add' ? '新增巡检计划' : '更新巡检计划'"
-    v-model="visible" :loading="loading" @confirm="handleConfirm" @cancel="cancelConfirm" @opened="handleOpened"
-    @closed="handleClosed">
+  <v-dialog
+    show-full-screen
+    :fixed-body-height="false"
+    use-body-scrolling
+    :title="type === 'add' ? '新增巡检计划' : '更新巡检计划'"
+    v-model="visible"
+    :loading="loading"
+    @confirm="handleConfirm"
+    @cancel="cancelConfirm"
+    @opened="handleOpened"
+    @closed="handleClosed"
+  >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
           <el-form-item label="覆盖范围：" prop="code">
-            <el-input v-model="formData.fanWei" placeholder="请输入覆盖范围" style="width: 300px" clearable />
+            <!-- <el-input
+              v-model="targetAreas"
+              placeholder="请输入覆盖范围"
+              style="width: 300px"
+              clearable
+            /> -->
+            <el-select
+              v-model="targetAreas"
+              multiple
+              @change="changeTargetAreas"
+            >
+              <el-option
+                v-for="item in areas"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -216,29 +277,51 @@ onMounted(() => {
 
         <el-col :span="12">
           <el-form-item label="开始时间:">
-            <el-time-select @change="changeStartTime" editable v-model="startTime" start="00:00" end="23:45" step="00:15" />
+            <el-time-select
+              @change="changeStartTime"
+              editable
+              v-model="startTime"
+              start="00:00"
+              end="23:45"
+              step="00:15"
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col v-if="formData.xunJianLeiXing != '定点巡检'" :span="12">
           <el-form-item label="结束时间:">
-            <el-time-select @change="changeEndTime" editable v-model="endTime" start="00:00" end="23:45" step="00:15" />
+            <el-time-select
+              @change="changeEndTime"
+              editable
+              v-model="endTime"
+              start="00:00"
+              end="23:45"
+              step="00:15"
+            />
           </el-form-item>
         </el-col>
         <el-col v-if="formData.xunJianPinLu != '每日'" :span="12">
           <el-form-item label="选择:">
             <el-select v-model="endDay" multiple @change="changeEndDay">
-              <el-option v-if="formData.xunJianPinLu == '每周'" v-for="(item, index) in weekSelect" :key="index"
-                :value="item.value" :label="item.label" />
-              <el-option v-if="formData.xunJianPinLu == '每月'" v-for="(item, index) in daySelect" :key="index"
-                :value="item.value" :label="item.label" />
+              <el-option
+                v-if="formData.xunJianPinLu == '每周'"
+                v-for="(item, index) in weekSelect"
+                :key="index"
+                :value="item.value"
+                :label="item.label"
+              />
+              <el-option
+                v-if="formData.xunJianPinLu == '每月'"
+                v-for="(item, index) in daySelect"
+                :key="index"
+                :value="item.value"
+                :label="item.label"
+              />
             </el-select>
           </el-form-item>
         </el-col>
       </el-row>
-
-
     </el-form>
   </v-dialog>
 </template>

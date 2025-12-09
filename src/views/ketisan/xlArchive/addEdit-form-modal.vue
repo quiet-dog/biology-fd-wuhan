@@ -151,7 +151,7 @@ function handleClosed() {
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
-          <el-form-item label="方案名称：" prop="personnelId">
+          <el-form-item label="人员名称：" prop="personnelId">
             <!-- <el-input v-model="formData.userId" filterable placeholder="请选择人员姓名" style="width: 300px" /> -->
             <el-select v-model="formData.personnelId">
               <div v-infinite-scroll="loadModel">

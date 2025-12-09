@@ -94,7 +94,7 @@ function changePersonnel(item) {}
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="信息"
+    title="查看节能设备"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"
@@ -105,12 +105,12 @@ function changePersonnel(item) {}
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
-          <el-form-item label="设备SN号：" prop="deviceSn">
+          <el-form-item label="设备编号：" prop="deviceSn">
             <el-input
               v-model="formData.deviceSn"
               disabled
               filterable
-              placeholder="请输入设备SN号"
+              placeholder="请输入设备编号"
               style="width: 300px"
             />
           </el-form-item>

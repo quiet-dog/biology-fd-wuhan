@@ -115,7 +115,7 @@ function handleClosed() {
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    :title="type == 'add' ? '添加空调设备' : '更新空调设备'"
+    :title="type == 'add' ? '添加节能设备' : '编辑节能设备'"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"
@@ -126,7 +126,7 @@ function handleClosed() {
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
-          <el-form-item label="设备SN号：" prop="deviceSn">
+          <el-form-item label="设备编号：" prop="deviceSn">
             <el-input
               v-model="formData.deviceSn"
               filterable

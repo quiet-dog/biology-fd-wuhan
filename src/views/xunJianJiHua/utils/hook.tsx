@@ -18,7 +18,7 @@ export function useHook() {
 
   const searchFormParams = reactive<XunJianListCommand>({
     title: "",
-    xunJianType: null
+    xunJianPinLu: ""
   });
 
   const timeRange = computed<[string, string] | null>({
@@ -64,11 +64,11 @@ export function useHook() {
     },
     {
       label: "巡检频率",
-      prop: "xunJianPinLu",
+      prop: "xunJianPinLu"
     },
     {
       label: "覆盖范围",
-      prop: "fanWei",
+      prop: "fanWei"
     },
     {
       label: "开始时间",
