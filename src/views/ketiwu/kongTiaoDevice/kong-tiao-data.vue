@@ -3,7 +3,7 @@
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="空调数据"
+    title="节能数据"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"
@@ -140,6 +140,8 @@ const handleOpened = () => {
 const handleClosed = () => {
   console.log("handleClosed");
   visible.value = false;
+  searchParams.value.pageNum = 1;
+  searchParams.value.pageSize = 10;
 };
 
 function handleSizeChange(size: number) {

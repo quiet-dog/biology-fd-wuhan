@@ -12,6 +12,7 @@ import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import { Plus } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
+import QuShiEcharts from "./echarts.vue";
 
 defineOptions({
   name: "ManageXunJian"
@@ -86,6 +87,11 @@ const xunJianEventRef = ref<InstanceType<typeof XunJianFormModal>>();
 const openEventListDialog = row => {
   xunJianEventRef.value.handleOpenDialog(row.xunJianHistoryId);
 };
+
+const quShiEchartsRef = ref<InstanceType<typeof QuShiEcharts>>();
+const openQuShiEcharts = () => {
+  quShiEchartsRef.value.handleOpened();
+};
 </script>
 
 <template>
@@ -116,7 +122,7 @@ const openEventListDialog = row => {
           <el-option label="已完成" value="已完成" />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间">
+      <el-form-item label="开始日期">
         <el-date-picker
           class="!w-[240px]"
           v-model="timeRange"
@@ -142,11 +148,14 @@ const openEventListDialog = row => {
         >
           重置
         </el-button>
+        <el-button @click="openQuShiEcharts" type="primary" class="ml-2">
+          趋势分析
+        </el-button>
       </el-form-item>
     </el-form>
 
     <PureTableBar
-      title="知识库"
+      title="巡检报告列表"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
@@ -211,6 +220,7 @@ const openEventListDialog = row => {
     </PureTableBar>
 
     <XunJianFormModal ref="xunJianEventRef" />
+    <QuShiEcharts ref="quShiEchartsRef" />
   </div>
 </template>
 

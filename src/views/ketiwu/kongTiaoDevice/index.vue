@@ -147,7 +147,7 @@ const exportClick = () => {
   exportKongTiaoDevice(
     toRaw({ ...searchFormParams, kongTiaoDeviceIds: multipleSelection.value })
   ).then(res => {
-    ExportDownload(res, "空调设备列表");
+    ExportDownload(res, "节能设备列表");
   });
 };
 

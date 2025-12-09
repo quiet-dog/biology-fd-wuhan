@@ -149,7 +149,7 @@ const exportClick = () => {
   exportJianCeDevice(
     toRaw({ ...searchFormParams, jianCeDeviceIds: multipleSelection.value })
   ).then(res => {
-    ExportDownload(res, "消杀设备列表");
+    ExportDownload(res, "监测设备列表");
   });
 };
 onMounted(() => {

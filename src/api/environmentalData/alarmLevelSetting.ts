@@ -56,3 +56,11 @@ export function getBuTongApi(data) {
     data: data
   });
 }
+
+export function getXunJianAlarmCount(params: string) {
+  return http.request("get", "/manage/xunJian/history/alarmCount", {
+    params: {
+      dayType: params
+    }
+  });
+}

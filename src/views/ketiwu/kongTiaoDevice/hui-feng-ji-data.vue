@@ -119,6 +119,8 @@
         v-model:page-size="searchParams.pageSize"
         layout="total, prev, pager, next"
         :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       />
     </div>
   </v-dialog>

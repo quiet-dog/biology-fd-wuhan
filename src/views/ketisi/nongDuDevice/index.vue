@@ -41,7 +41,7 @@ const columns: TableColumnList = [
     align: "left"
   },
   {
-    label: "设备编号",
+    label: "设备sn号",
     prop: "deviceSn"
   },
   {
@@ -54,10 +54,10 @@ const columns: TableColumnList = [
   },
   {
     label: "累计工作时长",
-    prop: "totalWorkTime"
+    prop: "workTimeStr"
   },
   {
-    label: "在线状态",
+    label: "设备在线状态",
     prop: "isOnlineStr"
   },
   {
