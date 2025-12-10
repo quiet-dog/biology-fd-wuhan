@@ -12,7 +12,8 @@ import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import { Plus } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
-import QuShiEcharts from "./echarts.vue";
+// import QuShiEcharts from "./echarts.vue";
+import Echarts from "../xunJianJiHua/echarts.vue";
 
 defineOptions({
   name: "ManageXunJian"
@@ -92,6 +93,11 @@ const quShiEchartsRef = ref<InstanceType<typeof QuShiEcharts>>();
 const openQuShiEcharts = () => {
   quShiEchartsRef.value.handleOpened();
 };
+
+const echartsRef = ref();
+function openEcharts() {
+  echartsRef.value.open();
+}
 </script>
 
 <template>
@@ -148,9 +154,9 @@ const openQuShiEcharts = () => {
         >
           重置
         </el-button>
-        <el-button @click="openQuShiEcharts" type="primary" class="ml-2">
+        <!-- <el-button @click="openQuShiEcharts" type="primary" class="ml-2">
           趋势分析
-        </el-button>
+        </el-button> -->
       </el-form-item>
     </el-form>
 
@@ -160,6 +166,10 @@ const openQuShiEcharts = () => {
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
     >
+      <template #buttons>
+        <el-button type="primary" @click="openEcharts">异常统计分析</el-button>
+      </template>
+
       <template v-slot="{ size, dynamicColumns }">
         <pure-table
           ref="tableRef"
@@ -220,7 +230,8 @@ const openQuShiEcharts = () => {
     </PureTableBar>
 
     <XunJianFormModal ref="xunJianEventRef" />
-    <QuShiEcharts ref="quShiEchartsRef" />
+    <!-- <QuShiEcharts ref="quShiEchartsRef" /> -->
+    <Echarts ref="echartsRef" />
   </div>
 </template>
 

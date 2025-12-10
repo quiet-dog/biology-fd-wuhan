@@ -3,7 +3,7 @@
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    title="查看报警趋势"
+    title="异常统计分析"
     v-model="visible"
     @closed="handleClosed"
     @cancel="handleClosed"
