@@ -105,7 +105,7 @@ function handleClosed() {
     show-full-screen
     :fixed-body-height="false"
     use-body-scrolling
-    :title="type == 'add' ? '添加消杀设备' : '更新消杀设备'"
+    :title="type == 'add' ? '添加消杀设备' : '编辑消杀设备'"
     v-model="visible"
     :loading="loading"
     @confirm="handleConfirm"

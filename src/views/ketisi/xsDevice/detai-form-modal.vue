@@ -98,6 +98,7 @@ function changePersonnel(item) {}
     @cancel="cancelConfirm"
     @opened="handleOpened"
     @closed="handleClosed"
+    :confirm-show="false"
   >
     <el-form :model="formData" label-width="100px" :rules="rules" ref="formRef">
       <el-row>

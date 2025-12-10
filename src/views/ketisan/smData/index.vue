@@ -72,7 +72,7 @@ const columns: TableColumnList = [
   // },
   {
     label: "时间",
-    prop: "createTime"
+    prop: "caiYangTime"
   },
   {
     label: "操作",

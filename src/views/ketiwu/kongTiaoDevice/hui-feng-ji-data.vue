@@ -187,6 +187,16 @@ function archiveListFun() {
     });
 }
 
+function handleSizeChange(val: number) {
+  searchParams.value.pageSize = val;
+  archiveListFun();
+}
+
+function handleCurrentChange(val: number) {
+  searchParams.value.pageNum = val;
+  archiveListFun();
+}
+
 function open(sn: string) {
   // deviceType.value = type;
   deviceSn.value = sn;

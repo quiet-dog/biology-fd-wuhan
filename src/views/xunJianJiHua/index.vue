@@ -104,7 +104,7 @@ function openEcharts() {
           <el-option label="每月" value="每月" />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建日期：">
+      <el-form-item label="创建时间：">
         <el-date-picker
           class="!w-[240px]"
           v-model="timeRange"
@@ -143,7 +143,7 @@ function openEcharts() {
         <el-button type="primary" :icon="Plus" @click="openDialog('add')"
           >新增</el-button
         >
-        <el-button type="primary" @click="openEcharts">巡检记录</el-button>
+        <!-- <el-button type="primary" @click="openEcharts">异常统计分析</el-button> -->
       </template>
 
       <template v-slot="{ size, dynamicColumns }">
