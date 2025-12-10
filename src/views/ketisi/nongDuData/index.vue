@@ -139,7 +139,7 @@ const exportClick = () => {
   exportNongDuData(
     toRaw({ ...searchFormParams, nongDuDataIds: multipleSelection.value })
   ).then(res => {
-    ExportDownload(res, "监测设备数据列表");
+    ExportDownload(res, "检测设备数据列表");
   });
 };
 onMounted(() => {
@@ -185,7 +185,7 @@ onMounted(() => {
       </el-form-item>
     </el-form>
     <PureTableBar
-      title="监测设备数据"
+      title="检测设备数据"
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
