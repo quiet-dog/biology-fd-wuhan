@@ -41,7 +41,7 @@ const columns: TableColumnList = [
     align: "left"
   },
   {
-    label: "设备SN号",
+    label: "设备编号",
     prop: "deviceSn"
   },
   {
