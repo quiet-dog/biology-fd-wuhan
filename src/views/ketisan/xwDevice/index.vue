@@ -57,10 +57,10 @@ const columns: TableColumnList = [
     label: "机位对应内容",
     prop: "content"
   },
-  {
-    label: "设备状态",
-    prop: "isOnline"
-  },
+  // {
+  //   label: "设备状态",
+  //   prop: "isOnline"
+  // },
   {
     label: "操作",
     fixed: "right",

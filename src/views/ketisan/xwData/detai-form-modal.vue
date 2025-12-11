@@ -59,7 +59,7 @@ function handleOpened() {
 
 const getPicUrl = item => {
   if (item != null && item != "") {
-    return `/renTiServer` + item.replace("/home/hust/storage", "");
+    return `/renTiServer/images` + item.replace("/home/hust/storage", "");
   }
   return "";
 };
