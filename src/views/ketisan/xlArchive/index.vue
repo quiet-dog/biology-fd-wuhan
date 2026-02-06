@@ -63,7 +63,7 @@ const columns: TableColumnList = [
   },
   {
     label: "状态",
-    prop: "重点关注"
+    prop: "status"
   },
   {
     label: "操作",
